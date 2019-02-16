@@ -110,6 +110,9 @@ class UnaryOperator(Element):
 		self.__operand = operand
 		self.__func = func
 
+	def getOperand(self):
+		return self.__operand
+
 	def getValue(self):
 		return self.__func(self.__operand.getValue())
 
@@ -118,6 +121,9 @@ class UnaryOperator(Element):
 
 	def toString(self):
 		return self.getSymbol() + "(" + self.__operand.toString() + ")"
+
+	def simplify(self):
+		return self
 
 class Operator(Element):
 
@@ -128,6 +134,12 @@ class Operator(Element):
 		self.__operand2 = operand2
 
 		self.__func = func
+
+	def getOperandLeft(self):
+		return self.__operand1
+
+	def getOperandRight(self):
+		return self.__operand2
 
 	def getValue(self):
 		return self.__func(self.__operand1.getValue(), self.__operand2.getValue())
@@ -165,6 +177,13 @@ class Not(UnaryOperator):
 	def __init__(self, operand):
 		super(Not, self).__init__("~", lambda a : not a, operand)
 
+	def simplify(self):
+		operandVal = self.getOperand().getValue()
+		if operandVal != None:
+			return Atom(self.getOperand().toString()).setValue(not operandVal)
+
+		return self
+
 def atomsIsSubset(phi, psi):
 	for atomPhi in phi.getAtoms():
 		if atomPhi.getValue() == None and not psi.hasAtom(atomPhi):
@@ -197,6 +216,7 @@ def interpolate(phi, psi):
 
 
 def main():
+	print(s.simplify().toString())
 
 	t = Atom("t")
 	s = Atom("s")
