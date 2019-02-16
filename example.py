@@ -30,7 +30,7 @@ class Element:
 	def getAtoms(self):
 		pass
 
-	def isValid(self):
+	def isTaut(self):
 		pass
 
 	def hasAtom(self, atom):
@@ -62,7 +62,7 @@ class Element:
 
 		return worlds
 
-	def isValid(self):
+	def isTaut(self):
 
 		with tempEval(self):
 			for world in self.getWorlds():
@@ -96,8 +96,8 @@ class Atom(Element):
 	def getAtoms(self):
 		return [self]
 
-	def isValid(self):
-		return True
+	def isTaut(self):
+		return False
 
 	def toString(self):
 		if self.getValue() == None:	
@@ -281,7 +281,7 @@ def interpolateAux(phi, psi):
 
 def interpolate(phi, psi):
 
-	if not Impl(phi, psi).isValid():
+	if not Impl(phi, psi).isTaut():
 		print("Not Valid!")
 		return None
 
