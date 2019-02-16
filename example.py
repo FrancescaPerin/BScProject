@@ -211,18 +211,5 @@ def main():
 
 	print(interpolate(phi, psi).toString())
 
-	#atoms = phi.getAtoms()
-	#for atom in atoms:
-		#print(atom.getSymbol(), end=" ")
-	#print(" ")
-
-	#print(phi.getValue())
-
-	#p.setValue(True)
-	#q.setValue(False)
-	#r.setValue(True)
-
-	#print(phi.getValue())
-
 if __name__ == '__main__':
 	main()
