@@ -287,8 +287,29 @@ def interpolate(phi, psi):
 
 	return interpolateAux(copy.copy(phi), psi)
 
+def computeInterpolant(phi, psi):
+	print("phi: " + phi.toString())
+	print("psi: " + psi.toString())
+
+	interpolated = interpolate(phi, psi)
+	print("interpolant: " + interpolated.toString())
+	print("simplified interpolant: " + interpolated.simplify().toString())
+
+	return interpolated
 
 def main():
+
+	a = Atom("a")
+	b = Atom("b")
+	c = Atom("c")
+	d = Atom("d")
+
+	phi = Conj(Disj(b,Not(b)),Conj(a,d)) 
+	psi = Disj(a,Conj(b,c))
+
+	computeInterpolant(phi, psi)
+
+	print("__________________________________")
 
 	t = Atom("t")
 	s = Atom("s")
@@ -298,12 +319,7 @@ def main():
 	phi = Disj(q, Conj(r,s))
 	psi = Impl(Not(q), Disj(t,s))
 
-	print(phi.toString())
-	print(psi.toString())
-
-	interpolated = interpolate(phi, psi)
-	print(interpolated.toString())
-	print(interpolated.simplify().toString())
+	computeInterpolant(phi, psi)
 
 if __name__ == '__main__':
 	main()
