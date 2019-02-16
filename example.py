@@ -1,5 +1,21 @@
 import copy
 
+class tempEval:
+
+	def __init__(self, element):
+		self.__element = element
+		self.__vals = []
+
+	def __enter__(self):
+		atoms = self.__element.getAtoms()
+		for i in range(len(atoms)):
+			self.__vals.append(atoms[i].getValue())
+
+	def __exit__(self, type, value, tb):
+		atoms = self.__element.getAtoms()
+		for i in range(len(atoms)):
+			atoms[i].setValue(self.__vals[i]) 
+
 class Element:
 
 	def __init__(self, symbol):
@@ -16,6 +32,20 @@ class Element:
 
 	def isValid(self):
 		pass
+
+	def hasAtom(self, atom):
+		for selfAtom in self.getAtoms():
+			if selfAtom.getSymbol() == atom.getSymbol():
+				return True
+
+		return False
+
+	def setAtomBySymbol(self, symbol, value):
+		for atom in self.getAtoms():
+			if atom.getSymbol() == symbol and atom.getValue() == None:
+				atom.setValue(value)
+
+		return self
 
 	def getWorlds(self):
 		atoms = self.getAtoms()
@@ -34,24 +64,13 @@ class Element:
 
 	def isValid(self):
 
-		worlds = self.getWorlds()
-		atoms = self.getAtoms()
+		with tempEval(self):
+			for world in self.getWorlds():
+				for atom in world:
+					self.setAtomBySymbol(atom.getSymbol(), atom.getValue())
 
-		tempVals = []
-		for i in range(len(atoms)):
-			tempVals.append(atoms[i].getValue())
-
-		for world in worlds:
-			for atom in world:
-				for actualAtom in atoms:
-					if actualAtom.getSymbol() == atom.getSymbol():
-						actualAtom.setValue(atom.getValue())
-
-			if(not self.getValue()):
-				return False
-
-		for i in range(len(atoms)):
-			atoms[i].setValue(tempVals[i]) 
+				if(not self.getValue()):
+					return False
 
 		return True
 
@@ -146,51 +165,25 @@ class Not(UnaryOperator):
 	def __init__(self, operand):
 		super(Not, self).__init__("~", lambda a : not a, operand)
 
+def atomsIsSubset(phi, psi):
+	for atomPhi in phi.getAtoms():
+		if atomPhi.getValue() == None and not psi.hasAtom(atomPhi):
+			return False
+	return True
+
 def interpolateAux(phi, psi):
 
-	isSubset = True
-	for atomPhi in phi.getAtoms():
-		if atomPhi.getValue() == None:
-
-			inPsi = False
-
-			for atomPsi in psi.getAtoms():
-				if atomPsi.getSymbol() == atomPhi.getSymbol():
-					inPsi = True
-					break
-
-			if(not inPsi):
-				isSubset = False
-				break
-
-	if(isSubset):
+	if(atomsIsSubset(phi, psi)):
 		return phi
 
-	atoms = phi.getAtoms()
-	for atomPhi in atoms:
-		if atomPhi.getValue() == None:
-
-			inPsi = False
-
-			for atomPsi in psi.getAtoms():
-				if atomPsi.getSymbol() == atomPhi.getSymbol():
-					inPsi = True
-					break
-
-			if not inPsi:
-				p = atomPhi
-				break
+	# get p
+	for atomPhi in phi.getAtoms():
+		if atomPhi.getValue() == None and not psi.hasAtom(atomPhi):
+			p = atomPhi
+			break
 		
-	phiTrue = copy.deepcopy(phi)
-	phiFalse = copy.deepcopy(phi)
-
-	for atom in phiTrue.getAtoms():
-		if atom.getSymbol() == p.getSymbol():
-			atom.setValue(True)
-
-	for atom in phiFalse.getAtoms():
-		if atom.getSymbol() == p.getSymbol():
-			atom.setValue(False)
+	phiTrue = copy.deepcopy(phi).setAtomBySymbol(p.getSymbol(), True)
+	phiFalse = copy.deepcopy(phi).setAtomBySymbol(p.getSymbol(), False)
 
 	return interpolateAux(Disj(phiTrue, phiFalse), psi)
 
