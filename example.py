@@ -130,6 +130,11 @@ class UnaryOperator(Element):
 		return self.getSymbol() + "(" + self.__operand.toString() + ")"
 
 	def simplify(self):
+		selfVal = self.getValue()
+		if selfVal != None:
+			return Atom(selfVal)
+
+		self.setOperand(self.getOperand().simplify())
 		return self
 
 class Operator(Element):
@@ -242,15 +247,15 @@ class Impl(Operator):
 class Not(UnaryOperator):
 
 	def __init__(self, operand):
-		super(Not, self).__init__("~", lambda a : not a, operand)
 
-	def simplify(self):
-		operandVal = self.getOperand().getValue()
-		if operandVal != None:
-			return Atom(self.getOperand().toString()).setValue(not operandVal)
+		def OP(a):
 
-		self.setOperand(getOperand().simplify())
-		return self
+			if a == None:
+				return None
+
+			return not a
+
+		super(Not, self).__init__("~", OP, operand)
 
 def atomsIsSubset(phi, psi):
 	for atomPhi in phi.getAtoms():
