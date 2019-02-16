@@ -74,6 +74,9 @@ class Element:
 
 		return True
 
+	def simplify(self):
+		return self
+
 	def toString(self):
 		pass
 
@@ -113,6 +116,10 @@ class UnaryOperator(Element):
 	def getOperand(self):
 		return self.__operand
 
+	def setOperand(self, operand):
+		self.__operand = operand
+		return self
+
 	def getValue(self):
 		return self.__func(self.__operand.getValue())
 
@@ -138,8 +145,16 @@ class Operator(Element):
 	def getOperandLeft(self):
 		return self.__operand1
 
+	def setOperandLeft(self, operand):
+		self.__operand1 = operand
+		return self
+
 	def getOperandRight(self):
 		return self.__operand2
+
+	def setOperandRight(self, operand):
+		self.__operand2 = operand
+		return self
 
 	def getValue(self):
 		return self.__func(self.__operand1.getValue(), self.__operand2.getValue())
@@ -153,6 +168,34 @@ class Operator(Element):
 
 		return atoms
 
+	def simplify(self):
+
+		selfValue = self.getValue()
+		if selfValue!= None:
+			return Atom(self.toString()).setValue(selfValue)
+
+		self.setOperandRight(self.getOperandRight().simplify())
+		self.setOperandLeft(self.getOperandLeft().simplify())
+
+		valOperRight=self.getOperandRight().getValue()
+		valOperLeft=self.getOperandLeft().getValue()
+
+		if valOperRight!=None and valOperLeft==None:
+
+			if self.__func(True, valOperRight):
+				return self.getOperandLeft()
+			else :
+				return Not(self.getOperandLeft())
+
+		if valOperRight==None and valOperLeft!=None:
+
+			if self.__func(valOperLeft, True):
+				return self.getOperandRight()
+			else :
+				return Not(self.getOperandRight())
+
+		return self
+
 	def toString(self):
 		return "(" + self.__operand1.toString() + " " + self.getSymbol() + " " + self.__operand2.toString() + ")"
 
@@ -160,17 +203,41 @@ class Operator(Element):
 class Conj(Operator):
 
 	def __init__(self, operand1, operand2):
-		super(Conj, self).__init__("^", lambda a,b : a and b, operand1, operand2)
+
+		def OP(a,b):
+			if a==False or b==False:
+				return False
+
+			return a and b
+
+		super(Conj, self).__init__("^", OP, operand1, operand2)
 
 class Disj(Operator):
 
 	def __init__(self, operand1, operand2):
-		super(Disj, self).__init__("v", lambda a,b : a or b, operand1, operand2)
+
+		def OP(a,b):
+			if a==True or b==True:
+				return True
+
+			if a==False and b==False:
+				return False
+
+			return None
+
+		super(Disj, self).__init__("v", OP, operand1, operand2)
 
 class Impl(Operator):
 
 	def __init__(self, operand1, operand2):
-		super(Impl, self).__init__("->", lambda a,b : not a or b, operand1, operand2)
+
+		def OP(a,b):
+			if a==False or b==True:
+				return True
+
+			return not a or b
+
+		super(Impl, self).__init__("->", OP, operand1, operand2)
 
 class Not(UnaryOperator):
 
@@ -182,6 +249,7 @@ class Not(UnaryOperator):
 		if operandVal != None:
 			return Atom(self.getOperand().toString()).setValue(not operandVal)
 
+		self.setOperand(getOperand().simplify())
 		return self
 
 def atomsIsSubset(phi, psi):
@@ -216,7 +284,6 @@ def interpolate(phi, psi):
 
 
 def main():
-	print(s.simplify().toString())
 
 	t = Atom("t")
 	s = Atom("s")
@@ -229,7 +296,9 @@ def main():
 	print(phi.toString())
 	print(psi.toString())
 
-	print(interpolate(phi, psi).toString())
+	interpolated = interpolate(phi, psi)
+	print(interpolated.toString())
+	print(interpolated.simplify().toString())
 
 if __name__ == '__main__':
 	main()
