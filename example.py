@@ -321,5 +321,17 @@ def main():
 
 	computeInterpolant(phi, psi)
 
+	print("__________________________________")
+
+	p = Atom("p")
+	q = Atom("q")
+	r = Atom("r")
+
+	phi = Disj(Impl(p,r),Impl(q,r))
+	psi = Impl(Conj(p,q), r)
+
+	computeInterpolant(phi, psi)
+
+
 if __name__ == '__main__':
 	main()
