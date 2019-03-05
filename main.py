@@ -1,6 +1,8 @@
 import basics
 import folOperator as op
 
+import sequentCalc as sc
+
 import basicInterpolant as bi
 
 def main():
@@ -14,6 +16,10 @@ def main():
 	psi = op.Disj(a,op.Conj(b,c))
 
 	bi.computeInterpolant(phi, psi)
+
+	entailment = sc.Entailment([phi], [psi])
+	print(entailment.toString())
+	print(entailment.solve())
 
 	print("__________________________________")
 
@@ -37,6 +43,13 @@ def main():
 	psi = op.Impl(op.Conj(p,q), r)
 
 	bi.computeInterpolant(phi, psi)
+
+
+	print("__________________________________")
+
+	entailment = sc.Entailment([phi], [psi])
+	print(entailment.toString())
+	print(entailment.solve())
 
 
 if __name__ == '__main__':
