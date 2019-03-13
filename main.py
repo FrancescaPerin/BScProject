@@ -33,6 +33,10 @@ def main():
 
 	bi.computeInterpolant(phi, psi)
 
+	entailment = sc.Entailment([phi], [psi])
+	print(entailment.toString())
+	print(entailment.solve())
+
 	print("__________________________________")
 
 	p = basics.Atom("p")
@@ -43,9 +47,6 @@ def main():
 	psi = op.Impl(op.Conj(p,q), r)
 
 	bi.computeInterpolant(phi, psi)
-
-
-	print("__________________________________")
 
 	entailment = sc.Entailment([phi], [psi])
 	print(entailment.toString())

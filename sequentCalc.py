@@ -1,5 +1,6 @@
 import basics
 import folOperator as op
+import pars
 
 import copy
 
@@ -102,7 +103,7 @@ class RConj(RRule):
 
 	@staticmethod
 	def canApply(conclusions):
-		return [conclusion.getSymbol() == "^" for conclusion in conclusions]
+		return [conclusion.getSymbol() == pars.CONJ_SYMBOL for conclusion in conclusions]
 
 	@staticmethod
 	def step(entailment, conclusion):
@@ -122,7 +123,7 @@ class RDisj(RRule):
 
 	@staticmethod
 	def canApply(conclusions):
-		return [conclusion.getSymbol() == "v" for conclusion in conclusions]
+		return [conclusion.getSymbol() == pars.DISJ_SYMBOL for conclusion in conclusions]
 
 	@staticmethod
 	def step(entailment, conclusion):
@@ -139,7 +140,7 @@ class RImpl(RRule):
 
 	@staticmethod
 	def canApply(conclusions):
-		return [conclusion.getSymbol() == "->" for conclusion in conclusions]
+		return [conclusion.getSymbol() == pars.IMPL_SYMBOL for conclusion in conclusions]
 
 	@staticmethod
 	def step(entailment, conclusion):
@@ -157,7 +158,7 @@ class RNeg(RRule):
 
 	@staticmethod
 	def canApply(conclusions):
-		return [conclusion.getSymbol() == "~" for conclusion in conclusions]
+		return [conclusion.getSymbol() == pars.NOT_SYMBOL for conclusion in conclusions]
 
 	@staticmethod
 	def step(entailment, conclusion):
@@ -184,7 +185,7 @@ class LConj(LRule):
 
 	@staticmethod
 	def canApply(premises):
-		return [premise.getSymbol() == "^" for premise in premises]
+		return [premise.getSymbol() == pars.CONJ_SYMBOL for premise in premises]
 
 	@staticmethod
 	def step(entailment, premise):
@@ -201,7 +202,7 @@ class LDisj(LRule):
 
 	@staticmethod
 	def canApply(premises):
-		return [premise.getSymbol() == "v" for premise in premises]
+		return [premise.getSymbol() == pars.DISJ_SYMBOL for premise in premises]
 
 	@staticmethod
 	def step(entailment, premise):
@@ -221,7 +222,7 @@ class LImpl(LRule):
 
 	@staticmethod
 	def canApply(premises):
-		return [premise.getSymbol() == "->" for premise in premises]
+		return [premise.getSymbol() == pars.IMPL_SYMBOL for premise in premises]
 
 	@staticmethod
 	def step(entailment, premise):
@@ -241,7 +242,7 @@ class LNeg(LRule):
 
 	@staticmethod
 	def canApply(premises):
-		return [premise.getSymbol() == "~" for premise in premises]
+		return [premise.getSymbol() == pars.NOT_SYMBOL for premise in premises]
 
 	@staticmethod
 	def step(entailment, premise):

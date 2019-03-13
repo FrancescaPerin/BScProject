@@ -1,4 +1,5 @@
 import basics 
+import pars
 
 #Class for unary operators (for now only not)
 class UnaryOperator(basics.Element):
@@ -128,7 +129,7 @@ class Disj(Operator):
 
 			return None
 
-		super(Disj, self).__init__("v", OP, operand1, operand2)
+		super(Disj, self).__init__(pars.DISJ_SYMBOL, OP, operand1, operand2)
 
 class Impl(Operator):
 
@@ -143,7 +144,7 @@ class Impl(Operator):
 
 			return None
 
-		super(Impl, self).__init__("->", OP, operand1, operand2)
+		super(Impl, self).__init__(pars.IMPL_SYMBOL, OP, operand1, operand2)
 
 class Not(UnaryOperator):
 
@@ -156,7 +157,7 @@ class Not(UnaryOperator):
 
 			return not a
 
-		super(Not, self).__init__("~", OP, operand)
+		super(Not, self).__init__(pars.NOT_SYMBOL, OP, operand)
 
 
 
