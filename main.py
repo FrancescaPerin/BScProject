@@ -25,11 +25,11 @@ def main():
 
 	t = basics.Atom("t")
 	s = basics.Atom("s")
-	q = basics.Atom("q")
-	r = basics.Atom("r")
+	u = basics.Atom("u")
+	v = basics.Atom("v")
 
-	phi = op.Disj(q, op.Conj(r,s))
-	psi = op.Impl(op.Not(q), op.Disj(t,s))
+	phi = op.Disj(u, op.Conj(v,s))
+	psi = op.Impl(op.Not(u), op.Disj(t,s))
 
 	bi.computeInterpolant(phi, psi)
 

@@ -73,6 +73,7 @@ class Operator(basics.Element):
 	def simplify(self):
 
 		selfValue = self.getValue()
+
 		if selfValue!= None:
 			return basics.Atom(self.toString()).setValue(selfValue)
 
@@ -137,7 +138,10 @@ class Impl(Operator):
 			if a==False or b==True:
 				return True
 
-			return not a or b
+			if a==True and b==False:
+				return False
+
+			return None
 
 		super(Impl, self).__init__("->", OP, operand1, operand2)
 
