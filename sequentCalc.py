@@ -8,49 +8,71 @@ import copy
 
 class Entailment:
 
-	def __init__(self, premises, conclusions):
+	#rPremises corresponds to f+, lPremises to f-, 
+	#rConclusions to X- and lConclusion to X+.
+	def __init__(self, lPremises, lConclusions):
 
-		self.__premises = premises
-		self.__conclusions = conclusions
+		self.__rPremises = []
+		self.__lPremises = lPremises
+
+		self.__rConclusions = []
+		self.__lConclusions = lConclusions
+
+		self.__children = []
 
 	def solve(self):
 		
 		# right rules
+		
+		rconjs = RConj.canApply(self.getLeftConclusions())
+		rdisj = RDisj.canApply(self.getLeftConclusions())
+		rimpl = RImpl.canApply(self.getLeftConclusions())
+		rneg = RNeg.canApply(self.getLeftConclusions())
 
-		rconjs = RConj.canApply(self.getConclusions())
+		lconjs = LConj.canApply(self.getLeftPremises())
+		ldisj = LDisj.canApply(self.getLeftPremises())
+		limpl = LImpl.canApply(self.getLeftPremises())
+		lneg = LNeg.canApply(self.getLeftPremises())
+
+
 		if(any(rconjs)):
-			return RConj.step(self, self.getConclusions()[rconjs.index(True)])
+			self.__children = RConj.step(self, self.getLeftConclusions()[rconjs.index(True)])
 
-		rdisj = RDisj.canApply(self.getConclusions())
-		if(any(rdisj)):
-			return RDisj.step(self, self.getConclusions()[rdisj.index(True)])
+		
+		elif(any(rdisj)):
+			self.__children = RDisj.step(self, self.getLeftConclusions()[rdisj.index(True)])
 
-		rimpl = RImpl.canApply(self.getConclusions())
-		if(any(rimpl)):
-			return RImpl.step(self, self.getConclusions()[rimpl.index(True)])
+		
+		elif(any(rimpl)):
+			self.__children = RImpl.step(self, self.getLeftConclusions()[rimpl.index(True)])
 
-		rneg = RNeg.canApply(self.getConclusions())
-		if(any(rneg)):
-			return RNeg.step(self, self.getConclusions()[rneg.index(True)])
+		
+		elif(any(rneg)):
+			self.__children = RNeg.step(self, self.getLeftConclusions()[rneg.index(True)])
 
 		# left rules
 
-		lconjs = LConj.canApply(self.getPremises())
-		if(any(lconjs)):
-			return LConj.step(self, self.getPremises()[lconjs.index(True)])
+		
+		elif(any(lconjs)):
+			self.__children = LConj.step(self, self.getLeftPremises()[lconjs.index(True)])
 
-		ldisj = LDisj.canApply(self.getPremises())
-		if(any(ldisj)):
-			return LDisj.step(self, self.getPremises()[ldisj.index(True)])
+		
+		elif(any(ldisj)):
+			self.__children = LDisj.step(self, self.getLeftPremises()[ldisj.index(True)])
 
-		limpl = LImpl.canApply(self.getPremises())
-		if(any(limpl)):
-			return LImpl.step(self, self.getPremises()[limpl.index(True)])
+		
+		elif(any(limpl)):
+			self.__children = LImpl.step(self, self.getLeftPremises()[limpl.index(True)])
 
-		lneg = LNeg.canApply(self.getPremises())
-		if(any(lneg)):
-			return LNeg.step(self, self.getPremises()[lneg.index(True)])
+		
+		elif(any(lneg)):
+			self.__children = LNeg.step(self, self.getLeftPremises()[lneg.index(True)])
 
+
+		if self.__children == None:
+			return False
+		elif len(self.__children)>0:
+			return True
 
 		# axioms
 
@@ -60,11 +82,23 @@ class Entailment:
 
 		return False
 
+	def getRightPremises(self):
+		return self.__rPremises
+
+	def getLeftPremises(self):
+		return self.__lPremises
+
 	def getPremises(self):
-		return self.__premises
+		return self.__lPremises + self.__rPremises
+
+	def getRightConclusions(self):
+		return self.__rConclusions
+
+	def getLeftConclusions(self):
+		return self.__lConclusions
 
 	def getConclusions(self):
-		return self.__conclusions
+		return self.__lConclusions + self.__rConclusions
 
 	@staticmethod
 	def copyEntailment(entailment):
@@ -111,13 +145,16 @@ class RConj(RRule):
 		left = Entailment.copyEntailment(entailment)
 		right = Entailment.copyEntailment(entailment)
 
-		left.getConclusions().remove(conclusion)
-		right.getConclusions().remove(conclusion)
+		left.getLeftConclusions().remove(conclusion)
+		right.getLeftConclusions().remove(conclusion)
 
-		left.getConclusions().append(conclusion.getOperandLeft())
-		right.getConclusions().append(conclusion.getOperandRight())
+		left.getLeftConclusions().append(conclusion.getOperandLeft())
+		right.getLeftConclusions().append(conclusion.getOperandRight())
 
-		return left.solve() and right.solve()
+		if (not left.solve() or not right.solve()):
+			return None;
+		
+		return [left, right]
 
 class RDisj(RRule):
 
@@ -129,12 +166,16 @@ class RDisj(RRule):
 	def step(entailment, conclusion):
 
 		new = Entailment.copyEntailment(entailment)
-		new.getConclusions().remove(conclusion)
 
-		new.getConclusions().append(conclusion.getOperandLeft())
-		new.getConclusions().append(conclusion.getOperandRight())
+		new.getLeftConclusions().remove(conclusion)
 
-		return new.solve()
+		new.getLeftConclusions().append(conclusion.getOperandLeft())
+		new.getLeftConclusions().append(conclusion.getOperandRight())
+
+		if not new.solve():
+			return None
+
+		return [new]
 
 class RImpl(RRule):
 
@@ -147,12 +188,15 @@ class RImpl(RRule):
 
 		new = Entailment.copyEntailment(entailment)
 
-		new.getConclusions().remove(conclusion)
+		new.getLeftConclusions().remove(conclusion)
 
-		new.getPremises().append(conclusion.getOperandLeft())
-		new.getConclusions().append(conclusion.getOperandRight())
+		new.getRightPremises().append(conclusion.getOperandLeft())
+		new.getLeftConclusions().append(conclusion.getOperandRight())
 
-		return new.solve()
+		if not new.solve():
+			return None
+
+		return [new]
 
 class RNeg(RRule):
 
@@ -165,11 +209,14 @@ class RNeg(RRule):
 
 		new = Entailment.copyEntailment(entailment)
 
-		new.getConclusions().remove(conclusion)
+		new.getLeftConclusions().remove(conclusion)
 
-		new.getPremises().append(conclusion.getOperand())
+		new.getRightPremises().append(conclusion.getOperand())
 
-		return new.solve()
+		if not new.solve():
+			return None
+
+		return [new]
 
 class LRule:
 
@@ -191,12 +238,15 @@ class LConj(LRule):
 	def step(entailment, premise):
 
 		new = Entailment.copyEntailment(entailment)
-		new.getPremises().remove(premise)
+		new.getLeftPremises().remove(premise)
 
-		new.getPremises().append(premise.getOperandLeft())
-		new.getPremises().append(premise.getOperandRight())
+		new.getLeftPremises().append(premise.getOperandLeft())
+		new.getLeftPremises().append(premise.getOperandRight())
 
-		return new.solve()
+		if not new.solve():
+			return None
+
+		return [new]
 
 class LDisj(LRule):
 
@@ -210,13 +260,16 @@ class LDisj(LRule):
 		left = Entailment.copyEntailment(entailment)
 		right = Entailment.copyEntailment(entailment)
 
-		left.getPremises().remove(premise)
-		right.getPremises().remove(premise)
+		left.getLeftPremises().remove(premise)
+		right.getLeftPremises().remove(premise)
 
-		left.getPremises().append(premise.getOperandLeft())
-		right.getPremises().append(premise.getOperandRight())
+		left.getLeftPremises().append(premise.getOperandLeft())
+		right.getLeftPremises().append(premise.getOperandRight())
 
-		return left.solve() and right.solve()
+		if (not left.solve() or not right.solve()):
+			return None;
+		
+		return [left, right]
 
 class LImpl(LRule):
 
@@ -230,13 +283,16 @@ class LImpl(LRule):
 		left = Entailment.copyEntailment(entailment)
 		right = Entailment.copyEntailment(entailment)
 
-		left.getPremises().remove(premise)
-		right.getPremises().remove(premise)
+		left.getLeftPremises().remove(premise)
+		right.getLeftPremises().remove(premise)
 
-		left.getConclusions().append(premise.getOperandLeft())
-		right.getPremises().append(premise.getOperandRight())
+		left.getRightConclusions().append(premise.getOperandLeft())
+		right.getLeftPremises().append(premise.getOperandRight())
 
-		return left.solve() and right.solve()
+		if (not left.solve() or not right.solve()):
+			return None;
+		
+		return [left, right]
 
 class LNeg(LRule):
 
@@ -249,7 +305,10 @@ class LNeg(LRule):
 
 		new = Entailment.copyEntailment(entailment)
 
-		new.getPremises().remove(premise)
-		new.getConclusions().append(premise.getOperand())
+		new.getLeftPremises().remove(premise)
+		new.getRightConclusions().append(premise.getOperand())
 
-		return new.solve()
+		if not new.solve():
+			return None
+
+		return [new]

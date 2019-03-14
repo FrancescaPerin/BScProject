@@ -52,6 +52,22 @@ def main():
 	print(entailment.toString())
 	print(entailment.solve())
 
+	print("__________________________________")
+
+	p = basics.Atom("p")
+	q = basics.Atom("q")
+	r = basics.Atom("r")
+	s = basics.Atom("s")
+
+	phi = op.Conj(p,q)
+	psi = op.Impl(op.Not(s),op.Conj(p,op.Impl(r,q)))
+
+	bi.computeInterpolant(phi, psi)
+
+	entailment = sc.Entailment([phi], [psi])
+	print(entailment.toString())
+	print(entailment.solve())
+
 
 if __name__ == '__main__':
 	main()

@@ -24,7 +24,7 @@ class UnaryOperator(basics.Element):
 		return self.__operand.getAtoms()
 
 	def toString(self):
-		return self.getSymbol() + "(" + self.__operand.toString() + ")"
+		return  self.getSymbol() + "(" + self.__operand.toString() + ")"
 
 	def simplify(self):
 		selfVal = self.getValue()
