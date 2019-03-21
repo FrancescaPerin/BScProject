@@ -10,12 +10,12 @@ class Entailment:
 
 	#rPremises corresponds to f+, lPremises to f-, 
 	#rConclusions to X- and lConclusion to X+.
-	def __init__(self, lPremises, lConclusions):
+	def __init__(self, lPremises, rPremises, lConclusions, rConclusions):
 
-		self.__rPremises = []
+		self.__rPremises = rPremises
 		self.__lPremises = lPremises
 
-		self.__rConclusions = []
+		self.__rConclusions = rConclusions
 		self.__lConclusions = lConclusions
 
 		self.__children = []
@@ -24,49 +24,89 @@ class Entailment:
 		
 		# right rules
 		
-		rconjs = RConj.canApply(self.getLeftConclusions())
-		rdisj = RDisj.canApply(self.getLeftConclusions())
-		rimpl = RImpl.canApply(self.getLeftConclusions())
-		rneg = RNeg.canApply(self.getLeftConclusions())
+		r_Lconjs = RConj.canApply(self.getLeftConclusions())
+		r_Rconjs = RConj.canApply(self.getRightConclusions())
 
-		lconjs = LConj.canApply(self.getLeftPremises())
-		ldisj = LDisj.canApply(self.getLeftPremises())
-		limpl = LImpl.canApply(self.getLeftPremises())
-		lneg = LNeg.canApply(self.getLeftPremises())
+		r_Ldisj = RDisj.canApply(self.getLeftConclusions())
+		r_Rdisj = RDisj.canApply(self.getRightConclusions())
+
+		r_Limpl = RImpl.canApply(self.getLeftConclusions())
+		r_Rimpl = RImpl.canApply(self.getRightConclusions())
+
+		r_Lneg = RNeg.canApply(self.getLeftConclusions())
+		r_Rneg = RNeg.canApply(self.getRightConclusions())
 
 
-		if(any(rconjs)):
-			self.__children = RConj.step(self, self.getLeftConclusions()[rconjs.index(True)])
+		l_Lconjs = LConj.canApply(self.getLeftPremises())
+		l_Rconjs = LConj.canApply(self.getRightPremises())
 
+		l_Ldisj = LDisj.canApply(self.getLeftPremises())
+		l_Rdisj = LDisj.canApply(self.getRightPremises())
+
+		l_Limpl = LImpl.canApply(self.getLeftPremises())
+		l_Rimpl = LImpl.canApply(self.getRightPremises())
+
+		l_Lneg = LNeg.canApply(self.getLeftPremises())
+		l_Rneg = LNeg.canApply(self.getRightPremises())
+
+		#check if:
+		#conjunction right rule (conclusions) can be applied to left part (before semicolon)
+		if(any(r_Lconjs)):
+			self.__children = RConj.stepLeft(self, self.getLeftConclusions()[r_Lconjs.index(True)])
+
+		#conjunction right rule (conclusions) can be applied to right (after semicolon)
+		elif(any(r_Rconjs)):
+			self.__children = RConj.stepRight(self, self.getRightConclusions()[r_Rconjs.index(True)])
 		
-		elif(any(rdisj)):
-			self.__children = RDisj.step(self, self.getLeftConclusions()[rdisj.index(True)])
+		#disjunction right rule (conclusions) can be applied to left 
+		elif(any(r_Ldisj)):
+			self.__children = RDisj.stepLeft(self, self.getLeftConclusions()[r_Ldisj.index(True)])
 
+		#disjunction right rule (conclusions) can be applied to right 
+		elif(any(r_Rdisj)):
+			self.__children = RDisj.stepRight(self, self.getRightConclusions()[r_Rdisj.index(True)])
 		
-		elif(any(rimpl)):
-			self.__children = RImpl.step(self, self.getLeftConclusions()[rimpl.index(True)])
+		elif(any(r_Limpl)):
+			self.__children = RImpl.stepLeft(self, self.getLeftConclusions()[r_Limpl.index(True)])
 
-		
-		elif(any(rneg)):
-			self.__children = RNeg.step(self, self.getLeftConclusions()[rneg.index(True)])
+		elif(any(r_Rimpl)):
+			self.__children = RImpl.stepRight(self, self.getRightConclusions()[r_Rimpl.index(True)])
+
+		elif(any(r_Lneg)):
+			self.__children = RNeg.stepLeft(self, self.getLeftConclusions()[r_Lneg.index(True)])
+
+		elif(any(r_Rneg)):
+			self.__children = RNeg.stepRight(self, self.getRightConclusions()[r_Rneg.index(True)])
 
 		# left rules
 
 		
-		elif(any(lconjs)):
-			self.__children = LConj.step(self, self.getLeftPremises()[lconjs.index(True)])
+		elif(any(l_Lconjs)):
+			self.__children = LConj.stepLeft(self, self.getLeftPremises()[l_Lconjs.index(True)])
+
+		elif(any(l_Rconjs)):
+			self.__children = LConj.stepRight(self, self.getRightPremises()[l_Rconjs.index(True)])
+
+		elif(any(l_Ldisj)):
+			self.__children = LDisj.stepLeft(self, self.getLeftPremises()[l_Ldisj.index(True)])
+
+		elif(any(l_Rdisj)):
+			self.__children = LDisj.stepRight(self, self.getRightPremises()[l_Rdisj.index(True)])
 
 		
-		elif(any(ldisj)):
-			self.__children = LDisj.step(self, self.getLeftPremises()[ldisj.index(True)])
+		elif(any(l_Limpl)):
+			self.__children = LImpl.stepLeft(self, self.getLeftPremises()[l_Limpl.index(True)])
+
+		elif(any(l_Rimpl)):
+			self.__children = LImpl.stepRight(self, self.getRightPremises()[l_Rimpl.index(True)])
 
 		
-		elif(any(limpl)):
-			self.__children = LImpl.step(self, self.getLeftPremises()[limpl.index(True)])
+		elif(any(l_Lneg)):
+			self.__children = LNeg.stepLeft(self, self.getLeftPremises()[l_Lneg.index(True)])
 
-		
-		elif(any(lneg)):
-			self.__children = LNeg.step(self, self.getLeftPremises()[lneg.index(True)])
+		elif(any(l_Rneg)):
+			self.__children = LNeg.stepRight(self, self.getRightPremises()[l_Rneg.index(True)])
+
 
 
 		if self.__children == None:
@@ -74,7 +114,7 @@ class Entailment:
 		elif len(self.__children)>0:
 			return True
 
-		# axioms
+		
 
 		for premise in self.getPremises():
 			if premise in self.getConclusions():
@@ -102,22 +142,40 @@ class Entailment:
 
 	@staticmethod
 	def copyEntailment(entailment):
-		return Entailment(copy.copy(entailment.getPremises()), copy.copy(entailment.getConclusions()))
+
+		cLeftPremises=copy.copy(entailment.getLeftPremises())
+		cRightPremises=copy.copy(entailment.getRightPremises())
+		cLeftConcl=copy.copy(entailment.getLeftConclusions())
+		cRightConcl=copy.copy(entailment.getRightConclusions())
+
+		after=Entailment(cLeftPremises, cRightPremises, cLeftConcl, cRightConcl)
+		
+		#print("step:"+  after.toString())
+		return after
 
 	def toString(self):
 
 		a = ""
 		b = ""
+		c = ""
+		d = ""
 
-		for premise in self.getPremises():
+		for premise in self.getLeftPremises():
 
 			a+=str(premise.toString()) + " "
+
+		for premise in self.getRightPremises():
+			c+=str(premise.toString()) + " "
 		
-		for conclusion in self.getConclusions():
+		for conclusion in self.getLeftConclusions():
 
 			b+=str(conclusion.toString()) + " "
 
-		return (a + " |- " + b)
+		for conclusion in self.getRightConclusions():
+
+			d+=str(conclusion.toString()) + " "
+
+		return (a + " ; " + c + " |- " + b + " ; " + d )
 
 # RULES
 
@@ -130,17 +188,22 @@ class RRule:
 		pass
 
 	@staticmethod
-	def step(entailment, conclusion):
+	def stepLeft(entailment, conclusion):
+		pass
+
+	@staticmethod
+	def stepRight(entailment, conclusion):
 		pass
 
 class RConj(RRule):
 
 	@staticmethod
 	def canApply(conclusions):
-		return [conclusion.getSymbol() == pars.CONJ_SYMBOL for conclusion in conclusions]
+		return ([conclusion.getSymbol() == pars.CONJ_SYMBOL for conclusion in conclusions])
 
 	@staticmethod
-	def step(entailment, conclusion):
+	def stepLeft(entailment, conclusion):
+
 
 		left = Entailment.copyEntailment(entailment)
 		right = Entailment.copyEntailment(entailment)
@@ -156,14 +219,32 @@ class RConj(RRule):
 		
 		return [left, right]
 
+	def stepRight(entailment, conclusion):
+
+
+		left = Entailment.copyEntailment(entailment)
+		right = Entailment.copyEntailment(entailment)
+
+		left.getRightConclusions().remove(conclusion)
+		right.getRightConclusions().remove(conclusion)
+
+		left.getRightConclusions().append(conclusion.getOperandLeft())
+		right.getRightConclusions().append(conclusion.getOperandRight())
+
+		if (not left.solve() or not right.solve()):
+			return None;
+		
+		return [left, right]
+
+
 class RDisj(RRule):
 
 	@staticmethod
 	def canApply(conclusions):
-		return [conclusion.getSymbol() == pars.DISJ_SYMBOL for conclusion in conclusions]
+		return ([conclusion.getSymbol() == pars.DISJ_SYMBOL for conclusion in conclusions])
 
 	@staticmethod
-	def step(entailment, conclusion):
+	def stepLeft(entailment, conclusion):
 
 		new = Entailment.copyEntailment(entailment)
 
@@ -177,14 +258,28 @@ class RDisj(RRule):
 
 		return [new]
 
+	@staticmethod
+	def stepRight(entailment, conclusion):
+
+		new = Entailment.copyEntailment(entailment)
+
+		new.getRigthConclusions().remove(conclusion)
+
+		new.getRightConclusions().append(conclusion.getOperandLeft())
+		new.getRightConclusions().append(conclusion.getOperandRight())
+
+		if not new.solve():
+			return None
+
+		return [new]
 class RImpl(RRule):
 
 	@staticmethod
 	def canApply(conclusions):
-		return [conclusion.getSymbol() == pars.IMPL_SYMBOL for conclusion in conclusions]
+		return ([conclusion.getSymbol() == pars.IMPL_SYMBOL for conclusion in conclusions])
 
 	@staticmethod
-	def step(entailment, conclusion):
+	def stepLeft(entailment, conclusion):
 
 		new = Entailment.copyEntailment(entailment)
 
@@ -192,6 +287,21 @@ class RImpl(RRule):
 
 		new.getRightPremises().append(conclusion.getOperandLeft())
 		new.getLeftConclusions().append(conclusion.getOperandRight())
+		
+		if not new.solve():
+			return None
+
+		return [new]
+
+	@staticmethod
+	def stepRight(entailment, conclusion):
+
+		new = Entailment.copyEntailment(entailment)
+
+		new.getRightConclusions().remove(conclusion)
+
+		new.getLeftPremises().append(conclusion.getOperandLeft())
+		new.getRightConclusions().append(conclusion.getOperandRight())
 
 		if not new.solve():
 			return None
@@ -202,16 +312,30 @@ class RNeg(RRule):
 
 	@staticmethod
 	def canApply(conclusions):
-		return [conclusion.getSymbol() == pars.NOT_SYMBOL for conclusion in conclusions]
+		return ([conclusion.getSymbol() == pars.NOT_SYMBOL for conclusion in conclusions])
 
 	@staticmethod
-	def step(entailment, conclusion):
+	def stepLeft(entailment, conclusion):
 
 		new = Entailment.copyEntailment(entailment)
 
 		new.getLeftConclusions().remove(conclusion)
 
 		new.getRightPremises().append(conclusion.getOperand())
+
+		if not new.solve():
+			return None
+
+		return [new]
+
+	@staticmethod
+	def stepRight(entailment, conclusion):
+
+		new = Entailment.copyEntailment(entailment)
+
+		new.getRightConclusions().remove(conclusion)
+
+		new.getLeftPremises().append(conclusion.getOperand())
 
 		if not new.solve():
 			return None
@@ -225,19 +349,24 @@ class LRule:
 		pass
 
 	@staticmethod
-	def step(entailment, premise):
+	def stepLeft(entailment, premise):
+		pass
+
+	@staticmethod
+	def stepRight(entailment, premise):
 		pass
 
 class LConj(LRule):
 
 	@staticmethod
 	def canApply(premises):
-		return [premise.getSymbol() == pars.CONJ_SYMBOL for premise in premises]
+		return ([premise.getSymbol() == pars.CONJ_SYMBOL for premise in premises])
 
 	@staticmethod
-	def step(entailment, premise):
+	def stepLeft(entailment, premise):
 
 		new = Entailment.copyEntailment(entailment)
+
 		new.getLeftPremises().remove(premise)
 
 		new.getLeftPremises().append(premise.getOperandLeft())
@@ -248,14 +377,29 @@ class LConj(LRule):
 
 		return [new]
 
+	@staticmethod
+	def stepRight(entailment, premise):
+
+		new = Entailment.copyEntailment(entailment)
+
+		new.getRightPremises().remove(premise)
+
+		new.getRightPremises().append(premise.getOperandLeft())
+		new.getRightPremises().append(premise.getOperandRight())
+
+		if not new.solve():
+			return None
+
+		return [new]
+
 class LDisj(LRule):
 
 	@staticmethod
 	def canApply(premises):
-		return [premise.getSymbol() == pars.DISJ_SYMBOL for premise in premises]
+		return ([premise.getSymbol() == pars.DISJ_SYMBOL for premise in premises])
 
 	@staticmethod
-	def step(entailment, premise):
+	def stepLeft(entailment, premise):
 
 		left = Entailment.copyEntailment(entailment)
 		right = Entailment.copyEntailment(entailment)
@@ -271,14 +415,31 @@ class LDisj(LRule):
 		
 		return [left, right]
 
+	@staticmethod
+	def stepRight(entailment, premise):
+
+		left = Entailment.copyEntailment(entailment)
+		right = Entailment.copyEntailment(entailment)
+
+		left.getRightPremises().remove(premise)
+		right.getRightPremises().remove(premise)
+
+		left.getRightPremises().append(premise.getOperandLeft())
+		right.getRightPremises().append(premise.getOperandRight())
+
+		if (not left.solve() or not right.solve()):
+			return None;
+		
+		return [left, right]
+
 class LImpl(LRule):
 
 	@staticmethod
 	def canApply(premises):
-		return [premise.getSymbol() == pars.IMPL_SYMBOL for premise in premises]
+		return ([premise.getSymbol() == pars.IMPL_SYMBOL for premise in premises])
 
 	@staticmethod
-	def step(entailment, premise):
+	def stepLeft(entailment, premise):
 
 		left = Entailment.copyEntailment(entailment)
 		right = Entailment.copyEntailment(entailment)
@@ -294,19 +455,49 @@ class LImpl(LRule):
 		
 		return [left, right]
 
+	@staticmethod
+	def stepRight(entailment, premise):
+
+		left = Entailment.copyEntailment(entailment)
+		right = Entailment.copyEntailment(entailment)
+
+		left.getRightPremises().remove(premise)
+		right.getRightPremises().remove(premise)
+
+		left.getLeftConclusions().append(premise.getOperandLeft())
+		right.getRightPremises().append(premise.getOperandRight())
+
+		if (not left.solve() or not right.solve()):
+			return None;
+		
+		return [left, right]
+
 class LNeg(LRule):
 
 	@staticmethod
 	def canApply(premises):
-		return [premise.getSymbol() == pars.NOT_SYMBOL for premise in premises]
+		return ([premise.getSymbol() == pars.NOT_SYMBOL for premise in premises])
 
 	@staticmethod
-	def step(entailment, premise):
+	def stepLeft(entailment, premise):
 
 		new = Entailment.copyEntailment(entailment)
 
 		new.getLeftPremises().remove(premise)
 		new.getRightConclusions().append(premise.getOperand())
+
+		if not new.solve():
+			return None
+
+		return [new]
+
+	@staticmethod
+	def stepRight(entailment, premise):
+
+		new = Entailment.copyEntailment(entailment)
+
+		new.getRightPremises().remove(premise)
+		new.getLeftConclusions().append(premise.getOperand())
 
 		if not new.solve():
 			return None

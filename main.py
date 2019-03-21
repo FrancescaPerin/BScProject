@@ -17,7 +17,7 @@ def main():
 
 	bi.computeInterpolant(phi, psi)
 
-	entailment = sc.Entailment([phi], [psi])
+	entailment = sc.Entailment([phi],[], [psi], [])
 	print(entailment.toString())
 	print(entailment.solve())
 
@@ -33,7 +33,7 @@ def main():
 
 	bi.computeInterpolant(phi, psi)
 
-	entailment = sc.Entailment([phi], [psi])
+	entailment = sc.Entailment([phi],[], [psi],[])
 	print(entailment.toString())
 	print(entailment.solve())
 
@@ -48,7 +48,7 @@ def main():
 
 	bi.computeInterpolant(phi, psi)
 
-	entailment = sc.Entailment([phi], [psi])
+	entailment = sc.Entailment([phi],[], [psi],[])
 	print(entailment.toString())
 	print(entailment.solve())
 
@@ -64,9 +64,11 @@ def main():
 
 	bi.computeInterpolant(phi, psi)
 
-	entailment = sc.Entailment([phi], [psi])
+	entailment = sc.Entailment([phi],[], [psi],[])
 	print(entailment.toString())
 	print(entailment.solve())
+
+	print("__________________________________")
 
 
 if __name__ == '__main__':
