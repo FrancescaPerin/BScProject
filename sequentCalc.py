@@ -1,6 +1,7 @@
 import basics
 import folOperator as op
 import pars
+import functionality as F
 
 import copy
 
@@ -20,8 +21,13 @@ class Entailment:
 
 		self.__children = []
 
+		self.__rule =[]
+
+		self.__side = bool
+
+
 	def solve(self):
-		
+
 		# right rules
 		
 		r_Lconjs = RConj.canApply(self.getLeftConclusions())
@@ -53,68 +59,99 @@ class Entailment:
 		#conjunction right rule (conclusions) can be applied to left part (before semicolon)
 		if(any(r_Lconjs)):
 			self.__children = RConj.stepLeft(self, self.getLeftConclusions()[r_Lconjs.index(True)])
+			self.__rule=RConj.interpolate
+			self.__side=True
 
 		#conjunction right rule (conclusions) can be applied to right (after semicolon)
 		elif(any(r_Rconjs)):
 			self.__children = RConj.stepRight(self, self.getRightConclusions()[r_Rconjs.index(True)])
-		
+			self.__rule=RConj.interpolate
+			self.__side=False
+
 		#disjunction right rule (conclusions) can be applied to left 
 		elif(any(r_Ldisj)):
 			self.__children = RDisj.stepLeft(self, self.getLeftConclusions()[r_Ldisj.index(True)])
+			self.__rule=RDisj.interpolate
+			self.__side=True
 
 		#disjunction right rule (conclusions) can be applied to right 
 		elif(any(r_Rdisj)):
 			self.__children = RDisj.stepRight(self, self.getRightConclusions()[r_Rdisj.index(True)])
-		
+			self.__rule= RDij.interpolate
+			elf.__side=False
+
 		elif(any(r_Limpl)):
 			self.__children = RImpl.stepLeft(self, self.getLeftConclusions()[r_Limpl.index(True)])
+			self.__rule= RImpl.interpolate
+			self.__side=True
 
 		elif(any(r_Rimpl)):
 			self.__children = RImpl.stepRight(self, self.getRightConclusions()[r_Rimpl.index(True)])
+			self.__rule= RImpl.interpolant
+			elf.__side=False
 
 		elif(any(r_Lneg)):
 			self.__children = RNeg.stepLeft(self, self.getLeftConclusions()[r_Lneg.index(True)])
+			self.__rule= RNeg.interpolate
+			self.__side=True
 
 		elif(any(r_Rneg)):
 			self.__children = RNeg.stepRight(self, self.getRightConclusions()[r_Rneg.index(True)])
-
+			self.__rule= RNeg.interpolate
+			elf.__side=False
 		# left rules
 
 		
 		elif(any(l_Lconjs)):
 			self.__children = LConj.stepLeft(self, self.getLeftPremises()[l_Lconjs.index(True)])
+			self.__rule= LConj.interpolate
+			self.__side=True
 
 		elif(any(l_Rconjs)):
 			self.__children = LConj.stepRight(self, self.getRightPremises()[l_Rconjs.index(True)])
+			self.__rule= LConj.interpolate
+			elf.__side=False
 
 		elif(any(l_Ldisj)):
 			self.__children = LDisj.stepLeft(self, self.getLeftPremises()[l_Ldisj.index(True)])
+			self.__rule= LDisj.interpolate
+			self.__side=True
 
 		elif(any(l_Rdisj)):
 			self.__children = LDisj.stepRight(self, self.getRightPremises()[l_Rdisj.index(True)])
+			self.__rule= LDisj.interpolate(self,interpolants,False)
+			elf.__side=False
 
 		
 		elif(any(l_Limpl)):
 			self.__children = LImpl.stepLeft(self, self.getLeftPremises()[l_Limpl.index(True)])
+			self.__rule= LImpl.interpolate
+			self.__side=True
 
 		elif(any(l_Rimpl)):
 			self.__children = LImpl.stepRight(self, self.getRightPremises()[l_Rimpl.index(True)])
-
-		
+			self.__rule= LImpl.interpolate
+			elf.__side=False
+				
 		elif(any(l_Lneg)):
 			self.__children = LNeg.stepLeft(self, self.getLeftPremises()[l_Lneg.index(True)])
+			self.__rule= LNeg.interpolate
+			self.__side=True
 
 		elif(any(l_Rneg)):
 			self.__children = LNeg.stepRight(self, self.getRightPremises()[l_Rneg.index(True)])
+			self.__rule= LNeg.interpolate
+			self.__side=False
 
 
+		
 
 		if self.__children == None:
 			return False
+
 		elif len(self.__children)>0:
 			return True
 
-		
 
 		for premise in self.getPremises():
 			if premise in self.getConclusions():
@@ -140,6 +177,15 @@ class Entailment:
 	def getConclusions(self):
 		return self.__lConclusions + self.__rConclusions
 
+	def getChildren(self):
+		return self.__children
+
+
+	def getRule(self):
+		return self.__rule
+
+
+
 	@staticmethod
 	def copyEntailment(entailment):
 
@@ -149,8 +195,7 @@ class Entailment:
 		cRightConcl=copy.copy(entailment.getRightConclusions())
 
 		after=Entailment(cLeftPremises, cRightPremises, cLeftConcl, cRightConcl)
-		
-		#print("step:"+  after.toString())
+
 		return after
 
 	def toString(self):
@@ -177,6 +222,34 @@ class Entailment:
 
 		return (a + " ; " + c + " |- " + b + " ; " + d )
 
+
+	def isAxiom(self):
+
+		if len(self.__children)==0:
+			return True
+
+		elif len(self.__children)>0:
+			return False
+
+	def axiomInterpolant(self):
+
+		for premise in self.getPremises():
+			if premise in self.getConclusions() and premise != None :
+				interpolants=premise
+				
+		return interpolants
+
+	def calcInterpolant (self):
+
+		if self.isAxiom():
+			return self.axiomInterpolant()
+
+		else:
+			interpolants=[child.calcInterpolant() for child in self.__children]
+
+
+		return self.__rule(interpolants, self.__side)
+
 # RULES
 
 #	RIGHT-SIDE RULES
@@ -193,6 +266,16 @@ class RRule:
 
 	@staticmethod
 	def stepRight(entailment, conclusion):
+		pass
+
+	#rule for computing interpolant for R-L rule 
+	@staticmethod
+	def interpolate(interpolant, c=True):
+		pass
+
+	#rule for computing interpolant for R-R rule
+	@staticmethod
+	def interpolate(interpolant, c=False):
 		pass
 
 class RConj(RRule):
@@ -236,6 +319,18 @@ class RConj(RRule):
 		
 		return [left, right]
 
+	#interpolant rule if RConj is on the left of semicolon(f-)
+	#interpolant is the disjunction of the interpolant of the two subfromulas
+	def interpolate(interpolant, c=True):
+
+		return op.Conj(interpolant[0],interpolant[1])
+
+	#interpolant rule if RConj is on the right of semicolon(f+)
+	#interpolant is the conjunction of the interpolant of the two subfromulas
+	def interpolate (interpolant, c=False):
+
+		return op.Disj(interpolant[0],interpolant[1])
+		
 
 class RDisj(RRule):
 
@@ -272,6 +367,20 @@ class RDisj(RRule):
 			return None
 
 		return [new]
+
+	#interpolant rule if RDisj is on the left of semicolon(f-)
+	#interpolant is not changed
+	def interpolate (interpolant, c=True):
+		
+		return interpolant 
+
+	#interpolant rule if RDisj is on the right of semicolon(f+)
+	#interpolant is not changed
+	def interpolate (interpolant, c=True):
+		
+		return interpolant 
+		
+
 class RImpl(RRule):
 
 	@staticmethod
@@ -285,7 +394,7 @@ class RImpl(RRule):
 
 		new.getLeftConclusions().remove(conclusion)
 
-		new.getRightPremises().append(conclusion.getOperandLeft())
+		new.getLeftPremises().append(conclusion.getOperandLeft())
 		new.getLeftConclusions().append(conclusion.getOperandRight())
 		
 		if not new.solve():
@@ -300,13 +409,25 @@ class RImpl(RRule):
 
 		new.getRightConclusions().remove(conclusion)
 
-		new.getLeftPremises().append(conclusion.getOperandLeft())
+		new.getRightPremises().append(conclusion.getOperandLeft())
 		new.getRightConclusions().append(conclusion.getOperandRight())
 
 		if not new.solve():
 			return None
 
 		return [new]
+
+	#interpolant rule if RImpl is on the left of semicolon(f-)
+	#interpolant is not changed
+	def interpolate (interpolant, c=True):
+		
+		return interpolant 
+
+	#interpolant rule if RImpl is on the right of semicolon(f+)
+	#interpolant is not changed
+	def interpolate (interpolant, c=True):
+		
+		return interpolant 
 
 class RNeg(RRule):
 
@@ -342,6 +463,18 @@ class RNeg(RRule):
 
 		return [new]
 
+	#interpolant rule if RNeg is on the left of semicolon(f-)
+	#interpolant is not changed
+	def interpolate (interpolant, c=True):
+		
+		return interpolant 
+
+	#interpolant rule if RNeg is on the right of semicolon(f+)
+	#interpolant is not changed
+	def interpolate (interpolant, c=True):
+		
+		return interpolant 
+
 class LRule:
 
 	@staticmethod
@@ -354,6 +487,16 @@ class LRule:
 
 	@staticmethod
 	def stepRight(entailment, premise):
+		pass
+
+	#rule for computing interpolant for L-L rule 
+	@staticmethod
+	def interpolate(interpolant, c=True):
+		pass
+
+	#rule for computing interpolant for L-R rule
+	@staticmethod
+	def interpolate(interpolant, c=False):
 		pass
 
 class LConj(LRule):
@@ -391,6 +534,20 @@ class LConj(LRule):
 			return None
 
 		return [new]
+
+	#interpolant rule if LConj is on the left of semicolon(f-)
+	#interpolant is not changed
+	def interpolate(interpolant, c=True):
+		
+		return interpolant 
+
+	#interpolant rule if LConj is on the right of semicolon(f+)
+	#interpolant is not changed
+	def interpolate(interpolant, c=True):
+		
+		return interpolant 
+
+
 
 class LDisj(LRule):
 
@@ -432,6 +589,18 @@ class LDisj(LRule):
 		
 		return [left, right]
 
+	#interpolant rule if LDisj is on the left of semicolon(f-)
+	#interpolant is the disjunction of the interpolant of the two subfromulas
+	def interpolate(interpolant, c=True):
+		
+		return op.Disj(interpolant[0],interpolant[1])
+
+	#interpolant rule if LDisj is on the right of semicolon(f+)
+	#interpolant is the conjunction of the interpolant of the two subfromulas
+	def interpolate(interpolant, c=False):
+		
+		return op.Conj(interpolant[0],interpolant[1])
+
 class LImpl(LRule):
 
 	@staticmethod
@@ -472,6 +641,18 @@ class LImpl(LRule):
 		
 		return [left, right]
 
+	#interpolant rule if LImpl is on the left of semicolon(f-)
+	#interpolant is the implication of the interpolant of the two subfromulas
+	def interpolate(interpolant, c=True):
+		
+		return op.Impl(interpolant[0],interpolant[1])
+
+	#interpolant rule if LImpl is on the right of semicolon(f+)
+	#interpolant is the conjunction of the interpolant of the two subfromulas
+	def interpolate(interpolant, c=False):
+
+		return op.Conj(interpolant[0],interpolant[1])
+
 class LNeg(LRule):
 
 	@staticmethod
@@ -503,3 +684,16 @@ class LNeg(LRule):
 			return None
 
 		return [new]
+
+	#interpolant rule if LNeg is on the left of semicolon(f-)
+	#interpolant is the negation of the interpolant of the subfromula
+	def interpolate(interpolant, c=True):
+		
+		return op.Not(interpolant[0],interpolant[1])
+
+	#interpolant rule if LNeg is on the right of semicolon(f+)
+	#interpolant is not changed
+	def interpolate(interpolant, c=False):
+		
+		return interpolant 
+

@@ -6,6 +6,7 @@ import sequentCalc as sc
 import basicInterpolant as bi
 
 def main():
+	
 
 	a = basics.Atom("a")
 	b = basics.Atom("b")
@@ -21,6 +22,8 @@ def main():
 	print(entailment.toString())
 	print(entailment.solve())
 
+	entailment.calcInterpolant()
+
 	print("__________________________________")
 
 	t = basics.Atom("t")
@@ -34,6 +37,7 @@ def main():
 	bi.computeInterpolant(phi, psi)
 
 	entailment = sc.Entailment([phi],[], [psi],[])
+
 	print(entailment.toString())
 	print(entailment.solve())
 
@@ -69,6 +73,22 @@ def main():
 	print(entailment.solve())
 
 	print("__________________________________")
+
+	d = basics.Atom("d")
+	e = basics.Atom("e")
+	f = basics.Atom("f")
+	g = basics.Atom("g")
+	h = basics.Atom("h")
+
+	phi = op.Conj(d,op.Impl(e,f))
+	psi = op.Disj(op.Not(g),h)
+
+	bi.computeInterpolant(phi, psi)
+
+	entailment = sc.Entailment([phi],[], [psi],[])
+	print(entailment.toString())
+	print(entailment.solve())
+	
 
 
 if __name__ == '__main__':
