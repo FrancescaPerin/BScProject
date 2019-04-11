@@ -232,23 +232,43 @@ class Entailment:
 			return False
 
 	def axiomInterpolant(self):
+		c=0
+		interpolants=[]
 
-		for premise in self.getPremises():
-			if premise in self.getConclusions() and premise != None :
-				interpolants=premise
-				
+		for premise in (self.getLeftPremises() + self.getRightConclusions()):
+
+			if premise in (self.getRightPremises()+ self.getLeftConclusions()):
+
+				if c==0:		
+					interpolants=premise
+					print("c:"+str(c)+"\t"+ str(premise.toString()))
+					
+				if c>0:
+					interpolants=op.Conj(interpolants,premise)
+					print("c:"+str(c)+"\t"+ str(premise.toString()))
+
+				c+=1
+		
+		print(str(interpolants.toString()))		
 		return interpolants
 
-	def calcInterpolant (self):
+	def calcInterpolantAux(self):
 
 		if self.isAxiom():
 			return self.axiomInterpolant()
 
 		else:
-			interpolants=[child.calcInterpolant() for child in self.__children]
+			interpolants=[child.calcInterpolantAux() for child in self.__children]
 
 
 		return self.__rule(interpolants, self.__side)
+
+	def calcInterpolant(self):
+
+		interpolant= self.calcInterpolantAux() 
+
+		return interpolant  	
+
 
 # RULES
 

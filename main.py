@@ -7,6 +7,23 @@ import basicInterpolant as bi
 
 def main():
 	
+	a = basics.Atom("a")
+	b = basics.Atom("b")
+	c = basics.Atom("c")
+
+	phi = op.Conj(a,op.Conj(b,c)) 
+	psi = op.Conj(op.Disj(a,c),op.Disj(b,c))
+
+	bi.computeInterpolant(phi, psi)
+
+	entailment = sc.Entailment([phi],[], [psi], [])
+	print(entailment.toString())
+	print(entailment.solve())
+
+
+	entailment.calcInterpolant()
+
+	print("__________________________________")
 
 	a = basics.Atom("a")
 	b = basics.Atom("b")
@@ -22,7 +39,9 @@ def main():
 	print(entailment.toString())
 	print(entailment.solve())
 
+
 	entailment.calcInterpolant()
+
 
 	print("__________________________________")
 
@@ -41,6 +60,7 @@ def main():
 	print(entailment.toString())
 	print(entailment.solve())
 
+
 	print("__________________________________")
 
 	p = basics.Atom("p")
@@ -55,6 +75,7 @@ def main():
 	entailment = sc.Entailment([phi],[], [psi],[])
 	print(entailment.toString())
 	print(entailment.solve())
+	
 
 	print("__________________________________")
 
@@ -71,6 +92,7 @@ def main():
 	entailment = sc.Entailment([phi],[], [psi],[])
 	print(entailment.toString())
 	print(entailment.solve())
+
 
 	print("__________________________________")
 
