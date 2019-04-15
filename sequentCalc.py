@@ -110,7 +110,7 @@ class Entailment:
 		elif(any(l_Rconjs)):
 			self.__children = LConj.stepRight(self, self.getRightPremises()[l_Rconjs.index(True)])
 			self.__rule= LConj.interpolate
-			elf.__side=False
+			self.__side=False
 
 		elif(any(l_Ldisj)):
 			self.__children = LDisj.stepLeft(self, self.getLeftPremises()[l_Ldisj.index(True)])
@@ -144,7 +144,7 @@ class Entailment:
 			self.__side=False
 
 
-		
+		print(self.toString())
 
 		if self.__children == None:
 			return False
@@ -183,6 +183,18 @@ class Entailment:
 
 	def getRule(self):
 		return self.__rule
+
+	def setPremises(self, premiseL, premiseR):
+
+		self.__lPremises=premiseR
+		self.__rPremises=premiseL
+		return self
+
+	def setConclusions(self, conclusionL, conclusionR):
+
+		self.__lConclusions=conclusionR
+		self.__rConclusions=conclusionL
+		return self
 
 
 
@@ -223,6 +235,38 @@ class Entailment:
 		return (a + " ; " + c + " |- " + b + " ; " + d )
 
 
+
+	def checkTorF(self):
+
+		value=basics.Atom("z")
+
+		value.setAtomBySymbol(value.getSymbol(), True)
+
+
+		entailment1 = Entailment([self.getLeftPremises()],[],[op.Disj(self.getRightConclusions(),value)],[])
+		entailment2 = Entailment([op.Conj(self.getRightPremises(),value) ],[], [self.getLeftConclusions()],[])
+
+		print("first entailment: \t "+entailment1.toString())
+		print("second entailment: \t "+entailment2.toString())
+
+		if entailment1.solve() and entailment2.solve():
+
+			print ("it sort of works")
+			interpolant= [True] 
+			return intepolant
+
+		else:
+			value.setAtomBySymbol(value.getSymbol(), False)
+			entailment1 = Entailment([self.getLeftPremises()],[],[self.getRightConclusions(),value.setAtomBySymbol(value.getSymbol(), False)],[])
+			entailment2 = Entailment([self.getRightPremises(), value.setAtomBySymbol(value.getSymbol(), False)],[], [self.getLeftConclusions()],[])
+			if entailment1.solve() and entailment2.solve():
+
+				print ("it sort of works")
+				interpolant= [False] 
+				return interpolant
+
+		return False
+
 	def isAxiom(self):
 
 		if len(self.__children)==0:
@@ -234,11 +278,10 @@ class Entailment:
 	def axiomInterpolant(self):
 		c=0
 		interpolants=[]
-
 		for premise in (self.getLeftPremises() + self.getRightConclusions()):
 
 			if premise in (self.getRightPremises()+ self.getLeftConclusions()):
-
+				
 				if c==0:		
 					interpolants=premise
 					print("c:"+str(c)+"\t"+ str(premise.toString()))
@@ -248,8 +291,9 @@ class Entailment:
 					print("c:"+str(c)+"\t"+ str(premise.toString()))
 
 				c+=1
-		
-		print(str(interpolants.toString()))		
+
+			#print(str(interpolants.toString()))
+
 		return interpolants
 
 	def calcInterpolantAux(self):
@@ -265,7 +309,7 @@ class Entailment:
 
 	def calcInterpolant(self):
 
-		interpolant= self.calcInterpolantAux() 
+		interpolant= self.calcInterpolantAux()
 
 		return interpolant  	
 
@@ -414,7 +458,7 @@ class RImpl(RRule):
 
 		new.getLeftConclusions().remove(conclusion)
 
-		new.getLeftPremises().append(conclusion.getOperandLeft())
+		new.getRightPremises().append(conclusion.getOperandLeft())
 		new.getLeftConclusions().append(conclusion.getOperandRight())
 		
 		if not new.solve():
@@ -429,7 +473,7 @@ class RImpl(RRule):
 
 		new.getRightConclusions().remove(conclusion)
 
-		new.getRightPremises().append(conclusion.getOperandLeft())
+		new.getLeftPremises().append(conclusion.getOperandLeft())
 		new.getRightConclusions().append(conclusion.getOperandRight())
 
 		if not new.solve():
@@ -636,8 +680,11 @@ class LImpl(LRule):
 		left.getLeftPremises().remove(premise)
 		right.getLeftPremises().remove(premise)
 
-		left.getRightConclusions().append(premise.getOperandLeft())
+		left.setPremises(left.getLeftPremises(), left.getRightPremises())
+		left.setConclusions(left.getLeftConclusions(), left.getRightConclusions())
+		
 		right.getLeftPremises().append(premise.getOperandRight())
+		left.getLeftConclusions().append(premise.getOperandLeft())
 
 		if (not left.solve() or not right.solve()):
 			return None;
@@ -685,7 +732,12 @@ class LNeg(LRule):
 		new = Entailment.copyEntailment(entailment)
 
 		new.getLeftPremises().remove(premise)
-		new.getRightConclusions().append(premise.getOperand())
+
+		new.setPremises(new.getLeftPremises(), new.getRightPremises())
+		new.setConclusions(new.getLeftConclusions(), new.getRightConclusions())
+
+		new.getLeftConclusions().append(premise.getOperand())
+
 
 		if not new.solve():
 			return None
