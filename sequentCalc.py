@@ -296,22 +296,13 @@ class Entailment:
 
 		return interpolants
 
-	def calcInterpolantAux(self):
+	def calcInterpolant(self):
 
 		if self.isAxiom():
 			return self.axiomInterpolant()
 
-		else:
-			interpolants=[child.calcInterpolantAux() for child in self.__children]
-
-
-		return self.__rule(interpolants, self.__side)
-
-	def calcInterpolant(self):
-
-		interpolant= self.calcInterpolantAux()
-
-		return interpolant  	
+		interpolants = [child.calcInterpolant() for child in self.__children]
+		return self.__rule(interpolants, self.__side) 	
 
 
 # RULES
@@ -334,12 +325,7 @@ class RRule:
 
 	#rule for computing interpolant for R-L rule 
 	@staticmethod
-	def interpolate(interpolant, c=True):
-		pass
-
-	#rule for computing interpolant for R-R rule
-	@staticmethod
-	def interpolate(interpolant, c=False):
+	def interpolate(interpolant, c):
 		pass
 
 class RConj(RRule):
@@ -385,15 +371,14 @@ class RConj(RRule):
 
 	#interpolant rule if RConj is on the left of semicolon(f-)
 	#interpolant is the disjunction of the interpolant of the two subfromulas
-	def interpolate(interpolant, c=True):
-
-		return op.Conj(interpolant[0],interpolant[1])
-
 	#interpolant rule if RConj is on the right of semicolon(f+)
 	#interpolant is the conjunction of the interpolant of the two subfromulas
-	def interpolate (interpolant, c=False):
+	def interpolate(interpolant, c):
 
-		return op.Disj(interpolant[0],interpolant[1])
+		if c:
+			return op.Conj(interpolant[0],interpolant[1])
+		else:
+			return op.Disj(interpolant[0],interpolant[1])		
 		
 
 class RDisj(RRule):
@@ -434,16 +419,10 @@ class RDisj(RRule):
 
 	#interpolant rule if RDisj is on the left of semicolon(f-)
 	#interpolant is not changed
-	def interpolate (interpolant, c=True):
-		
-		return interpolant 
-
 	#interpolant rule if RDisj is on the right of semicolon(f+)
 	#interpolant is not changed
-	def interpolate (interpolant, c=True):
-		
+	def interpolate (interpolant, c):
 		return interpolant 
-		
 
 class RImpl(RRule):
 
@@ -761,7 +740,7 @@ class LNeg(LRule):
 	#interpolant is the negation of the interpolant of the subfromula
 	def interpolate(interpolant, c=True):
 		
-		return op.Not(interpolant[0],interpolant[1])
+		return op.Not(interpolant[0])
 
 	#interpolant rule if LNeg is on the right of semicolon(f+)
 	#interpolant is not changed

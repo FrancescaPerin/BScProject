@@ -9,6 +9,24 @@ def main():
 
 	p = basics.Atom("p")
 	q = basics.Atom("q")
+	r = basics.Atom("r")
+
+	phi = op.Conj(op.Not(op.Disj(p,q)), r)
+	psi = op.Conj(op.Not(p), r)
+
+	bi.computeInterpolant(phi, psi)
+
+	entailment = sc.Entailment([phi],[], [psi], [])
+	print(entailment.toString())
+	print(entailment.solve())
+
+
+	entailment.calcInterpolant()
+
+	print("__________________________________")
+
+	p = basics.Atom("p")
+	q = basics.Atom("q")
 
 	phi = op.Conj(op.Not(p),op.Conj(p,q)) 
 	psi = q
