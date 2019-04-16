@@ -29,7 +29,9 @@ class UnaryOperator(basics.Element):
 	def simplify(self):
 		selfVal = self.getValue()
 		if selfVal != None:
-			return Atom(selfVal)
+			atm = basics.Atom(self.toString())
+			atm.setValue(selfVal)
+			return atm 
 
 		self.setOperand(self.getOperand().simplify())
 		return self

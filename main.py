@@ -15,20 +15,21 @@ def main():
 	psi = op.Conj(op.Not(p), r)
 
 	bi.computeInterpolant(phi, psi)
+	print("START HERE (previous interpolants used only for reference:")
 
 	entailment = sc.Entailment([phi],[], [psi], [])
 	print(entailment.toString())
 	print(entailment.solve())
 
 
-	entailment.calcInterpolant()
+	print("final interpolant:"+ entailment.calcInterpolant().toString())
 
 	print("__________________________________")
 
 	p = basics.Atom("p")
 	q = basics.Atom("q")
 
-	phi = op.Conj(op.Not(p),op.Conj(p,q)) 
+	phi = op.Conj(op.Not(p),q)
 	psi = q
 
 	bi.computeInterpolant(phi, psi)
@@ -38,7 +39,7 @@ def main():
 	print(entailment.solve())
 
 
-	entailment.calcInterpolant()
+	print("final interpolant:"+ entailment.calcInterpolant().toString())
 
 	print("__________________________________")
 
@@ -56,7 +57,7 @@ def main():
 	print(entailment.solve())
 
 
-	entailment.calcInterpolant()
+	print("final interpolant:"+ entailment.calcInterpolant().toString())
 
 	print("__________________________________")
 
@@ -73,7 +74,8 @@ def main():
 	entailment = sc.Entailment([phi],[], [psi], [])
 	print(entailment.toString())
 	print(entailment.solve())
-	entailment.calcInterpolant()
+	
+	print("final interpolant:"+ entailment.calcInterpolant().toString())
 
 	print("__________________________________")
 
@@ -92,7 +94,7 @@ def main():
 	print(entailment.toString())
 	print(entailment.solve())
 
-	entailment.calcInterpolant()
+	print("final interpolant:"+ entailment.calcInterpolant().toString())
 
 
 
@@ -111,7 +113,7 @@ def main():
 	print(entailment.toString())
 	print(entailment.solve())
 
-	entailment.calcInterpolant()
+	print("final interpolant:"+ entailment.calcInterpolant().toString())
 	
 	print("__________________________________")
 
@@ -129,7 +131,7 @@ def main():
 	print(entailment.toString())
 	print(entailment.solve())
 
-	entailment.calcInterpolant()
+	print("final interpolant:"+ entailment.calcInterpolant().toString())
 
 
 	print("__________________________________")

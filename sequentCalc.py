@@ -219,18 +219,18 @@ class Entailment:
 
 		for premise in self.getLeftPremises():
 
-			a+=str(premise.toString()) + " "
+			a+=str(premise.toString()) + ", "
 
 		for premise in self.getRightPremises():
-			c+=str(premise.toString()) + " "
+			c+=str(premise.toString()) + ", "
 		
 		for conclusion in self.getLeftConclusions():
 
-			b+=str(conclusion.toString()) + " "
+			b+=str(conclusion.toString()) + ", "
 
 		for conclusion in self.getRightConclusions():
 
-			d+=str(conclusion.toString()) + " "
+			d+=str(conclusion.toString()) + ", "
 
 		return (a + " ; " + c + " |- " + b + " ; " + d )
 
@@ -240,9 +240,7 @@ class Entailment:
 
 		value=basics.Atom("z")
 
-		value.setAtomBySymbol(value.getSymbol(), True)
-
-
+		value.setValue(True)
 		entailment1 = Entailment([self.getLeftPremises()],[],[op.Disj(self.getRightConclusions(),value)],[])
 		entailment2 = Entailment([op.Conj(self.getRightPremises(),value) ],[], [self.getLeftConclusions()],[])
 
@@ -250,22 +248,17 @@ class Entailment:
 		print("second entailment: \t "+entailment2.toString())
 
 		if entailment1.solve() and entailment2.solve():
-
-			print ("it sort of works")
-			interpolant= [True] 
-			return intepolant
-
+			return True
 		else:
+
 			value.setAtomBySymbol(value.getSymbol(), False)
 			entailment1 = Entailment([self.getLeftPremises()],[],[self.getRightConclusions(),value.setAtomBySymbol(value.getSymbol(), False)],[])
 			entailment2 = Entailment([self.getRightPremises(), value.setAtomBySymbol(value.getSymbol(), False)],[], [self.getLeftConclusions()],[])
+			
 			if entailment1.solve() and entailment2.solve():
+				return False
 
-				print ("it sort of works")
-				interpolant= [False] 
-				return interpolant
-
-		return False
+		return None
 
 	def isAxiom(self):
 
@@ -277,31 +270,55 @@ class Entailment:
 
 	def axiomInterpolant(self):
 		c=0
-		interpolants=[]
+		interpolants=None
 		for premise in (self.getLeftPremises() + self.getRightConclusions()):
 
 			if premise in (self.getRightPremises()+ self.getLeftConclusions()):
 				
 				if c==0:		
-					interpolants=premise
-					print("c:"+str(c)+"\t"+ str(premise.toString()))
+					interpolants = premise
 					
 				if c>0:
-					interpolants=op.Conj(interpolants,premise)
-					print("c:"+str(c)+"\t"+ str(premise.toString()))
+					interpolants = op.Conj(interpolants,premise)
 
 				c+=1
 
 			#print(str(interpolants.toString()))
+
+		print("")
+		print("Axiom  " + self.toString() + " ")
+		print (interpolants.toString())
+		print(" ")
 
 		return interpolants
 
 	def calcInterpolant(self):
 
 		if self.isAxiom():
-			return self.axiomInterpolant()
+
+			interpolant = self.axiomInterpolant()
+
+			if interpolant == None:
+
+				check = self.checkTorF()
+				if check != None:
+					atm = basics.Atom("z")
+					atm.setValue(check)
+					return [atm]
+				else:
+					return None
+
+			else:
+
+				return interpolant
 
 		interpolants = [child.calcInterpolant() for child in self.__children]
+
+		print("Interpolants for " + self.toString() + " with rule " + str(self.__rule) + ":")
+		for interpolant in interpolants:
+			print(interpolant.toString())
+		print(" ")
+
 		return self.__rule(interpolants, self.__side) 	
 
 
@@ -422,7 +439,7 @@ class RDisj(RRule):
 	#interpolant rule if RDisj is on the right of semicolon(f+)
 	#interpolant is not changed
 	def interpolate (interpolant, c):
-		return interpolant 
+		return interpolant[0]
 
 class RImpl(RRule):
 
@@ -462,15 +479,11 @@ class RImpl(RRule):
 
 	#interpolant rule if RImpl is on the left of semicolon(f-)
 	#interpolant is not changed
-	def interpolate (interpolant, c=True):
-		
-		return interpolant 
-
 	#interpolant rule if RImpl is on the right of semicolon(f+)
 	#interpolant is not changed
-	def interpolate (interpolant, c=True):
-		
-		return interpolant 
+	def interpolate (interpolant, c):
+		return interpolant[0]
+
 
 class RNeg(RRule):
 
@@ -508,15 +521,11 @@ class RNeg(RRule):
 
 	#interpolant rule if RNeg is on the left of semicolon(f-)
 	#interpolant is not changed
-	def interpolate (interpolant, c=True):
-		
-		return interpolant 
-
 	#interpolant rule if RNeg is on the right of semicolon(f+)
 	#interpolant is not changed
-	def interpolate (interpolant, c=True):
-		
-		return interpolant 
+	def interpolate (interpolant, c):
+		return interpolant[0]
+ 
 
 class LRule:
 
@@ -534,12 +543,7 @@ class LRule:
 
 	#rule for computing interpolant for L-L rule 
 	@staticmethod
-	def interpolate(interpolant, c=True):
-		pass
-
-	#rule for computing interpolant for L-R rule
-	@staticmethod
-	def interpolate(interpolant, c=False):
+	def interpolate(interpolant, c):
 		pass
 
 class LConj(LRule):
@@ -580,15 +584,10 @@ class LConj(LRule):
 
 	#interpolant rule if LConj is on the left of semicolon(f-)
 	#interpolant is not changed
-	def interpolate(interpolant, c=True):
-		
-		return interpolant 
-
 	#interpolant rule if LConj is on the right of semicolon(f+)
 	#interpolant is not changed
-	def interpolate(interpolant, c=True):
-		
-		return interpolant 
+	def interpolate(interpolant, c):
+		return interpolant[0]
 
 
 
@@ -634,15 +633,15 @@ class LDisj(LRule):
 
 	#interpolant rule if LDisj is on the left of semicolon(f-)
 	#interpolant is the disjunction of the interpolant of the two subfromulas
-	def interpolate(interpolant, c=True):
-		
-		return op.Disj(interpolant[0],interpolant[1])
-
 	#interpolant rule if LDisj is on the right of semicolon(f+)
 	#interpolant is the conjunction of the interpolant of the two subfromulas
-	def interpolate(interpolant, c=False):
-		
-		return op.Conj(interpolant[0],interpolant[1])
+	def interpolate(interpolant, c):
+
+		if c:
+			return op.Disj(interpolant[0],interpolant[1])
+		else:
+			return op.Conj(interpolant[0],interpolant[1])
+
 
 class LImpl(LRule):
 
@@ -689,15 +688,15 @@ class LImpl(LRule):
 
 	#interpolant rule if LImpl is on the left of semicolon(f-)
 	#interpolant is the implication of the interpolant of the two subfromulas
-	def interpolate(interpolant, c=True):
-		
-		return op.Impl(interpolant[0],interpolant[1])
-
 	#interpolant rule if LImpl is on the right of semicolon(f+)
 	#interpolant is the conjunction of the interpolant of the two subfromulas
-	def interpolate(interpolant, c=False):
+	def interpolate(interpolant, c=True):
 
-		return op.Conj(interpolant[0],interpolant[1])
+		if c:
+			return op.Impl(interpolant[0],interpolant[1])
+		else:
+			return op.Conj(interpolant[0],interpolant[1])
+
 
 class LNeg(LRule):
 
@@ -738,13 +737,12 @@ class LNeg(LRule):
 
 	#interpolant rule if LNeg is on the left of semicolon(f-)
 	#interpolant is the negation of the interpolant of the subfromula
-	def interpolate(interpolant, c=True):
-		
-		return op.Not(interpolant[0])
-
 	#interpolant rule if LNeg is on the right of semicolon(f+)
 	#interpolant is not changed
-	def interpolate(interpolant, c=False):
-		
-		return interpolant 
+	def interpolate(interpolant, c):
+
+		if c:
+			return op.Not(interpolant[0])
+		else:
+			return interpolant[0]
 
