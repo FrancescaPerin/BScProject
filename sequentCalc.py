@@ -244,9 +244,6 @@ class Entailment:
 		entailment1 = Entailment([self.getLeftPremises()],[],[op.Disj(self.getRightConclusions(),value)],[])
 		entailment2 = Entailment([op.Conj(self.getRightPremises(),value) ],[], [self.getLeftConclusions()],[])
 
-		print("first entailment: \t "+entailment1.toString())
-		print("second entailment: \t "+entailment2.toString())
-
 		if entailment1.solve() and entailment2.solve():
 			return True
 		else:
@@ -283,8 +280,6 @@ class Entailment:
 
 				c+=1
 
-			#print(str(interpolants.toString()))
-
 		print("")
 		print("Axiom  " + self.toString() + " ")
 		print (interpolants.toString())
@@ -312,12 +307,16 @@ class Entailment:
 
 				return interpolant
 
+
 		interpolants = [child.calcInterpolant() for child in self.__children]
 
-		print("Interpolants for " + self.toString() + " with rule " + str(self.__rule) + ":")
-		for interpolant in interpolants:
-			print(interpolant.toString())
+		print("Interpolants for " + self.toString() + " with rule " + str(self.__rule) + "and side " +str(self.__side)+":")
+
+		
+		print(self.__rule(interpolants, self.__side).toString())
+
 		print(" ")
+
 
 		return self.__rule(interpolants, self.__side) 	
 
