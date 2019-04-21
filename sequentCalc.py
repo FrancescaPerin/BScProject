@@ -268,17 +268,34 @@ class Entailment:
 	def axiomInterpolant(self):
 		c=0
 		interpolants=None
-		for premise in (self.getLeftPremises() + self.getRightConclusions()):
+		for premise in self.getLeftPremises():
 
-			if premise in (self.getRightPremises()+ self.getLeftConclusions()):
+			if premise in self.getLeftConclusions():
+
+				interpolants=premise
 				
-				if c==0:		
-					interpolants = premise
-					
-				if c>0:
-					interpolants = op.Conj(interpolants,premise)
+				return interpolants
 
-				c+=1
+
+		for premise in self.getRightPremises():
+
+			if premise in self.getRightConclusions():
+
+				interpolants=op.Not(premise)
+				
+				return interpolants
+
+		for premise in self.getLeftPremises():
+
+			if premise in self.getRightConclusions():
+				
+				return True
+
+		for premise in self.getRightPremises():
+
+			if premise in self.getLeftConclusions():
+				
+				return True
 
 		print("")
 		print("Axiom  " + self.toString() + " ")
@@ -291,21 +308,7 @@ class Entailment:
 
 		if self.isAxiom():
 
-			interpolant = self.axiomInterpolant()
-
-			if interpolant == None:
-
-				check = self.checkTorF()
-				if check != None:
-					atm = basics.Atom("z")
-					atm.setValue(check)
-					return [atm]
-				else:
-					return None
-
-			else:
-
-				return interpolant
+			return self.axiomInterpolant()
 
 
 		interpolants = [child.calcInterpolant() for child in self.__children]
