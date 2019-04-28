@@ -217,20 +217,41 @@ class Entailment:
 		c = ""
 		d = ""
 
+		len1=len(self.getLeftPremises())
 		for premise in self.getLeftPremises():
 
-			a+=str(premise.toString()) + ", "
+			if len1>1:
+				a+=str(premise.toString()) + ", "
+			elif len1==1:
 
+				a+=str(premise.toString())
+			len1-=1
+
+		len2=len(self.getRightPremises())
 		for premise in self.getRightPremises():
-			c+=str(premise.toString()) + ", "
+			
+			if len2>1:
+				c+=str(premise.toString()) + ", "
+			elif len2==1:
+				c+=str(premise.toString())
+			len2-=1
 		
+		len3=len(self.getLeftConclusions())
 		for conclusion in self.getLeftConclusions():
 
-			b+=str(conclusion.toString()) + ", "
+			if len3>1:
+				b+=str(conclusion.toString()) + ", "
+			elif len3==1:
+				b+=str(conclusion.toString())
+			len3-=1
 
+		len4=len(self.getRightConclusions())
 		for conclusion in self.getRightConclusions():
-
-			d+=str(conclusion.toString()) + ", "
+			if len4>1:
+				d+=str(conclusion.toString()) + ", "
+			elif len4==1:
+				d+=str(conclusion.toString())
+			len4-=1
 
 		return (a + " ; " + c + " |- " + b + " ; " + d )
 
@@ -295,7 +316,7 @@ class Entailment:
 
 			if premise in self.getLeftConclusions():
 				
-				return True
+				return False
 
 		print("")
 		print("Axiom  " + self.toString() + " ")
