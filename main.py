@@ -21,8 +21,11 @@ def main():
 	print(entailment.toString())
 	print(entailment.solve())
 
+	interpolant= entailment.calcInterpolant()
 
-	print("final interpolant:"+ entailment.calcInterpolant().toString())
+	print("final interpolant:"+ interpolant.toString())
+
+	entailment.checkInterpolant(interpolant)
 
 	print("__________________________________")
 
@@ -39,7 +42,11 @@ def main():
 	print(entailment.solve())
 
 
-	print("final interpolant:"+ entailment.calcInterpolant().toString())
+	interpolant= entailment.calcInterpolant()
+
+
+	print("final interpolant:"+ interpolant.toString())
+	entailment.checkInterpolant(interpolant)
 
 	print("__________________________________")
 
@@ -56,8 +63,11 @@ def main():
 	print(entailment.toString())
 	print(entailment.solve())
 
+	interpolant= entailment.calcInterpolant()
 
-	print("final interpolant:"+ entailment.calcInterpolant().toString())
+
+	print("final interpolant:"+ interpolant.toString())
+	entailment.checkInterpolant(interpolant)
 
 	print("__________________________________")
 
@@ -75,7 +85,11 @@ def main():
 	print(entailment.toString())
 	print(entailment.solve())
 	
-	print("final interpolant:"+ entailment.calcInterpolant().toString())
+	interpolant= entailment.calcInterpolant()
+
+
+	print("final interpolant:"+ interpolant.toString())
+	entailment.checkInterpolant(interpolant)
 
 	print("__________________________________")
 
@@ -93,10 +107,12 @@ def main():
 
 	print(entailment.toString())
 	print(entailment.solve())
+	
+	interpolant= entailment.calcInterpolant()
 
-	print("final interpolant:"+ entailment.calcInterpolant().toString())
 
-
+	print("final interpolant:"+ interpolant.toString())
+	entailment.checkInterpolant(interpolant)
 
 	print("__________________________________")
 
@@ -112,8 +128,12 @@ def main():
 	entailment = sc.Entailment([phi],[], [psi],[])
 	print(entailment.toString())
 	print(entailment.solve())
+	
+	interpolant= entailment.calcInterpolant()
 
-	print("final interpolant:"+ entailment.calcInterpolant().toString())
+
+	print("final interpolant:"+ interpolant.toString())
+	entailment.checkInterpolant(interpolant)
 	
 	print("__________________________________")
 
@@ -130,9 +150,10 @@ def main():
 	entailment = sc.Entailment([phi],[], [psi],[])
 	print(entailment.toString())
 	print(entailment.solve())
-
-	print("final interpolant:"+ entailment.calcInterpolant().toString())
-
+	
+	interpolant= entailment.calcInterpolant()
+	print("final interpolant:"+ interpolant.toString())
+	entailment.checkInterpolant(interpolant)
 
 	print("__________________________________")
 
@@ -155,7 +176,9 @@ def main():
 
 	if val:
 
-		entailment.calcInterpolant()
+		interpolant= entailment.calcInterpolant()
+		print("final interpolant:"+ interpolant.toString())
+		entailment.checkInterpolant(interpolant)
 	
 
 

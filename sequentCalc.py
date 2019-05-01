@@ -144,7 +144,7 @@ class Entailment:
 			self.__side=False
 
 
-		print(self.toString())
+		#print(self.toString())
 
 		if self.__children == None:
 			return False
@@ -255,29 +255,6 @@ class Entailment:
 
 		return (a + " ; " + c + " |- " + b + " ; " + d )
 
-
-
-	def checkTorF(self):
-
-		value=basics.Atom("z")
-
-		value.setValue(True)
-		entailment1 = Entailment([self.getLeftPremises()],[],[op.Disj(self.getRightConclusions(),value)],[])
-		entailment2 = Entailment([op.Conj(self.getRightPremises(),value) ],[], [self.getLeftConclusions()],[])
-
-		if entailment1.solve() and entailment2.solve():
-			return True
-		else:
-
-			value.setAtomBySymbol(value.getSymbol(), False)
-			entailment1 = Entailment([self.getLeftPremises()],[],[self.getRightConclusions(),value.setAtomBySymbol(value.getSymbol(), False)],[])
-			entailment2 = Entailment([self.getRightPremises(), value.setAtomBySymbol(value.getSymbol(), False)],[], [self.getLeftConclusions()],[])
-			
-			if entailment1.solve() and entailment2.solve():
-				return False
-
-		return None
-
 	def isAxiom(self):
 
 		if len(self.__children)==0:
@@ -344,6 +321,74 @@ class Entailment:
 
 		return self.__rule(interpolants, self.__side) 	
 
+	def checkInterpolant(self, interpolant):
+
+
+
+		entailment1=Entailment(self.getPremises(),[], [interpolant], [])
+		entailment2=Entailment([interpolant],[], self.getConclusions(), [])
+
+		print("entailment1:"+ entailment1.toString())
+		print("entailment2:"+ entailment2.toString())
+
+		if entailment1.solve() and entailment2.solve():
+			if self.checkVocabulary(interpolant):
+				print("interpolant found respects the CI property and definiton")
+				return True
+
+		return False
+
+	def getVocabulary(self,s):
+		prem=s
+		for char in s:
+			if not char.isalnum():
+				prem = prem.replace(char,"")
+		prem=sorted(prem)
+		prem=''.join(prem)
+
+		return prem
+
+
+	def checkVocabulary(self, interpolant):
+
+		vocPremise=""
+		vocConclusion=""
+		vocInterpolant=""
+
+		for premise in self.getPremises():
+
+			vocPremise+=str(premise.toString())
+
+		for conclusion in self.getConclusions():
+
+			vocConclusion+=str(conclusion.toString())
+
+		for item in interpolant.toString():
+
+			vocInterpolant+=str(conclusion.toString())
+
+		prem=self.getVocabulary(vocPremise)
+		concl=self.getVocabulary(vocConclusion)
+		inte=self.getVocabulary(vocInterpolant)
+
+		if len(prem)>len(concl):
+			atoms=set(prem).intersection(concl)
+		else: 
+			atoms=set(concl).intersection(prem)
+
+		for atom in atoms:
+			if atom  not in inte:
+				return False
+
+		return True
+
+
+
+
+
+		return True
+
+		
 
 # RULES
 
