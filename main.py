@@ -1,5 +1,6 @@
 import basics
 import folOperator as op
+import functionality as F
 
 import sequentCalc as sc
 
@@ -7,7 +8,7 @@ import basicInterpolant as bi
 
 def main():
 
-	p = basics.Atom("p")
+	"""p = basics.Atom("p")
 	q = basics.Atom("q")
 	r = basics.Atom("r")
 
@@ -15,7 +16,6 @@ def main():
 	psi = op.Conj(op.Not(p), r)
 
 	bi.computeInterpolant(phi, psi)
-	print("START HERE (previous interpolants used only for reference:")
 
 	entailment = sc.Entailment([phi],[], [psi], [])
 	print(entailment.toString())
@@ -25,10 +25,34 @@ def main():
 
 	print("final interpolant:"+ interpolant.toString())
 
-	entailment.checkInterpolant(interpolant)
+	print("check: ", entailment.checkInterpolant(phi, psi, interpolant))
+
 
 	print("__________________________________")
+	"""
+	
+	entailment=F.randomGen(5, 3)
 
+	psi=entailment[0]
+	phi= entailment[1]
+
+	bi.computeInterpolant(phi, psi)
+	entailment = sc.Entailment([phi],[], [psi], [])
+
+	entailment = sc.Entailment([phi],[], [psi], [])
+	print(entailment.toString())
+	val=entailment.solve()
+	
+	print(val)
+	print 
+
+	if val:
+
+		interpolant= entailment.calcInterpolant()
+		print("final interpolant:"+ interpolant.toString())
+		print("check: ", entailment.checkInterpolant(phi, psi, interpolant))
+
+"""
 	p = basics.Atom("p")
 	q = basics.Atom("q")
 
@@ -179,7 +203,7 @@ def main():
 		interpolant= entailment.calcInterpolant()
 		print("final interpolant:"+ interpolant.toString())
 		entailment.checkInterpolant(interpolant)
-	
+	"""
 
 
 if __name__ == '__main__':

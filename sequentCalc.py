@@ -78,7 +78,7 @@ class Entailment:
 		elif(any(r_Rdisj)):
 			self.__children = RDisj.stepRight(self, self.getRightConclusions()[r_Rdisj.index(True)])
 			self.__rule= RDij.interpolate
-			elf.__side=False
+			self.__side=False
 
 		elif(any(r_Limpl)):
 			self.__children = RImpl.stepLeft(self, self.getLeftConclusions()[r_Limpl.index(True)])
@@ -119,8 +119,8 @@ class Entailment:
 
 		elif(any(l_Rdisj)):
 			self.__children = LDisj.stepRight(self, self.getRightPremises()[l_Rdisj.index(True)])
-			self.__rule= LDisj.interpolate(self,interpolants,False)
-			elf.__side=False
+			self.__rule= LDisj.interpolate
+			self.__side=False
 
 		
 		elif(any(l_Limpl)):
@@ -131,7 +131,7 @@ class Entailment:
 		elif(any(l_Rimpl)):
 			self.__children = LImpl.stepRight(self, self.getRightPremises()[l_Rimpl.index(True)])
 			self.__rule= LImpl.interpolate
-			elf.__side=False
+			self.__side=False
 				
 		elif(any(l_Lneg)):
 			self.__children = LNeg.stepLeft(self, self.getLeftPremises()[l_Lneg.index(True)])
@@ -144,7 +144,7 @@ class Entailment:
 			self.__side=False
 
 
-		#print(self.toString())
+		print(self.toString())
 
 		if self.__children == None:
 			return False
@@ -271,7 +271,12 @@ class Entailment:
 			if premise in self.getLeftConclusions():
 
 				interpolants=premise
-				
+
+				print("")
+				print("Axiom  " + self.toString() + " ")
+				print (interpolants.toString())
+				print(" ")
+
 				return interpolants
 
 
@@ -280,25 +285,34 @@ class Entailment:
 			if premise in self.getRightConclusions():
 
 				interpolants=op.Not(premise)
-				
+
+				print("")
+				print("Axiom  " + self.toString() + " ")
+				print (interpolants.toString())
+				print(" ")
+
 				return interpolants
+				
+				
 
 		for premise in self.getLeftPremises():
 
 			if premise in self.getRightConclusions():
+				print("")
+				print("Axiom :" + self.toString())
+				print("False")
+				print("")
 				
-				return True
+				return False
 
 		for premise in self.getRightPremises():
 
 			if premise in self.getLeftConclusions():
-				
-				return False
-
-		print("")
-		print("Axiom  " + self.toString() + " ")
-		print (interpolants.toString())
-		print(" ")
+				print("")
+				print("Axiom :" + self.toString())
+				print("True")
+				print("")
+				return True
 
 		return interpolants
 
@@ -312,7 +326,7 @@ class Entailment:
 		interpolants = [child.calcInterpolant() for child in self.__children]
 
 		print("Interpolants for " + self.toString() + " with rule " + str(self.__rule) + "and side " +str(self.__side)+":")
-
+		print("len children:"+str(len(self.getChildren())))
 		
 		print(self.__rule(interpolants, self.__side).toString())
 
@@ -321,75 +335,56 @@ class Entailment:
 
 		return self.__rule(interpolants, self.__side) 	
 
-	def checkInterpolant(self, interpolant):
+	@staticmethod
+	def checkInterpolant(phi, psi, interpolant):
 
 
 
-		entailment1=Entailment(self.getPremises(),[], [interpolant], [])
-		entailment2=Entailment([interpolant],[], self.getConclusions(), [])
+		entailment1=Entailment([phi],[], [interpolant], [])
+		entailment2=Entailment([interpolant],[], [psi], [])
 
 		print("entailment1:"+ entailment1.toString())
 		print("entailment2:"+ entailment2.toString())
 
 		if entailment1.solve() and entailment2.solve():
-			if self.checkVocabulary(interpolant):
+			if Entailment.checkVocabulary(phi, psi, interpolant):
 				print("interpolant found respects the CI property and definiton")
 				return True
 
 		return False
 
-	def getVocabulary(self,s):
-		prem=s
-		for char in s:
-			if not char.isalnum():
-				prem = prem.replace(char,"")
-		prem=sorted(prem)
-		prem=''.join(prem)
-
-		return prem
 
 
-	def checkVocabulary(self, interpolant):
+	@staticmethod
+	def checkVocabulary(phi, psi, interpolant):
 
-		vocPremise=""
-		vocConclusion=""
-		vocInterpolant=""
+		allAtoms = phi.getAtoms() + psi.getAtoms()
 
-		for premise in self.getPremises():
-
-			vocPremise+=str(premise.toString())
-
-		for conclusion in self.getConclusions():
-
-			vocConclusion+=str(conclusion.toString())
-
-		for item in interpolant.toString():
-
-			vocInterpolant+=str(conclusion.toString())
-
-		prem=self.getVocabulary(vocPremise)
-		concl=self.getVocabulary(vocConclusion)
-		inte=self.getVocabulary(vocInterpolant)
-
-		if len(prem)>len(concl):
-			atoms=set(prem).intersection(concl)
-		else: 
-			atoms=set(concl).intersection(prem)
-
-		for atom in atoms:
-			if atom  not in inte:
+		for atom in interpolant.getAtoms():
+			if not (atom in allAtoms):
 				return False
-
 		return True
 
 
 
+	def convertSymbols(self):
 
+		newS=self.toString()
 
-		return True
+		newS=newS.replace("|-", "\\vdash")
+		newS=newS.replace("|", "\lor")
+		newS=newS.replace("^", "\land")
+		newS=newS.replace("->", "\\rightarrow")
+		newS=newS.replace("~", "\\neg")
 
-		
+		return newS
 
+	def latexProof (self):
+
+		print("\\begin{prooftree}")
+				
+
+		print("\\end{prooftree}")
 # RULES
 
 #	RIGHT-SIDE RULES

@@ -21,8 +21,8 @@ def interpolateAux(phi, psi):
 def interpolate(phi, psi):
 
 	if not op.Impl(phi, psi).isTaut():
-		print("Not Valid!")
-		return None
+		print("False")
+		return False
 
 	return interpolateAux(copy.copy(phi), psi)
 
@@ -31,6 +31,10 @@ def computeInterpolant(phi, psi):
 	print("psi: " + psi.toString())
 
 	interpolated = interpolate(phi, psi)
+
+	if not interpolated:
+		return False
+
 	print("interpolant: " + interpolated.toString())
 	print("simplified interpolant: " + interpolated.simplify().toString())
 
