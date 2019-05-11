@@ -88,7 +88,7 @@ class Entailment:
 		elif(any(r_Rimpl)):
 			self.__children = RImpl.stepRight(self, self.getRightConclusions()[r_Rimpl.index(True)])
 			self.__rule= RImpl.interpolant
-			elf.__side=False
+			self.__side=False
 
 		elif(any(r_Lneg)):
 			self.__children = RNeg.stepLeft(self, self.getLeftConclusions()[r_Lneg.index(True)])
@@ -98,7 +98,7 @@ class Entailment:
 		elif(any(r_Rneg)):
 			self.__children = RNeg.stepRight(self, self.getRightConclusions()[r_Rneg.index(True)])
 			self.__rule= RNeg.interpolate
-			elf.__side=False
+			self.__side=False
 		# left rules
 
 		
@@ -180,9 +180,9 @@ class Entailment:
 	def getChildren(self):
 		return self.__children
 
-
 	def getRule(self):
 		return self.__rule
+
 
 	def setPremises(self, premiseL, premiseR):
 
@@ -195,8 +195,6 @@ class Entailment:
 		self.__lConclusions=conclusionR
 		self.__rConclusions=conclusionL
 		return self
-
-
 
 	@staticmethod
 	def copyEntailment(entailment):
@@ -264,7 +262,7 @@ class Entailment:
 			return False
 
 	def axiomInterpolant(self):
-		c=0
+
 		interpolants=None
 		for premise in self.getLeftPremises():
 
@@ -292,27 +290,30 @@ class Entailment:
 				print(" ")
 
 				return interpolants
-				
-				
 
 		for premise in self.getLeftPremises():
 
 			if premise in self.getRightConclusions():
+				interpolants=basics.Atom("False")
+				interpolants.setValue(False)
 				print("")
 				print("Axiom :" + self.toString())
-				print("False")
+				print(interpolants.toString())
 				print("")
 				
-				return False
+				return interpolants
 
 		for premise in self.getRightPremises():
 
 			if premise in self.getLeftConclusions():
+
+				interpolants=basics.Atom("True")
+				interpolants.setValue(True)
 				print("")
 				print("Axiom :" + self.toString())
-				print("True")
+				print(interpolants.toString())
 				print("")
-				return True
+				return interpolants
 
 		return interpolants
 
@@ -326,7 +327,6 @@ class Entailment:
 		interpolants = [child.calcInterpolant() for child in self.__children]
 
 		print("Interpolants for " + self.toString() + " with rule " + str(self.__rule) + "and side " +str(self.__side)+":")
-		print("len children:"+str(len(self.getChildren())))
 		
 		print(self.__rule(interpolants, self.__side).toString())
 
@@ -343,26 +343,30 @@ class Entailment:
 		entailment1=Entailment([phi],[], [interpolant], [])
 		entailment2=Entailment([interpolant],[], [psi], [])
 
-		print("entailment1:"+ entailment1.toString())
-		print("entailment2:"+ entailment2.toString())
+		print("entailment 1:"+ entailment1.toString())
+		print("entailment 2:"+ entailment2.toString())
 
-		if entailment1.solve() and entailment2.solve():
+		print("entailment 1 is a tautology:"+ str(op.Impl(phi,interpolant).isTaut()))
+		print("entailment 2 is a tautology:"+ str(op.Impl(interpolant,psi).isTaut()))
+
+		if op.Impl(phi,interpolant).isTaut() and op.Impl(interpolant,psi).isTaut():
 			if Entailment.checkVocabulary(phi, psi, interpolant):
 				print("interpolant found respects the CI property and definiton")
 				return True
 
 		return False
 
-
-
 	@staticmethod
 	def checkVocabulary(phi, psi, interpolant):
 
-		allAtoms = phi.getAtoms() + psi.getAtoms()
+		allAtoms = phi.getAtoms() + psi.getAtoms() 
+		allAtoms.append(basics.Atom("True"))
+		allAtoms.append(basics.Atom("False"))
 
 		for atom in interpolant.getAtoms():
-			if not (atom in allAtoms):
+			if not any ([atom.getSymbol()==a.getSymbol() for a in allAtoms]):
 				return False
+
 		return True
 
 

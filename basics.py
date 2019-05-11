@@ -22,6 +22,10 @@ class Element:
 		self.__symbol = symbol
 
 	def getSymbol(self):
+
+		if isinstance(self.__symbol,bool):
+			return str(self.__symbol)
+
 		return self.__symbol
 
 	def getValue(self):

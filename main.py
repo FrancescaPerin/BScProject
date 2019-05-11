@@ -8,7 +8,7 @@ import basicInterpolant as bi
 
 def main():
 
-	"""p = basics.Atom("p")
+	"""	p = basics.Atom("p")
 	q = basics.Atom("q")
 	r = basics.Atom("r")
 
@@ -29,7 +29,7 @@ def main():
 
 
 	print("__________________________________")
-	"""
+	
 	
 	entailment=F.randomGen(5, 3)
 
@@ -51,8 +51,31 @@ def main():
 		interpolant= entailment.calcInterpolant()
 		print("final interpolant:"+ interpolant.toString())
 		print("check: ", entailment.checkInterpolant(phi, psi, interpolant))
+	
+	print("__________________________________")
+	"""
 
-"""
+	f=basics.Atom("f")
+	t=basics.Atom("t")
+
+	phi = op.Disj(f,t)
+	psi = op.Not(op.Not(op.Impl(t, t)))
+
+	bi.computeInterpolant(phi, psi)
+
+	entailment = sc.Entailment([phi],[], [psi], [])
+	print(entailment.toString())
+	print(entailment.solve())
+
+	interpolant= entailment.calcInterpolant()
+
+	print("final interpolant:"+ interpolant.toString())
+
+	print("check: ", entailment.checkInterpolant(phi, psi, interpolant))
+	"""
+
+	print("__________________________________")
+	
 	p = basics.Atom("p")
 	q = basics.Atom("q")
 

@@ -106,15 +106,7 @@ class Operator(basics.Element):
 		return self
 
 	def toString(self):
-		if isinstance(self.__operand1, bool):
-			return "(" + str(self.__operand1)+ " " + self.getSymbol() + " " + self.__operand2.toString() + ")"
 		
-		elif isinstance(self.__operand2, bool):
-			return "(" + self.__operand1.toString() + " " + self.getSymbol() + " " + str(self.__operand2) + ")"
-
-		elif isinstance( self.__operand1, bool) and isinstance(self.__operand2, bool):
-			return "(" + str(self.__operand1) + " "  + self.getSymbol() + " " + str(self.__operand2) + ")"
-
 		return "(" + self.__operand1.toString() + " " + self.getSymbol() + " " + self.__operand2.toString() + ")"
 
 
