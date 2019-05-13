@@ -25,6 +25,8 @@ class Entailment:
 
 		self.__side = bool
 
+		self.__latex=""
+
 
 	def solve(self):
 
@@ -270,6 +272,8 @@ class Entailment:
 
 				interpolants=premise
 
+				self.__latex=r"\AxiomC{$"+self.convertSymbols(interpolants)+"$}\n"
+
 				print("")
 				print("Axiom  " + self.toString() + " ")
 				print (interpolants.toString())
@@ -284,6 +288,8 @@ class Entailment:
 
 				interpolants=op.Not(premise)
 
+				self.__latex=r"\AxiomC{$"+self.convertSymbols(interpolants)+"$}\n"
+
 				print("")
 				print("Axiom  " + self.toString() + " ")
 				print (interpolants.toString())
@@ -296,6 +302,9 @@ class Entailment:
 			if premise in self.getRightConclusions():
 				interpolants=basics.Atom("False")
 				interpolants.setValue(False)
+
+				self.__latex+=r"\AxiomC{$"+self.convertSymbols(interpolants)+"$}\n"
+
 				print("")
 				print("Axiom :" + self.toString())
 				print(interpolants.toString())
@@ -309,10 +318,14 @@ class Entailment:
 
 				interpolants=basics.Atom("True")
 				interpolants.setValue(True)
+
+				self.__latex+=r"\AxiomC{$"+self.convertSymbols(interpolants)+"$}"+"\n"
+
 				print("")
 				print("Axiom :" + self.toString())
 				print(interpolants.toString())
 				print("")
+
 				return interpolants
 
 		return interpolants
@@ -327,6 +340,16 @@ class Entailment:
 		interpolants = [child.calcInterpolant() for child in self.__children]
 
 		print("Interpolants for " + self.toString() + " with rule " + str(self.__rule) + "and side " +str(self.__side)+":")
+		print ("len:"+ str(len(self.__children)))
+
+		if (len(self.__children))==1:
+			self.__latex+=r"\RightLabel{}"+"\n"
+			self.__latex+=r"\UnaryInfC{$"+ self.convertSymbols(self.__rule(interpolants, self.__side))+ "$}"+"\n"
+
+		if (len(self.__children))==2:
+			self.__latex+=r"\RightLabel{}"+"\n"
+			self.__latex+=r"\BinaryInfC{$"+ self.convertSymbols(self.__rule(interpolants, self.__side))+ "$}"+"\n"
+
 		
 		print(self.__rule(interpolants, self.__side).toString())
 
@@ -371,24 +394,39 @@ class Entailment:
 
 
 
-	def convertSymbols(self):
+	def convertSymbols(self, interpolant):
 
 		newS=self.toString()
+		interpolantStr=interpolant.toString()
 
-		newS=newS.replace("|-", "\\vdash")
-		newS=newS.replace("|", "\lor")
-		newS=newS.replace("^", "\land")
-		newS=newS.replace("->", "\\rightarrow")
-		newS=newS.replace("~", "\\neg")
+		newS=newS.replace(r"|-", r"\overset{"+interpolantStr+ r"}{\vdash}")
+		newS=newS.replace(r"|", r"\lor")
+		newS=newS.replace(r"^", r"\land")
+		newS=newS.replace(r"->", r"\rightarrow")
+		newS=newS.replace(r"~", r"\neg")
+		newS=newS.replace(r"True", r"\top")
+		newS=newS.replace(r"False", r"\bot")
 
 		return newS
 
-	def latexProof (self):
+	def latexProof(self):
+		
+		for child in self.__children:
+			child.latexProof()
+		
+		print(self.__latex)
 
-		print("\\begin{prooftree}")
-				
+	def latexProofAux(self):
 
-		print("\\end{prooftree}")
+		print("\nBEGIN LATEX PROOF:\n")
+
+		print(r"\begin{prooftree}")
+
+		self.latexProof()
+
+		print(r"\end{prooftree}")
+
+
 # RULES
 
 #	RIGHT-SIDE RULES

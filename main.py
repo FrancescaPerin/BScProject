@@ -27,9 +27,9 @@ def main():
 
 	print("check: ", entailment.checkInterpolant(phi, psi, interpolant))
 
-
-	print("__________________________________")
 	
+	print("__________________________________")
+	"""
 	
 	entailment=F.randomGen(5, 3)
 
@@ -51,9 +51,10 @@ def main():
 		interpolant= entailment.calcInterpolant()
 		print("final interpolant:"+ interpolant.toString())
 		print("check: ", entailment.checkInterpolant(phi, psi, interpolant))
-	
-	print("__________________________________")
+		entailment.latexProofAux()
 	"""
+	print("__________________________________")
+	
 
 	f=basics.Atom("f")
 	t=basics.Atom("t")
@@ -72,7 +73,9 @@ def main():
 	print("final interpolant:"+ interpolant.toString())
 
 	print("check: ", entailment.checkInterpolant(phi, psi, interpolant))
-	"""
+
+	entailment.latexProofAux()
+	
 
 	print("__________________________________")
 	
