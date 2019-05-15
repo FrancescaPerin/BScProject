@@ -343,11 +343,11 @@ class Entailment:
 		print ("len:"+ str(len(self.__children)))
 
 		if (len(self.__children))==1:
-			self.__latex+=r"\RightLabel{}"+"\n"
+			self.__latex+=r"\RightLabel{$"+ self.convertRule(self.__side)+ "$}"+"\n"
 			self.__latex+=r"\UnaryInfC{$"+ self.convertSymbols(self.__rule(interpolants, self.__side))+ "$}"+"\n"
 
 		if (len(self.__children))==2:
-			self.__latex+=r"\RightLabel{}"+"\n"
+			self.__latex+=r"\RightLabel{$"+ self.convertRule(self.__side)+ "$}"+"\n"
 			self.__latex+=r"\BinaryInfC{$"+ self.convertSymbols(self.__rule(interpolants, self.__side))+ "$}"+"\n"
 
 		
@@ -400,14 +400,37 @@ class Entailment:
 		interpolantStr=interpolant.toString()
 
 		newS=newS.replace(r"|-", r"\overset{"+interpolantStr+ r"}{\vdash}")
-		newS=newS.replace(r"|", r"\lor")
-		newS=newS.replace(r"^", r"\land")
-		newS=newS.replace(r"->", r"\rightarrow")
-		newS=newS.replace(r"~", r"\neg")
+		newS=newS.replace(pars.DISJ_SYMBOL, r"\lor")
+		newS=newS.replace(pars.CONJ_SYMBOL, r"\land")
+		newS=newS.replace(pars.IMPL_SYMBOL, r"\rightarrow")
+		newS=newS.replace(pars.NOT_SYMBOL, r"\neg")
 		newS=newS.replace(r"True", r"\top")
 		newS=newS.replace(r"False", r"\bot")
 
 		return newS
+
+	def convertRule(self, side):
+
+		name=self.__rule.__qualname__
+
+		name=name[:-12]
+
+		if side==True:
+
+			name=name.replace("Impl", r"\rightarrow_{+}")
+			name=name.replace("Neg", r"\neg_{+}")
+			name=name.replace("Conj", r"\land_{+}")
+			name=name.replace("Disj", r"\lor_{+}")
+
+		else:
+
+			name=name.replace("Impl", r"\rightarrow_{-}")
+			name=name.replace("Neg", r"\neg_{-}")
+			name=name.replace("Conj", r"\land_{-}")
+			name=name.replace("Disj", r"\lor_{-}")
+
+
+		return name 
 
 	def latexProof(self):
 		
