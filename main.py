@@ -10,10 +10,50 @@ def main():
 
 	"""	p = basics.Atom("p")
 	q = basics.Atom("q")
+
+	phi = op.Mod(op.Impl(p,q))
+	psi = op.Impl(op.Mod(p),op.Mod(q))
+
+
+	entailment = sc.Entailment([phi],[], [psi], [])
+	print(entailment.toString())
+	print(entailment.solve())
+
+	interpolant= entailment.calcInterpolant()
+
+	print("__________________________________")
+
+	p = basics.Atom("p")
+	q = basics.Atom("q")
 	r = basics.Atom("r")
 
+	phi = op.Mod(op.Conj(op.Mod(p),op.Mod(q)))
+	psi = op.Mod(op.Mod(op.Disj(p,r)))
+
+
+	entailment = sc.Entailment([phi],[], [psi], [])
+	print(entailment.toString())
+	print(entailment.solve())
+
+	interpolant= entailment.calcInterpolant()
+
+
+
+
+	"""
+	print("__________________________________")
+
+	p = basics.Atom("p")
+	q = basics.Atom("q")
+	r = basics.Atom("r")
+
+<<<<<<< Updated upstream
 	phi = op.Conj(op.Not(op.Disj(p,q)), r)
 	psi = op.Conj(op.Not(p), r)
+=======
+	phi = op.Conj(op.Mod(r,"a"),op.Mod(op.Conj(op.Not(op.Disj(p,q)), r), "a"))
+	psi = op.Mod(op.Conj(op.Not(p), r), "a")
+>>>>>>> Stashed changes
 
 	bi.computeInterpolant(phi, psi)
 
@@ -23,9 +63,14 @@ def main():
 
 	interpolant= entailment.calcInterpolant()
 
-	print("final interpolant:"+ interpolant.toString())
+	#print("final interpolant:"+ interpolant.toString())
 
+	#print("check: ", entailment.checkInterpolant(phi, psi, interpolant))
+
+<<<<<<< Updated upstream
 	print("check: ", entailment.checkInterpolant(phi, psi, interpolant))
+=======
+>>>>>>> Stashed changes
 
 	
 	print("__________________________________")
@@ -104,10 +149,15 @@ def main():
 	b = basics.Atom("b")
 	c = basics.Atom("c")
 
+<<<<<<< Updated upstream
 	phi = op.Conj(op.Not(a),op.Conj(b,c)) 
 	psi = op.Conj(op.Disj(a,b),op.Disj(b,c))
+=======
+	phi = op.Conj(op.Mod(op.Not(a),"x"),op.Mod(op.Conj(b,c),"x"))
+	psi = op.Mod(op.Conj(op.Disj(a,b),op.Disj(b,c)),"x")
+>>>>>>> Stashed changes
 
-	bi.computeInterpolant(phi, psi)
+	#bi.computeInterpolant(phi, psi)
 
 	entailment = sc.Entailment([phi],[], [psi], [])
 	print(entailment.toString())

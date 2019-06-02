@@ -27,11 +27,23 @@ class Entailment:
 
 		self.__latex=""
 
+		self.__modsymbol =""
+
 
 	def solve(self):
 
+<<<<<<< Updated upstream
 		# right rules
 		
+=======
+		#weakening rule chack if to be applied
+		#weakening=Weak.canApply(self.getPremises(),self.getConclusions())
+
+		#modality rule check first before other operators
+		all_Mod=LMod.canApply(self.getPremises(),self.getConclusions())
+
+		# right rules
+>>>>>>> Stashed changes
 		r_Lconjs = RConj.canApply(self.getLeftConclusions())
 		r_Rconjs = RConj.canApply(self.getRightConclusions())
 
@@ -58,6 +70,21 @@ class Entailment:
 		l_Rneg = LNeg.canApply(self.getRightPremises())
 
 		#check if:
+
+		#weakening rule can be applied
+		"""if(weakening):
+			print ("entering if weakening")
+			self.__children = Weak.step(self, self.getLeftConclusions(), self.getRightConclusions())
+			self.__rule=Weak.interpolate
+			self.__side=True"""
+
+		#modality rule can be applied
+		if(all_Mod):
+			self.__children, self.__modsymbol = LMod.step(self, self.getLeftConclusions(), self.getRightConclusions())
+			self.__rule=LMod.interpolate
+			self.__side=True
+
+
 		#conjunction right rule (conclusions) can be applied to left part (before semicolon)
 		if(any(r_Lconjs)):
 			self.__children = RConj.stepLeft(self, self.getLeftConclusions()[r_Lconjs.index(True)])
@@ -146,7 +173,7 @@ class Entailment:
 			self.__side=False
 
 
-		print(self.toString())
+		print("After:"+self.toString())
 
 		if self.__children == None:
 			return False
@@ -159,6 +186,7 @@ class Entailment:
 			if premise in self.getConclusions():
 				return True
 
+		print ("reaching False conclusion")
 		return False
 
 	def getRightPremises(self):
@@ -197,6 +225,18 @@ class Entailment:
 		self.__lConclusions=conclusionR
 		self.__rConclusions=conclusionL
 		return self
+
+	def addPremL(self, new, index):
+		self.__lPremises.insert(index,new)
+
+	def addPremR(self, new):
+		self.__rPremises.append(new)
+
+	def addConcL(self, new):
+		self.__lConclusions.append(new)
+
+	def addConcR(self, new):
+		self.__rConclusions.append(new)
 
 	@staticmethod
 	def copyEntailment(entailment):
@@ -343,15 +383,31 @@ class Entailment:
 		print ("len:"+ str(len(self.__children)))
 
 		if (len(self.__children))==1:
-			self.__latex+=r"\RightLabel{$"+ self.convertRule(self.__side)+ "$}"+"\n"
-			self.__latex+=r"\UnaryInfC{$"+ self.convertSymbols(self.__rule(interpolants, self.__side))+ "$}"+"\n"
+
+			if(self.__rule.__qualname__[:-12]=="LMod"):
+				self.__latex+=r"\RightLabel{$$}"+"\n"
+				#self.__latex+=r"\RightLabel{$"+ self.convertRule(self.__side)+ "$}"+"\n"
+				#self.__latex+=r"\UnaryInfC{$"+ self.convertSymbols(self.__rule(interpolants, self.__side, self.__modsymbol))+ "$}"+"\n"
+
+			else:
+				self.__latex+=r"\RightLabel{$"+ self.convertRule(self.__side)+ "$}"+"\n"
+				self.__latex+=r"\UnaryInfC{$"+ self.convertSymbols(self.__rule(interpolants, self.__side))+ "$}"+"\n"
 
 		if (len(self.__children))==2:
 			self.__latex+=r"\RightLabel{$"+ self.convertRule(self.__side)+ "$}"+"\n"
 			self.__latex+=r"\BinaryInfC{$"+ self.convertSymbols(self.__rule(interpolants, self.__side))+ "$}"+"\n"
 
+<<<<<<< Updated upstream
 		
 		print(self.__rule(interpolants, self.__side).toString())
+=======
+		if(self.__rule.__qualname__[:-12]=="LMod"):
+			print(self.__rule(interpolants, self.__side, self.__modsymbol).toString())
+			print(" ")
+			return self.__rule(interpolants, self.__side, self.__modsymbol)
+		else:
+			print(self.__rule(interpolants, self.__side).toString())
+>>>>>>> Stashed changes
 
 		print(" ")
 
@@ -422,7 +478,7 @@ class Entailment:
 			name=name.replace("Conj", r"\land_{+}")
 			name=name.replace("Disj", r"\lor_{+}")
 
-		else:
+		elif side==False:
 
 			name=name.replace("Impl", r"\rightarrow_{-}")
 			name=name.replace("Neg", r"\neg_{-}")
@@ -818,7 +874,7 @@ class LImpl(LRule):
 	#interpolant is the implication of the interpolant of the two subfromulas
 	#interpolant rule if LImpl is on the right of semicolon(f+)
 	#interpolant is the conjunction of the interpolant of the two subfromulas
-	def interpolate(interpolant, c=True):
+	def interpolate(interpolant, c):
 
 		if c:
 			return op.Impl(interpolant[0],interpolant[1])
@@ -866,11 +922,182 @@ class LNeg(LRule):
 	#interpolant rule if LNeg is on the left of semicolon(f-)
 	#interpolant is the negation of the interpolant of the subfromula
 	#interpolant rule if LNeg is on the right of semicolon(f+)
+<<<<<<< Updated upstream
 	#interpolant is not changed
 	def interpolate(interpolant, c):
+=======
+	#interpolant is not change
+	def interpolate(interpolant, c=True):
+>>>>>>> Stashed changes
 
 		if c:
 			return op.Not(interpolant[0])
 		else:
 			return interpolant[0]
 
+class MRule:
+
+	@staticmethod
+	def canApply(premises, conclusions):
+		pass
+
+	@staticmethod
+	def step(entailment, conclusions):
+		pass
+
+	#rule for computing interpolant for box rule, adds a box(with appropriate symbol) to interpolant
+	@staticmethod
+	def interpolate(interpolant, c, symbol):
+		pass
+
+class LMod(MRule):
+
+	@staticmethod
+	def canApply(premises,conclusions):
+
+		if len(conclusions)>1:
+			return False
+
+		if len(conclusions)<1  or not isinstance(conclusions[0], op.Mod):
+			return False
+
+		elif (len(conclusions)==1 and isinstance(conclusions[0], op.Mod)):
+			conclusion = conclusions[0]
+
+			for premise in premises:
+				if (premise.getSymbol() != conclusion.getSymbol()):
+					return False
+
+		return True
+
+	@staticmethod
+	def step(entailment, lC, rC):
+
+		new = Entailment.copyEntailment(entailment)
+		symbol=new.getConclusions()[0].getSymbol()
+
+		gotConcl = True
+		index=0
+
+		if len(rC)==1 and isinstance(rC[0], op.Mod) and len(lC)<1:
+
+			conclusion = entailment.getRightConclusions()[0]
+
+			new.getRightConclusions().remove(conclusion)
+			new.addConcR(conclusion.getOperand())
+
+		elif len(lC)==1 and isinstance(lC[0], op.Mod) and len(rC)<1:
+
+			conclusion = entailment.getLeftConclusions()[0]
+
+			new.getLeftConclusions().remove(conclusion)
+			new.addConcL(conclusion.getOperand())
+
+		else:
+			gotConcl = False
+
+		if gotConcl:
+			for premise in new.getRightPremises():
+				print("right premise")
+				print(premise.toString())
+				new.getRightPremises().remove(premise)
+				new.addPremR(premise.getOperand())
+
+			while index < len(new.getLeftPremises()):
+				new.getLeftPremises()[index]=new.getLeftPremises()[index].getOperand()
+				index += 1
+
+
+			"""for premise in new.getLeftPremises():
+				print("left premise")
+				print(premise.toString())
+				new.getLeftPremises().remove(premise)
+				new.addPremL(premise.getOperand())"""
+
+		print(new.toString())
+
+		if not new.solve():
+			return None
+
+		return [new], symbol
+
+
+	#interpolant rule if RNeg is on the left of semicolon(f-)
+	#interpolant is not changed
+	#interpolant rule if RNeg is on the right of semicolon(f+)
+	#interpolant is not changed
+	def interpolate (interpolant, c, symbol):
+		symbol=symbol.replace("[", "")
+		symbol=symbol.replace("]", "")
+		return op.Mod(interpolant[0],symbol)
+
+class Weak(MRule):
+
+	@staticmethod
+	def canApply(premises,conclusions):
+
+		for conclusion in conclusions:
+			if not isinstance(conclusion, op.Mod):
+				return False
+
+		for premise in premises:
+			if not isinstance(premise, op.Mod):
+				return False
+
+		for conclusion in conclusions:
+			found = False
+			for premise in premises:
+				if premise.getSymbol() == conclusion.getSymbol():
+					found = True
+					break
+
+			if not found:
+				return False
+
+		return True
+
+	@staticmethod
+	def step(entailment, lC, rC):
+
+		division = {}
+
+		for conclusion in entailment.getConclusions():
+
+			division[conclusion.getSymbol()] = {}
+
+			if conclusion in entailment.getLeftConclusions():
+				division[conclusion.getSymbol()]["lC"] = [copy.deepcopy(conclusion)]
+				division[conclusion.getSymbol()]["rC"] = []
+			else:
+				division[conclusion.getSymbol()]["rC"] = [copy.deepcopy(conclusion)]
+				division[conclusion.getSymbol()]["lC"] = []
+
+			division[conclusion.getSymbol()]["lP"] = []
+			division[conclusion.getSymbol()]["rP"] = []
+
+			for premise in entailment.getLeftPremises():
+				if premise.getSymbol() == conclusion.getSymbol():
+					division[conclusion.getSymbol()]["lP"].append(copy.deepcopy(premise))
+
+			for premise in entailment.getRightPremises():
+				if premise.getSymbol() == conclusion.getSymbol():
+					division[conclusion.getSymbol()]["rP"].append(copy.deepcopy(premise))
+
+		for symbol, subdivision in division.keys():
+
+			new = Entailment(subdivision["lP"], subdivision["rP"], subdivision["lC"], subdivision["rC"])
+
+			if new.solve():
+				return [new]
+			else:
+				del new
+
+		return False
+
+
+	#interpolant rule if RNeg is on the left of semicolon(f-)
+	#interpolant is not changed
+	#interpolant rule if RNeg is on the right of semicolon(f+)
+	#interpolant is not changed
+	def interpolate (interpolant,c,self):
+		return interpolant[0]

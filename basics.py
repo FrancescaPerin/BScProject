@@ -94,6 +94,9 @@ class Atom(Element):
 	def getValue(self):
 		return self.__value
 
+	def getOperand(self):
+		return self
+
 	def setValue(self, newVal):
 		self.__value = newVal
 		return self

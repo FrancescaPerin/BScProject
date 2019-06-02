@@ -11,6 +11,8 @@ class UnaryOperator(basics.Element):
 		self.__func = func
 
 	def getOperand(self):
+		if self==basics.Atom:
+			return self
 		return self.__operand
 
 	def setOperand(self, operand):
@@ -165,5 +167,15 @@ class Not(UnaryOperator):
 
 		super(Not, self).__init__(pars.NOT_SYMBOL, OP, operand)
 
+
+class Mod(UnaryOperator):
+
+	def __init__(self, operand, symbol="" ):
+
+		def OP(a):
+
+			return a
+
+		super(Mod, self).__init__("["+symbol+"]", OP, operand)
 
 
