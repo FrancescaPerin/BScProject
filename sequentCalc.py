@@ -9,7 +9,7 @@ import copy
 
 class Entailment:
 
-	#rPremises corresponds to f+, lPremises to f-, 
+	#rPremises corresponds to f+, lPremises to f-,
 	#rConclusions to X- and lConclusion to X+.
 	def __init__(self, lPremises, rPremises, lConclusions, rConclusions):
 
@@ -31,11 +31,8 @@ class Entailment:
 
 
 	def solve(self):
-
-<<<<<<< Updated upstream
 		# right rules
-		
-=======
+
 		#weakening rule chack if to be applied
 		#weakening=Weak.canApply(self.getPremises(),self.getConclusions())
 
@@ -43,7 +40,6 @@ class Entailment:
 		all_Mod=LMod.canApply(self.getPremises(),self.getConclusions())
 
 		# right rules
->>>>>>> Stashed changes
 		r_Lconjs = RConj.canApply(self.getLeftConclusions())
 		r_Rconjs = RConj.canApply(self.getRightConclusions())
 
@@ -97,13 +93,13 @@ class Entailment:
 			self.__rule=RConj.interpolate
 			self.__side=False
 
-		#disjunction right rule (conclusions) can be applied to left 
+		#disjunction right rule (conclusions) can be applied to left
 		elif(any(r_Ldisj)):
 			self.__children = RDisj.stepLeft(self, self.getLeftConclusions()[r_Ldisj.index(True)])
 			self.__rule=RDisj.interpolate
 			self.__side=True
 
-		#disjunction right rule (conclusions) can be applied to right 
+		#disjunction right rule (conclusions) can be applied to right
 		elif(any(r_Rdisj)):
 			self.__children = RDisj.stepRight(self, self.getRightConclusions()[r_Rdisj.index(True)])
 			self.__rule= RDij.interpolate
@@ -130,7 +126,7 @@ class Entailment:
 			self.__side=False
 		# left rules
 
-		
+
 		elif(any(l_Lconjs)):
 			self.__children = LConj.stepLeft(self, self.getLeftPremises()[l_Lconjs.index(True)])
 			self.__rule= LConj.interpolate
@@ -151,7 +147,7 @@ class Entailment:
 			self.__rule= LDisj.interpolate
 			self.__side=False
 
-		
+
 		elif(any(l_Limpl)):
 			self.__children = LImpl.stepLeft(self, self.getLeftPremises()[l_Limpl.index(True)])
 			self.__rule= LImpl.interpolate
@@ -161,7 +157,7 @@ class Entailment:
 			self.__children = LImpl.stepRight(self, self.getRightPremises()[l_Rimpl.index(True)])
 			self.__rule= LImpl.interpolate
 			self.__side=False
-				
+
 		elif(any(l_Lneg)):
 			self.__children = LNeg.stepLeft(self, self.getLeftPremises()[l_Lneg.index(True)])
 			self.__rule= LNeg.interpolate
@@ -269,13 +265,13 @@ class Entailment:
 
 		len2=len(self.getRightPremises())
 		for premise in self.getRightPremises():
-			
+
 			if len2>1:
 				c+=str(premise.toString()) + ", "
 			elif len2==1:
 				c+=str(premise.toString())
 			len2-=1
-		
+
 		len3=len(self.getLeftConclusions())
 		for conclusion in self.getLeftConclusions():
 
@@ -349,7 +345,7 @@ class Entailment:
 				print("Axiom :" + self.toString())
 				print(interpolants.toString())
 				print("")
-				
+
 				return interpolants
 
 		for premise in self.getRightPremises():
@@ -397,22 +393,19 @@ class Entailment:
 			self.__latex+=r"\RightLabel{$"+ self.convertRule(self.__side)+ "$}"+"\n"
 			self.__latex+=r"\BinaryInfC{$"+ self.convertSymbols(self.__rule(interpolants, self.__side))+ "$}"+"\n"
 
-<<<<<<< Updated upstream
-		
-		print(self.__rule(interpolants, self.__side).toString())
-=======
+			print(self.__rule(interpolants, self.__side).toString())
+
 		if(self.__rule.__qualname__[:-12]=="LMod"):
 			print(self.__rule(interpolants, self.__side, self.__modsymbol).toString())
 			print(" ")
 			return self.__rule(interpolants, self.__side, self.__modsymbol)
 		else:
 			print(self.__rule(interpolants, self.__side).toString())
->>>>>>> Stashed changes
 
 		print(" ")
 
 
-		return self.__rule(interpolants, self.__side) 	
+		return self.__rule(interpolants, self.__side)
 
 	@staticmethod
 	def checkInterpolant(phi, psi, interpolant):
@@ -438,7 +431,7 @@ class Entailment:
 	@staticmethod
 	def checkVocabulary(phi, psi, interpolant):
 
-		allAtoms = phi.getAtoms() + psi.getAtoms() 
+		allAtoms = phi.getAtoms() + psi.getAtoms()
 		allAtoms.append(basics.Atom("True"))
 		allAtoms.append(basics.Atom("False"))
 
@@ -486,13 +479,13 @@ class Entailment:
 			name=name.replace("Disj", r"\lor_{-}")
 
 
-		return name 
+		return name
 
 	def latexProof(self):
-		
+
 		for child in self.__children:
 			child.latexProof()
-		
+
 		print(self.__latex)
 
 	def latexProofAux(self):
@@ -524,7 +517,7 @@ class RRule:
 	def stepRight(entailment, conclusion):
 		pass
 
-	#rule for computing interpolant for R-L rule 
+	#rule for computing interpolant for R-L rule
 	@staticmethod
 	def interpolate(interpolant, c):
 		pass
@@ -550,7 +543,7 @@ class RConj(RRule):
 
 		if (not left.solve() or not right.solve()):
 			return None;
-		
+
 		return [left, right]
 
 	def stepRight(entailment, conclusion):
@@ -567,7 +560,7 @@ class RConj(RRule):
 
 		if (not left.solve() or not right.solve()):
 			return None;
-		
+
 		return [left, right]
 
 	#interpolant rule if RConj is on the left of semicolon(f-)
@@ -579,8 +572,8 @@ class RConj(RRule):
 		if c:
 			return op.Conj(interpolant[0],interpolant[1])
 		else:
-			return op.Disj(interpolant[0],interpolant[1])		
-		
+			return op.Disj(interpolant[0],interpolant[1])
+
 
 class RDisj(RRule):
 
@@ -640,7 +633,7 @@ class RImpl(RRule):
 
 		new.getRightPremises().append(conclusion.getOperandLeft())
 		new.getLeftConclusions().append(conclusion.getOperandRight())
-		
+
 		if not new.solve():
 			return None
 
@@ -709,7 +702,7 @@ class RNeg(RRule):
 	#interpolant is not changed
 	def interpolate (interpolant, c):
 		return interpolant[0]
- 
+
 
 class LRule:
 
@@ -725,7 +718,7 @@ class LRule:
 	def stepRight(entailment, premise):
 		pass
 
-	#rule for computing interpolant for L-L rule 
+	#rule for computing interpolant for L-L rule
 	@staticmethod
 	def interpolate(interpolant, c):
 		pass
@@ -795,7 +788,7 @@ class LDisj(LRule):
 
 		if (not left.solve() or not right.solve()):
 			return None;
-		
+
 		return [left, right]
 
 	@staticmethod
@@ -812,7 +805,7 @@ class LDisj(LRule):
 
 		if (not left.solve() or not right.solve()):
 			return None;
-		
+
 		return [left, right]
 
 	#interpolant rule if LDisj is on the left of semicolon(f-)
@@ -844,13 +837,13 @@ class LImpl(LRule):
 
 		left.setPremises(left.getLeftPremises(), left.getRightPremises())
 		left.setConclusions(left.getLeftConclusions(), left.getRightConclusions())
-		
+
 		right.getLeftPremises().append(premise.getOperandRight())
 		left.getLeftConclusions().append(premise.getOperandLeft())
 
 		if (not left.solve() or not right.solve()):
 			return None;
-		
+
 		return [left, right]
 
 	@staticmethod
@@ -867,7 +860,7 @@ class LImpl(LRule):
 
 		if (not left.solve() or not right.solve()):
 			return None;
-		
+
 		return [left, right]
 
 	#interpolant rule if LImpl is on the left of semicolon(f-)
@@ -922,13 +915,9 @@ class LNeg(LRule):
 	#interpolant rule if LNeg is on the left of semicolon(f-)
 	#interpolant is the negation of the interpolant of the subfromula
 	#interpolant rule if LNeg is on the right of semicolon(f+)
-<<<<<<< Updated upstream
-	#interpolant is not changed
-	def interpolate(interpolant, c):
-=======
+
 	#interpolant is not change
 	def interpolate(interpolant, c=True):
->>>>>>> Stashed changes
 
 		if c:
 			return op.Not(interpolant[0])
@@ -997,22 +986,16 @@ class LMod(MRule):
 			gotConcl = False
 
 		if gotConcl:
-			for premise in new.getRightPremises():
-				print("right premise")
-				print(premise.toString())
-				new.getRightPremises().remove(premise)
-				new.addPremR(premise.getOperand())
+
+			while index < len(new.getRightPremises()):
+				new.getRightPremises()[index]=new.getRightPremises().getOperand()
+				index += 1
+
+			index=0
 
 			while index < len(new.getLeftPremises()):
 				new.getLeftPremises()[index]=new.getLeftPremises()[index].getOperand()
 				index += 1
-
-
-			"""for premise in new.getLeftPremises():
-				print("left premise")
-				print(premise.toString())
-				new.getLeftPremises().remove(premise)
-				new.addPremL(premise.getOperand())"""
 
 		print(new.toString())
 

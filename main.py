@@ -47,13 +47,11 @@ def main():
 	q = basics.Atom("q")
 	r = basics.Atom("r")
 
-<<<<<<< Updated upstream
 	phi = op.Conj(op.Not(op.Disj(p,q)), r)
 	psi = op.Conj(op.Not(p), r)
-=======
+
 	phi = op.Conj(op.Mod(r,"a"),op.Mod(op.Conj(op.Not(op.Disj(p,q)), r), "a"))
 	psi = op.Mod(op.Conj(op.Not(p), r), "a")
->>>>>>> Stashed changes
 
 	bi.computeInterpolant(phi, psi)
 
@@ -67,15 +65,13 @@ def main():
 
 	#print("check: ", entailment.checkInterpolant(phi, psi, interpolant))
 
-<<<<<<< Updated upstream
 	print("check: ", entailment.checkInterpolant(phi, psi, interpolant))
-=======
->>>>>>> Stashed changes
 
-	
+
+
 	print("__________________________________")
 	"""
-	
+
 	entailment=F.randomGen(5, 3)
 
 	psi=entailment[0]
@@ -87,9 +83,9 @@ def main():
 	entailment = sc.Entailment([phi],[], [psi], [])
 	print(entailment.toString())
 	val=entailment.solve()
-	
+
 	print(val)
-	print 
+	print
 
 	if val:
 
@@ -97,9 +93,9 @@ def main():
 		print("final interpolant:"+ interpolant.toString())
 		print("check: ", entailment.checkInterpolant(phi, psi, interpolant))
 		entailment.latexProofAux()
-	"""
+
 	print("__________________________________")
-	
+
 
 	f=basics.Atom("f")
 	t=basics.Atom("t")
@@ -120,10 +116,10 @@ def main():
 	print("check: ", entailment.checkInterpolant(phi, psi, interpolant))
 
 	entailment.latexProofAux()
-	
+
 
 	print("__________________________________")
-	
+
 	p = basics.Atom("p")
 	q = basics.Atom("q")
 
@@ -149,13 +145,13 @@ def main():
 	b = basics.Atom("b")
 	c = basics.Atom("c")
 
-<<<<<<< Updated upstream
-	phi = op.Conj(op.Not(a),op.Conj(b,c)) 
+
+	phi = op.Conj(op.Not(a),op.Conj(b,c))
 	psi = op.Conj(op.Disj(a,b),op.Disj(b,c))
-=======
+
 	phi = op.Conj(op.Mod(op.Not(a),"x"),op.Mod(op.Conj(b,c),"x"))
 	psi = op.Mod(op.Conj(op.Disj(a,b),op.Disj(b,c)),"x")
->>>>>>> Stashed changes
+
 
 	#bi.computeInterpolant(phi, psi)
 
@@ -176,7 +172,7 @@ def main():
 	c = basics.Atom("c")
 	d = basics.Atom("d")
 
-	phi = op.Conj(op.Disj(b,op.Not(b)),op.Conj(a,d)) 
+	phi = op.Conj(op.Disj(b,op.Not(b)),op.Conj(a,d))
 	psi = op.Disj(a,op.Conj(b,c))
 
 	bi.computeInterpolant(phi, psi)
@@ -184,7 +180,7 @@ def main():
 	entailment = sc.Entailment([phi],[], [psi], [])
 	print(entailment.toString())
 	print(entailment.solve())
-	
+
 	interpolant= entailment.calcInterpolant()
 
 
@@ -207,7 +203,7 @@ def main():
 
 	print(entailment.toString())
 	print(entailment.solve())
-	
+
 	interpolant= entailment.calcInterpolant()
 
 
@@ -228,13 +224,13 @@ def main():
 	entailment = sc.Entailment([phi],[], [psi],[])
 	print(entailment.toString())
 	print(entailment.solve())
-	
+
 	interpolant= entailment.calcInterpolant()
 
 
 	print("final interpolant:"+ interpolant.toString())
 	entailment.checkInterpolant(interpolant)
-	
+
 	print("__________________________________")
 
 	p = basics.Atom("p")
@@ -250,7 +246,7 @@ def main():
 	entailment = sc.Entailment([phi],[], [psi],[])
 	print(entailment.toString())
 	print(entailment.solve())
-	
+
 	interpolant= entailment.calcInterpolant()
 	print("final interpolant:"+ interpolant.toString())
 	entailment.checkInterpolant(interpolant)
@@ -271,7 +267,7 @@ def main():
 	entailment = sc.Entailment([phi],[], [psi],[])
 	print(entailment.toString())
 	val=entailment.solve()
-	
+
 	print(val)
 
 	if val:
