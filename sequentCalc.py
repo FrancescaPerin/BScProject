@@ -988,11 +988,10 @@ class LMod(MRule):
 		if gotConcl:
 
 			while index < len(new.getRightPremises()):
-				new.getRightPremises()[index]=new.getRightPremises().getOperand()
+				new.getRightPremises()[index]=new.getRightPremises()[index].getOperand()
 				index += 1
 
 			index=0
-
 			while index < len(new.getLeftPremises()):
 				new.getLeftPremises()[index]=new.getLeftPremises()[index].getOperand()
 				index += 1
