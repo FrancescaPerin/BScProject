@@ -33,9 +33,6 @@ class Entailment:
 	def solve(self):
 		# right rules
 
-		#weakening rule chack if to be applied
-		#weakening=Weak.canApply(self.getPremises(),self.getConclusions())
-
 		#modality rule check first before other operators
 		all_Mod=LMod.canApply(self.getPremises(),self.getConclusions())
 
@@ -65,14 +62,10 @@ class Entailment:
 		l_Lneg = LNeg.canApply(self.getLeftPremises())
 		l_Rneg = LNeg.canApply(self.getRightPremises())
 
-		#check if:
+		#weakening rule chack if to be applied
+		#weakening=Weak.canApply(self.getPremises(),self.getConclusions())
 
-		#weakening rule can be applied
-		"""if(weakening):
-			print ("entering if weakening")
-			self.__children = Weak.step(self, self.getLeftConclusions(), self.getRightConclusions())
-			self.__rule=Weak.interpolate
-			self.__side=True"""
+		#check if:
 
 		#modality rule can be applied
 		if(all_Mod):
@@ -167,6 +160,13 @@ class Entailment:
 			self.__children = LNeg.stepRight(self, self.getRightPremises()[l_Rneg.index(True)])
 			self.__rule= LNeg.interpolate
 			self.__side=False
+
+		#weakening rule can be applied
+		"""elif(weakening):
+			print ("entering if weakening")
+			self.__children = Weak.step(self, self.getLeftConclusions(), self.getRightConclusions())
+			self.__rule=Weak.interpolate
+			self.__side=True"""
 
 
 		print("After:"+self.toString())
@@ -416,12 +416,18 @@ class Entailment:
 		entailment2=Entailment([interpolant],[], [psi], [])
 
 		print("entailment 1:"+ entailment1.toString())
+		e1=bool(entailment1.solve())
+
+		print (" ")
+
 		print("entailment 2:"+ entailment2.toString())
+		e2=bool(entailment2.solve())
 
-		print("entailment 1 is a tautology:"+ str(op.Impl(phi,interpolant).isTaut()))
-		print("entailment 2 is a tautology:"+ str(op.Impl(interpolant,psi).isTaut()))
 
-		if op.Impl(phi,interpolant).isTaut() and op.Impl(interpolant,psi).isTaut():
+		print("entailment 1 is a tautology:"+ str(e1))
+		print("entailment 2 is a tautology:"+ str(e2))
+
+		if e1 and e2:
 			if Entailment.checkVocabulary(phi, psi, interpolant):
 				print("interpolant found respects the CI property and definiton")
 				return True

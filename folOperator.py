@@ -1,4 +1,4 @@
-import basics 
+import basics
 import pars
 
 #Class for unary operators (for now only not)
@@ -36,7 +36,7 @@ class UnaryOperator(basics.Element):
 		if selfVal != None:
 			atm = basics.Atom(self.toString())
 			atm.setValue(selfVal)
-			return atm 
+			return atm
 
 		self.setOperand(self.getOperand().simplify())
 		return self
@@ -108,7 +108,7 @@ class Operator(basics.Element):
 		return self
 
 	def toString(self):
-		
+
 		return "(" + self.__operand1.toString() + " " + self.getSymbol() + " " + self.__operand2.toString() + ")"
 
 
@@ -173,6 +173,11 @@ class Mod(UnaryOperator):
 	def __init__(self, operand, symbol="" ):
 
 		def OP(a):
+			try:
+				raise NameError('HiThere')
+			except NameError:
+				print ("An exception flew by!")
+				raise
 
 			return a
 
