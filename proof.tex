@@ -1,0 +1,28 @@
+\documentclass[border=10pt,varwidth]{standalone}
+\usepackage{bussproofs}
+\usepackage{amsmath}
+\begin{document}
+\begin{prooftree}
+
+
+
+
+\AxiomC{$f ; t \overset{\top}{\vdash} t ; $}
+\RightLabel{$R\rightarrow_{+}$}
+\UnaryInfC{$f ;  \overset{\top}{\vdash} (t \rightarrow t) ; $}
+\RightLabel{$L\neg_{-}$}
+\UnaryInfC{$f ; \neg((t \rightarrow t)) \overset{\top}{\vdash}  ; $}
+
+
+
+\AxiomC{$t ; t \overset{t}{\vdash} t ; $}
+\RightLabel{$R\rightarrow_{+}$}
+\UnaryInfC{$t ;  \overset{t}{\vdash} (t \rightarrow t) ; $}
+\RightLabel{$L\neg_{-}$}
+\UnaryInfC{$t ; \neg((t \rightarrow t)) \overset{t}{\vdash}  ; $}
+\RightLabel{$L\lor_{+}$}
+\BinaryInfC{$(f \lor t) ; \neg((t \rightarrow t)) \overset{(\top \lor t)}{\vdash}  ; $}
+\RightLabel{$R\neg_{+}$}
+\UnaryInfC{$(f \lor t) ;  \overset{(\top \lor t)}{\vdash} \neg(\neg((t \rightarrow t))) ; $}
+\end{prooftree}
+\end{document}

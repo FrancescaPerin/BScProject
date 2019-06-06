@@ -7,7 +7,7 @@ import sequentCalc as sc
 import basicInterpolant as bi
 
 def main():
-
+	"""
 	p = basics.Atom("p")
 	q = basics.Atom("q")
 
@@ -24,6 +24,7 @@ def main():
 	print("final interpolant:"+ interpolant.toString())
 
 	print("check: ", entailment.checkInterpolant(phi, psi, interpolant))
+
 
 
 	print("__________________________________")
@@ -66,10 +67,30 @@ def main():
 
 	print("check: ", entailment.checkInterpolant(phi, psi, interpolant))
 
+	print("__________________________________")
+
+
+	b = basics.Atom("b")
+	c = basics.Atom("c")
+	d = basics.Atom("d")
+
+	phi = op.Conj(op.Mod(b ,"a"), op.Mod(d ,"b"))
+	psi = op.Mod(b ,"a")
+
+
+	entailment = sc.Entailment([phi],[], [psi], [])
+	print(entailment.toString())
+	print(entailment.solve())
+
+	interpolant= entailment.calcInterpolant()
+
+	print("final interpolant:"+ interpolant.toString())
+
+	print("check: ", entailment.checkInterpolant(phi, psi, interpolant))
 
 
 
-	"""
+
 	print("__________________________________")
 
 	p = basics.Atom("p")
@@ -90,11 +111,9 @@ def main():
 
 	interpolant= entailment.calcInterpolant()
 
-	#print("final interpolant:"+ interpolant.toString())
+	print("final interpolant:"+ interpolant.toString())
 
-	#print("check: ", entailment.checkInterpolant(phi, psi, interpolant))
-
-	print("check: ", entailment.checkInterpolant(phi, psi, interpolant))
+	entailment.latexProofAux()
 
 
 
@@ -124,7 +143,7 @@ def main():
 		entailment.latexProofAux()
 
 	print("__________________________________")
-
+	"""
 
 	f=basics.Atom("f")
 	t=basics.Atom("t")
@@ -146,7 +165,7 @@ def main():
 
 	entailment.latexProofAux()
 
-
+	"""
 	print("__________________________________")
 
 	p = basics.Atom("p")

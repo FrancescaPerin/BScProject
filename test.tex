@@ -1,0 +1,23 @@
+\documentclass[border=10pt,varwidth]{standalone}
+\usepackage{bussproofs}
+\usepackage{amsmath}
+\begin{document}
+
+\begin{prooftree}
+\AxiomC{$o, n ;  \overset{o}{\vdash} o ; a$}
+\RightLabel{$L\space\neg_{+}$}
+\UnaryInfC{$\neg(o) ; o, n \overset{\neg(o)}{\vdash} a ; $}
+\AxiomC{$o, o ;  \overset{o}{\vdash} o ; a$}
+\RightLabel{$L\space\neg_{+}$}
+\UnaryInfC{$\neg(o) ; o, o \overset{\neg(o)}{\vdash} a ; $}
+\RightLabel{$L\lor_{-}$}
+\BinaryInfC{$\neg(o) ; (n \lor o), o \overset{(\neg(o) \land \neg(o))}{\vdash} a ; $}
+\RightLabel{$R\rightarrow_{+}$}
+\UnaryInfC{$\neg(o) ; (n \lor o) \overset{(\neg(o) \land \neg(o))}{\vdash} (o \rightarrow a) ; $}
+\RightLabel{$R\rightarrow_{+}$}
+\UnaryInfC{$\neg(o) ;  \overset{(\neg(o) \land \neg(o))}{\vdash} ((n \lor o) \rightarrow (o \rightarrow a)) ; $}
+\end{prooftree}
+
+\end{document}
+^X
+
