@@ -49,6 +49,7 @@ def main():
 
 	print("__________________________________")
 
+	"""
 	p = basics.Atom("p")
 	q = basics.Atom("q")
 	r = basics.Atom("r")
@@ -67,11 +68,13 @@ def main():
 
 	print("check: ", entailment.checkInterpolant(phi, psi, interpolant))
 
+	#entailment.latexProofAux()
+
+
 	print("__________________________________")
 
 
 	b = basics.Atom("b")
-	c = basics.Atom("c")
 	d = basics.Atom("d")
 
 	phi = op.Conj(op.Mod(b ,"a"), op.Mod(d ,"b"))
@@ -89,8 +92,7 @@ def main():
 	print("check: ", entailment.checkInterpolant(phi, psi, interpolant))
 
 
-
-
+	"""
 	print("__________________________________")
 
 	p = basics.Atom("p")
@@ -143,7 +145,7 @@ def main():
 		entailment.latexProofAux()
 
 	print("__________________________________")
-	"""
+
 
 	f=basics.Atom("f")
 	t=basics.Atom("t")
@@ -165,7 +167,7 @@ def main():
 
 	entailment.latexProofAux()
 
-	"""
+
 	print("__________________________________")
 
 	p = basics.Atom("p")

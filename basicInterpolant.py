@@ -12,7 +12,7 @@ def interpolateAux(phi, psi):
 		if atomPhi.getValue() == None and not psi.hasAtom(atomPhi):
 			p = atomPhi
 			break
-		
+
 	phiTrue = copy.deepcopy(phi).setAtomBySymbol(p.getSymbol(), True)
 	phiFalse = copy.deepcopy(phi).setAtomBySymbol(p.getSymbol(), False)
 

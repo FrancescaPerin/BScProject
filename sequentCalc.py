@@ -2,9 +2,11 @@ import basics
 import folOperator as op
 import pars
 import functionality as F
-import subprocess
 
+from sys import platform
+import subprocess
 import copy
+import collections
 
 # BASIC CLASS
 
@@ -67,130 +69,107 @@ class Entailment:
 		weakening=Weak.canApply(self.getPremises(),self.getConclusions())
 
 		#check if:
-		#if other rule can be applied avoid weakening
-		other_rule=False
-
 		#modality rule can be applied
 		if(all_Mod):
 			self.__children, self.__modsymbol = LMod.step(self, self.getLeftConclusions(), self.getRightConclusions())
 			self.__rule=LMod.interpolate
 			self.__side=True
-			other_rule=True
-
 
 		#conjunction right rule (conclusions) can be applied to left part (before semicolon)
 		elif(any(r_Lconjs)):
 			self.__children = RConj.stepLeft(self, self.getLeftConclusions()[r_Lconjs.index(True)])
 			self.__rule=RConj.interpolate
 			self.__side=True
-			other_rule=True
 
 		#conjunction right rule (conclusions) can be applied to right (after semicolon)
 		elif(any(r_Rconjs)):
 			self.__children = RConj.stepRight(self, self.getRightConclusions()[r_Rconjs.index(True)])
 			self.__rule=RConj.interpolate
 			self.__side=False
-			other_rule=True
 
 		#disjunction right rule (conclusions) can be applied to left
 		elif(any(r_Ldisj)):
 			self.__children = RDisj.stepLeft(self, self.getLeftConclusions()[r_Ldisj.index(True)])
 			self.__rule=RDisj.interpolate
 			self.__side=True
-			other_rule=True
 
 		#disjunction right rule (conclusions) can be applied to right
 		elif(any(r_Rdisj)):
 			self.__children = RDisj.stepRight(self, self.getRightConclusions()[r_Rdisj.index(True)])
 			self.__rule= RDij.interpolate
 			self.__side=False
-			other_rule=True
 
 		elif(any(r_Limpl)):
 			self.__children = RImpl.stepLeft(self, self.getLeftConclusions()[r_Limpl.index(True)])
 			self.__rule= RImpl.interpolate
 			self.__side=True
-			other_rule=True
 
 		elif(any(r_Rimpl)):
 			self.__children = RImpl.stepRight(self, self.getRightConclusions()[r_Rimpl.index(True)])
 			self.__rule= RImpl.interpolant
 			self.__side=False
-			other_rule=True
 
 		elif(any(r_Lneg)):
 			self.__children = RNeg.stepLeft(self, self.getLeftConclusions()[r_Lneg.index(True)])
 			self.__rule= RNeg.interpolate
 			self.__side=True
-			other_rule=True
 
 		elif(any(r_Rneg)):
 			self.__children = RNeg.stepRight(self, self.getRightConclusions()[r_Rneg.index(True)])
 			self.__rule= RNeg.interpolate
 			self.__side=False
-			other_rule=True
 		# left rules
-
 
 		elif(any(l_Lconjs)):
 			self.__children = LConj.stepLeft(self, self.getLeftPremises()[l_Lconjs.index(True)])
 			self.__rule= LConj.interpolate
 			self.__side=True
-			other_rule=True
 
 		elif(any(l_Rconjs)):
 			self.__children = LConj.stepRight(self, self.getRightPremises()[l_Rconjs.index(True)])
 			self.__rule= LConj.interpolate
 			self.__side=False
-			other_rule=True
 
 		elif(any(l_Ldisj)):
 			self.__children = LDisj.stepLeft(self, self.getLeftPremises()[l_Ldisj.index(True)])
 			self.__rule= LDisj.interpolate
 			self.__side=True
-			other_rule=True
 
 		elif(any(l_Rdisj)):
 			self.__children = LDisj.stepRight(self, self.getRightPremises()[l_Rdisj.index(True)])
 			self.__rule= LDisj.interpolate
 			self.__side=False
-			other_rule=True
-
 
 		elif(any(l_Limpl)):
 			self.__children = LImpl.stepLeft(self, self.getLeftPremises()[l_Limpl.index(True)])
 			self.__rule= LImpl.interpolate
 			self.__side=True
-			other_rule=True
 
 		elif(any(l_Rimpl)):
 			self.__children = LImpl.stepRight(self, self.getRightPremises()[l_Rimpl.index(True)])
 			self.__rule= LImpl.interpolate
 			self.__side=False
-			other_rule=True
 
 		elif(any(l_Lneg)):
 			self.__children = LNeg.stepLeft(self, self.getLeftPremises()[l_Lneg.index(True)])
 			self.__rule= LNeg.interpolate
 			self.__side=True
-			other_rule=True
 
 		elif(any(l_Rneg)):
 			self.__children = LNeg.stepRight(self, self.getRightPremises()[l_Rneg.index(True)])
 			self.__rule= LNeg.interpolate
 			self.__side=False
-			other_rule=True
 
 		#weakening rule can be applied
-		elif (weakening) and other_rule==False:
+		elif (weakening):
 			self.__children = Weak.step(self, self.getLeftConclusions(), self.getRightConclusions())
 			self.__rule=Weak.interpolate
 			self.__side=True
 
 
-		#print(self.toString())
+		print(self.toString())
 
-		if self.__children == None:
+		if self.__children == None or self.__children==0:
 			return False
 
 		elif len(self.__children)>0:
@@ -201,7 +180,6 @@ class Entailment:
 			if premise in self.getConclusions():
 				return True
 
-		print ("reaching False conclusion")
 		return False
 
 	def getRightPremises(self):
@@ -312,10 +290,20 @@ class Entailment:
 
 	def isAxiom(self):
 
-		if len(self.__children)==0:
+		#compare = lambda self.getPremises(), self.getConclusions(): collections.Counter(self.getPremises()) == collections.Counter(self.getConclusions())
+
+		#if compare:
+			#return True
+
+		if self.__children==None :
+			print ("HERE1"+ self.toString())
+			return True
+		elif len(self.__children)==0:
+			print ("HERE2"+ self.toString())
 			return True
 
 		elif len(self.__children)>0:
+			print ("HERE3"+ self.toString())
 			return False
 
 	def axiomInterpolant(self):
@@ -388,7 +376,6 @@ class Entailment:
 	def calcInterpolant(self):
 
 		if self.isAxiom():
-
 			return self.axiomInterpolant()
 
 
@@ -400,9 +387,8 @@ class Entailment:
 		if (len(self.__children))==1:
 
 			if(self.__rule.__qualname__[:-12]=="LMod"):
-				self.__latex+=r"\RightLabel{$$}"+"\n"
-				#self.__latex+=r"\RightLabel{$"+ self.convertRule(self.__side)+ "$}"+"\n"
-				#self.__latex+=r"\UnaryInfC{$"+ self.convertSymbols(self.__rule(interpolants, self.__side, self.__modsymbol))+ "$}"+"\n"
+				self.__latex+=r"\RightLabel{$ Mod "+ self.__modsymbol +"$}"+"\n"
+				self.__latex+=r"\UnaryInfC{$"+ self.convertSymbols(self.__rule(interpolants, self.__side, self.__modsymbol))+ "$}"+"\n"
 
 			else:
 				self.__latex+=r"\RightLabel{$"+ self.convertRule(self.__side)+ "$}"+"\n"
@@ -527,7 +513,10 @@ class Entailment:
 			myfile.write("\\end{prooftree}\n"
 					"\\end{document}\n")
 		subprocess.run(["pdflatex", "-interaction=nonstopmode", "proof.tex"])
-		subprocess.run(["open", "proof.pdf"])
+		if platform.startswith('darwin'):
+			subprocess.run(["open", "proof.pdf"])
+		elif platform.startswith('linux'):
+			subprocess.run(["xdg-open", "proof.pdf"])
 
 
 # RULES
@@ -771,8 +760,8 @@ class LConj(LRule):
 		new.getLeftPremises().append(premise.getOperandRight())
 
 		if not new.solve():
+			print("This"+new.toString())
 			return None
-
 		return [new]
 
 	@staticmethod
@@ -962,7 +951,7 @@ class MRule:
 		pass
 
 	@staticmethod
-	def step(entailment, conclusions):
+	def step(entailment, lC, rC):
 		pass
 
 	#rule for computing interpolant for box rule, adds a box(with appropriate symbol) to interpolant
@@ -978,7 +967,7 @@ class LMod(MRule):
 		if len(conclusions)>1:
 			return False
 
-		if len(conclusions)<1  or not isinstance(conclusions[0], op.Mod):
+		elif len(conclusions)<1  or not isinstance(conclusions[0], op.Mod):
 			return False
 
 		elif (len(conclusions)==1 and isinstance(conclusions[0], op.Mod)):
@@ -1027,10 +1016,9 @@ class LMod(MRule):
 				new.getLeftPremises()[index]=new.getLeftPremises()[index].getOperand()
 				index += 1
 
-		print(new.toString())
-
 		if not new.solve():
-			return None
+			print ("returning None")
+			return None, None
 
 		return [new], symbol
 
@@ -1096,14 +1084,16 @@ class Weak(MRule):
 				if premise.getSymbol() == conclusion.getSymbol():
 					division[conclusion.getSymbol()]["rP"].append(copy.deepcopy(premise))
 
-		for symbol, subdivision in division.keys():
+		for symbol, subdivision in division.items():
 
 			new = Entailment(subdivision["lP"], subdivision["rP"], subdivision["lC"], subdivision["rC"])
+			print("new1"+ new.toString())
+
+			print("new.solve() "+str(bool(new.solve())))
 
 			if new.solve():
+				print("solved")
 				return [new]
-			else:
-				del new
 
 		return False
 

@@ -7,22 +7,19 @@
 
 
 
-\AxiomC{$f ; t \overset{\top}{\vdash} t ; $}
-\RightLabel{$R\rightarrow_{+}$}
-\UnaryInfC{$f ;  \overset{\top}{\vdash} (t \rightarrow t) ; $}
-\RightLabel{$L\neg_{-}$}
-\UnaryInfC{$f ; \neg((t \rightarrow t)) \overset{\top}{\vdash}  ; $}
+\AxiomC{$p, q ;  \overset{q}{\vdash} q ; $}
+\RightLabel{$ Mod []$}
+\UnaryInfC{$[](p), [](q) ;  \overset{[](q)}{\vdash} [](q) ; $}
 
 
-
-\AxiomC{$t ; t \overset{t}{\vdash} t ; $}
-\RightLabel{$R\rightarrow_{+}$}
-\UnaryInfC{$t ;  \overset{t}{\vdash} (t \rightarrow t) ; $}
-\RightLabel{$L\neg_{-}$}
-\UnaryInfC{$t ; \neg((t \rightarrow t)) \overset{t}{\vdash}  ; $}
-\RightLabel{$L\lor_{+}$}
-\BinaryInfC{$(f \lor t) ; \neg((t \rightarrow t)) \overset{(\top \lor t)}{\vdash}  ; $}
-\RightLabel{$R\neg_{+}$}
-\UnaryInfC{$(f \lor t) ;  \overset{(\top \lor t)}{\vdash} \neg(\neg((t \rightarrow t))) ; $}
+\AxiomC{$p, q ;  \overset{p}{\vdash} p ; $}
+\RightLabel{$ Mod []$}
+\UnaryInfC{$[](p), [](q) ;  \overset{[](p)}{\vdash} [](p) ; $}
+\RightLabel{$R\land_{+}$}
+\BinaryInfC{$[](p), [](q) ;  \overset{([](q) \land [](p))}{\vdash} ([](q) \land [](p)) ; $}
+\RightLabel{$ Mod []$}
+\UnaryInfC{$[]([](p)), []([](q)) ;  \overset{[](([](q) \land [](p)))}{\vdash} [](([](q) \land [](p))) ; $}
+\RightLabel{$L\land_{+}$}
+\UnaryInfC{$([]([](p)) \land []([](q))) ;  \overset{[](([](q) \land [](p)))}{\vdash} [](([](q) \land [](p))) ; $}
 \end{prooftree}
 \end{document}
