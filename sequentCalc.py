@@ -72,6 +72,7 @@ class Entailment:
 		#modality rule can be applied
 		if(all_Mod):
 			self.__children, self.__modsymbol = LMod.step(self, self.getLeftConclusions(), self.getRightConclusions())
+			print("children:"+self.__children[0].toString())
 			self.__rule=LMod.interpolate
 			self.__side=True
 
@@ -163,13 +164,14 @@ class Entailment:
 		#weakening rule can be applied
 		elif (weakening):
 			self.__children = Weak.step(self, self.getLeftConclusions(), self.getRightConclusions())
-			self.__rule=Weak.interpolate
+			self.__rule= Weak.interpolate
 			self.__side=True
 
 
-		print(self.toString())
+		print("proof:"+self.toString())
 
-		if self.__children == None or self.__children==0:
+		if self.__children== None:
+			print ("HERE")
 			return False
 
 		elif len(self.__children)>0:
@@ -290,18 +292,12 @@ class Entailment:
 
 	def isAxiom(self):
 
-		#compare = lambda self.getPremises(), self.getConclusions(): collections.Counter(self.getPremises()) == collections.Counter(self.getConclusions())
-
-		#if compare:
-			#return True
-
-		if self.__children==None :
-			print ("HERE1"+ self.toString())
-			return True
-		elif len(self.__children)==0:
+		if len(self.__children)==0:
 			print ("HERE2"+ self.toString())
 			return True
-
+		elif self.__children==None:
+			print ("HERE2"+ self.toString())
+			return True
 		elif len(self.__children)>0:
 			print ("HERE3"+ self.toString())
 			return False
@@ -612,7 +608,7 @@ class RDisj(RRule):
 		new.getLeftConclusions().append(conclusion.getOperandRight())
 
 		if not new.solve():
-			return None
+			return None;
 
 		return [new]
 
@@ -627,7 +623,7 @@ class RDisj(RRule):
 		new.getRightConclusions().append(conclusion.getOperandRight())
 
 		if not new.solve():
-			return None
+			return None;
 
 		return [new]
 
@@ -655,7 +651,7 @@ class RImpl(RRule):
 		new.getLeftConclusions().append(conclusion.getOperandRight())
 
 		if not new.solve():
-			return None
+			return None;
 
 		return [new]
 
@@ -698,7 +694,7 @@ class RNeg(RRule):
 		new.getRightPremises().append(conclusion.getOperand())
 
 		if not new.solve():
-			return None
+			return None;
 
 		return [new]
 
@@ -712,7 +708,7 @@ class RNeg(RRule):
 		new.getLeftPremises().append(conclusion.getOperand())
 
 		if not new.solve():
-			return None
+			return None;
 
 		return [new]
 
@@ -760,8 +756,7 @@ class LConj(LRule):
 		new.getLeftPremises().append(premise.getOperandRight())
 
 		if not new.solve():
-			print("This"+new.toString())
-			return None
+			return None;
 		return [new]
 
 	@staticmethod
@@ -775,7 +770,7 @@ class LConj(LRule):
 		new.getRightPremises().append(premise.getOperandRight())
 
 		if not new.solve():
-			return None
+			return None;
 
 		return [new]
 
@@ -913,9 +908,8 @@ class LNeg(LRule):
 
 		new.getLeftConclusions().append(premise.getOperand())
 
-
 		if not new.solve():
-			return None
+			return None;
 
 		return [new]
 
@@ -928,7 +922,7 @@ class LNeg(LRule):
 		new.getLeftConclusions().append(premise.getOperand())
 
 		if not new.solve():
-			return None
+			return None;
 
 		return [new]
 
@@ -1005,6 +999,7 @@ class LMod(MRule):
 		else:
 			gotConcl = False
 
+
 		if gotConcl:
 
 			while index < len(new.getRightPremises()):
@@ -1016,17 +1011,15 @@ class LMod(MRule):
 				new.getLeftPremises()[index]=new.getLeftPremises()[index].getOperand()
 				index += 1
 
+		print("new:"+new.toString())
+		print("#"+str(new.solve()))
 		if not new.solve():
-			print ("returning None")
-			return None, None
+			return None,None;
 
 		return [new], symbol
 
 
-	#interpolant rule if RNeg is on the left of semicolon(f-)
-	#interpolant is not changed
-	#interpolant rule if RNeg is on the right of semicolon(f+)
-	#interpolant is not changed
+	#interpolant rule if Modality rule applied, modality added to interpolant
 	def interpolate (interpolant, c, symbol):
 		symbol=symbol.replace("[", "")
 		symbol=symbol.replace("]", "")
@@ -1084,23 +1077,19 @@ class Weak(MRule):
 				if premise.getSymbol() == conclusion.getSymbol():
 					division[conclusion.getSymbol()]["rP"].append(copy.deepcopy(premise))
 
+
+		for symbol, item in division.items():
+			print(symbol, item["lP"])
+
 		for symbol, subdivision in division.items():
 
 			new = Entailment(subdivision["lP"], subdivision["rP"], subdivision["lC"], subdivision["rC"])
-			print("new1"+ new.toString())
-
-			print("new.solve() "+str(bool(new.solve())))
-
+			print("entailment"+ new.toString())
 			if new.solve():
-				print("solved")
 				return [new]
 
-		return False
+		return None;
 
-
-	#interpolant rule if RNeg is on the left of semicolon(f-)
-	#interpolant is not changed
-	#interpolant rule if RNeg is on the right of semicolon(f+)
-	#interpolant is not changed
+	#interpolant rule if weakening interpolant is not changed
 	def interpolate (interpolant,c,self):
 		return interpolant[0]
