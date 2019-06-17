@@ -25,8 +25,6 @@ def main():
 
 	print("check: ", entailment.checkInterpolant(phi, psi, interpolant))
 
-
-
 	print("__________________________________")
 
 	p = basics.Atom("p")
@@ -72,29 +70,8 @@ def main():
 
 
 	print("__________________________________")
+
 	"""
-
-	b = basics.Atom("b")
-	d = basics.Atom("d")
-
-	phi = op.Mod(b ,"a")
-	psi = op.Mod(b ,"a")
-
-
-	entailment = sc.Entailment([phi],[], [psi], [])
-	print(entailment.toString())
-	val=entailment.solve()
-
-	print(val)
-
-	#if val:
-
-		#interpolant= entailment.calcInterpolant()
-		#print("final interpolant:"+ interpolant.toString())
-		#print("check: ", entailment.checkInterpolant(phi, psi, interpolant))
-
-	print("__________________________________")
-
 	b = basics.Atom("b")
 	d = basics.Atom("d")
 
@@ -108,15 +85,41 @@ def main():
 
 	print(val)
 
-	#if val:
+	if val:
 
-		#interpolant= entailment.calcInterpolant()
-		#print("final interpolant:"+ interpolant.toString())
-		#print("check: ", entailment.checkInterpolant(phi, psi, interpolant))
+		interpolant= entailment.calcInterpolant()
+		print("final interpolant:"+ interpolant.toString())
+		print("check: ", entailment.checkInterpolant(phi, psi, interpolant))
 
-
+	entailment.latexProofAux()
 
 	"""
+	print("__________________________________")
+
+	p = basics.Atom("p")
+	q = basics.Atom("q")
+	r = basics.Atom("r")
+
+	phi = op.Conj(op.Mod(op.Mod(p)), op.Mod(op.Mod(q)))
+	psi = op.Mod(op.Disj(op.Mod(q),op.Mod(r)))
+
+
+	entailment = sc.Entailment([phi],[], [psi], [])
+	print(entailment.toString())
+	val=entailment.solve()
+
+	print(val)
+
+	if val:
+
+		interpolant= entailment.calcInterpolant()
+		print("final interpolant:"+ interpolant.toString())
+		print("check: ", entailment.checkInterpolant(phi, psi, interpolant))
+
+	entailment.latexProofAux()
+
+	print("__________________________________")
+
 
 	entailment=F.randomGen(5, 3)
 
@@ -142,6 +145,7 @@ def main():
 
 
 	"""
+
 
 
 if __name__ == '__main__':

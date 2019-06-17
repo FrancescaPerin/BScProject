@@ -34,154 +34,140 @@ class Entailment:
 
 
 	def solve(self):
-		# right rules
-
-		#modality rule check first before other operators
-		all_Mod=LMod.canApply(self.getPremises(),self.getConclusions())
-
-		# right rules
-		r_Lconjs = RConj.canApply(self.getLeftConclusions())
-		r_Rconjs = RConj.canApply(self.getRightConclusions())
-
-		r_Ldisj = RDisj.canApply(self.getLeftConclusions())
-		r_Rdisj = RDisj.canApply(self.getRightConclusions())
-
-		r_Limpl = RImpl.canApply(self.getLeftConclusions())
-		r_Rimpl = RImpl.canApply(self.getRightConclusions())
-
-		r_Lneg = RNeg.canApply(self.getLeftConclusions())
-		r_Rneg = RNeg.canApply(self.getRightConclusions())
-
-
-		l_Lconjs = LConj.canApply(self.getLeftPremises())
-		l_Rconjs = LConj.canApply(self.getRightPremises())
-
-		l_Ldisj = LDisj.canApply(self.getLeftPremises())
-		l_Rdisj = LDisj.canApply(self.getRightPremises())
-
-		l_Limpl = LImpl.canApply(self.getLeftPremises())
-		l_Rimpl = LImpl.canApply(self.getRightPremises())
-
-		l_Lneg = LNeg.canApply(self.getLeftPremises())
-		l_Rneg = LNeg.canApply(self.getRightPremises())
-
-		#weakening rule chack if to be applied
-		weakening=Weak.canApply(self.getPremises(),self.getConclusions())
-
-		#check if:
-		#modality rule can be applied
-		if(all_Mod):
-			self.__children, self.__modsymbol = LMod.step(self, self.getLeftConclusions(), self.getRightConclusions())
-			print("children:"+self.__children[0].toString())
-			self.__rule=LMod.interpolate
-			self.__side=True
-
-		#conjunction right rule (conclusions) can be applied to left part (before semicolon)
-		elif(any(r_Lconjs)):
-			self.__children = RConj.stepLeft(self, self.getLeftConclusions()[r_Lconjs.index(True)])
-			self.__rule=RConj.interpolate
-			self.__side=True
-
-		#conjunction right rule (conclusions) can be applied to right (after semicolon)
-		elif(any(r_Rconjs)):
-			self.__children = RConj.stepRight(self, self.getRightConclusions()[r_Rconjs.index(True)])
-			self.__rule=RConj.interpolate
-			self.__side=False
-
-		#disjunction right rule (conclusions) can be applied to left
-		elif(any(r_Ldisj)):
-			self.__children = RDisj.stepLeft(self, self.getLeftConclusions()[r_Ldisj.index(True)])
-			self.__rule=RDisj.interpolate
-			self.__side=True
-
-		#disjunction right rule (conclusions) can be applied to right
-		elif(any(r_Rdisj)):
-			self.__children = RDisj.stepRight(self, self.getRightConclusions()[r_Rdisj.index(True)])
-			self.__rule= RDij.interpolate
-			self.__side=False
-
-		elif(any(r_Limpl)):
-			self.__children = RImpl.stepLeft(self, self.getLeftConclusions()[r_Limpl.index(True)])
-			self.__rule= RImpl.interpolate
-			self.__side=True
-
-		elif(any(r_Rimpl)):
-			self.__children = RImpl.stepRight(self, self.getRightConclusions()[r_Rimpl.index(True)])
-			self.__rule= RImpl.interpolant
-			self.__side=False
-
-		elif(any(r_Lneg)):
-			self.__children = RNeg.stepLeft(self, self.getLeftConclusions()[r_Lneg.index(True)])
-			self.__rule= RNeg.interpolate
-			self.__side=True
-
-		elif(any(r_Rneg)):
-			self.__children = RNeg.stepRight(self, self.getRightConclusions()[r_Rneg.index(True)])
-			self.__rule= RNeg.interpolate
-			self.__side=False
-		# left rules
-
-		elif(any(l_Lconjs)):
-			self.__children = LConj.stepLeft(self, self.getLeftPremises()[l_Lconjs.index(True)])
-			self.__rule= LConj.interpolate
-			self.__side=True
-
-		elif(any(l_Rconjs)):
-			self.__children = LConj.stepRight(self, self.getRightPremises()[l_Rconjs.index(True)])
-			self.__rule= LConj.interpolate
-			self.__side=False
-
-		elif(any(l_Ldisj)):
-			self.__children = LDisj.stepLeft(self, self.getLeftPremises()[l_Ldisj.index(True)])
-			self.__rule= LDisj.interpolate
-			self.__side=True
-
-		elif(any(l_Rdisj)):
-			self.__children = LDisj.stepRight(self, self.getRightPremises()[l_Rdisj.index(True)])
-			self.__rule= LDisj.interpolate
-			self.__side=False
-
-		elif(any(l_Limpl)):
-			self.__children = LImpl.stepLeft(self, self.getLeftPremises()[l_Limpl.index(True)])
-			self.__rule= LImpl.interpolate
-			self.__side=True
-
-		elif(any(l_Rimpl)):
-			self.__children = LImpl.stepRight(self, self.getRightPremises()[l_Rimpl.index(True)])
-			self.__rule= LImpl.interpolate
-			self.__side=False
-
-		elif(any(l_Lneg)):
-			self.__children = LNeg.stepLeft(self, self.getLeftPremises()[l_Lneg.index(True)])
-			self.__rule= LNeg.interpolate
-			self.__side=True
-
-		elif(any(l_Rneg)):
-			self.__children = LNeg.stepRight(self, self.getRightPremises()[l_Rneg.index(True)])
-			self.__rule= LNeg.interpolate
-			self.__side=False
-
-		#weakening rule can be applied
-		elif (weakening):
-			self.__children = Weak.step(self, self.getLeftConclusions(), self.getRightConclusions())
-			self.__rule= Weak.interpolate
-			self.__side=True
-
-
-		print("proof:"+self.toString())
-
-		if self.__children== None:
-			print ("HERE")
-			return False
-
-		elif len(self.__children)>0:
-			return True
-
 
 		for premise in self.getPremises():
 			if premise in self.getConclusions():
 				return True
 
+		#check if:
+
+		#right rules who have only one children
+
+		#disjunction right rule (conclusions) can be applied to left
+		if(any(RDisj.canApply(self.getLeftConclusions()))):
+			r_Ldisj=RDisj.canApply(self.getLeftConclusions())
+			self.__children = RDisj.stepLeft(self, self.getLeftConclusions()[r_Ldisj.index(True)])
+			self.__rule=RDisj.interpolate
+			self.__side=True
+
+		#disjunction right rule (conclusions) can be applied to right
+		elif(any(RDisj.canApply(self.getRightConclusions()))):
+			r_Rdisj=RDisj.canApply(self.getRightConclusions())
+			self.__children = RDisj.stepRight(self, self.getRightConclusions()[r_Rdisj.index(True)])
+			self.__rule= RDij.interpolate
+			self.__side=False
+
+		elif(any(RImpl.canApply(self.getLeftConclusions()))):
+			r_Limpl= RImpl.canApply(self.getLeftConclusions())
+			self.__children = RImpl.stepLeft(self, self.getLeftConclusions()[r_Limpl.index(True)])
+			self.__rule= RImpl.interpolate
+			self.__side=True
+
+		elif(any(RImpl.canApply(self.getRightConclusions()))):
+			r_Rimpl=RImpl.canApply(self.getRightConclusions())
+			self.__children = RImpl.stepRight(self, self.getRightConclusions()[r_Rimpl.index(True)])
+			self.__rule= RImpl.interpolant
+			self.__side=False
+
+		elif(any(RNeg.canApply(self.getLeftConclusions()))):
+			r_Lneg=RNeg.canApply(self.getLeftConclusions())
+			self.__children = RNeg.stepLeft(self, self.getLeftConclusions()[r_Lneg.index(True)])
+			self.__rule= RNeg.interpolate
+			self.__side=True
+
+		elif(any(RNeg.canApply(self.getRightConclusions()))):
+			r_Rneg=RNeg.canApply(self.getRightConclusions())
+			self.__children = RNeg.stepRight(self, self.getRightConclusions()[r_Rneg.index(True)])
+			self.__rule= RNeg.interpolate
+			self.__side=False
+
+		# left rules who create only one children
+
+		elif(any(LConj.canApply(self.getLeftPremises()))):
+			l_Lconjs=LConj.canApply(self.getLeftPremises())
+			self.__children = LConj.stepLeft(self, self.getLeftPremises()[l_Lconjs.index(True)])
+			self.__rule= LConj.interpolate
+			self.__side=True
+
+		elif(any(LConj.canApply(self.getRightPremises()))):
+			l_Rconjs=LConj.canApply(self.getRightPremises())
+			self.__children = LConj.stepRight(self, self.getRightPremises()[l_Rconjs.index(True)])
+			self.__rule= LConj.interpolate
+			self.__side=False
+
+		elif(any(LNeg.canApply(self.getLeftPremises()))):
+			l_Lneg=LNeg.canApply(self.getLeftPremises())
+			self.__children = LNeg.stepLeft(self, self.getLeftPremises()[l_Lneg.index(True)])
+			self.__rule= LNeg.interpolate
+			self.__side=True
+
+		elif(any(LNeg.canApply(self.getRightPremises()))):
+			l_Rneg=LNeg.canApply(self.getRightPremises())
+			self.__children = LNeg.stepRight(self, self.getRightPremises()[l_Rneg.index(True)])
+			self.__rule= LNeg.interpolate
+			self.__side=False
+
+		#right rules which produce two childrens
+		#conjunction right rule (conclusions) can be applied to left part (before semicolon)
+		elif(any(RConj.canApply(self.getLeftConclusions()))):
+			r_Lconj=RConj.canApply(self.getLeftConclusions())
+			self.__children = RConj.stepLeft(self, self.getLeftConclusions()[r_Lconjs.index(True)])
+			self.__rule=RConj.interpolate
+			self.__side=True
+
+		#conjunction right rule (conclusions) can be applied to right (after semicolon)
+		elif(any(RConj.canApply(self.getRightConclusions()))):
+			r_Rconjs=RConj.canApply(self.getRightConclusions())
+			self.__children = RConj.stepRight(self, self.getRightConclusions()[r_Rconjs.index(True)])
+			self.__rule=RConj.interpolate
+			self.__side=False
+
+		#left rules which produce two childrens
+		elif(any(LDisj.canApply(self.getLeftPremises()))):
+			l_Ldisj= LDisj.canApply(self.getLeftPremises())
+			self.__children = LDisj.stepLeft(self, self.getLeftPremises()[l_Ldisj.index(True)])
+			self.__rule= LDisj.interpolate
+			self.__side=True
+
+		elif(any(LDisj.canApply(self.getRightPremises()))):
+			l_Rdisj=LDisj.canApply(self.getRightPremises())
+			self.__children = LDisj.stepRight(self, self.getRightPremises()[l_Rdisj.index(True)])
+			self.__rule= LDisj.interpolate
+			self.__side=False
+
+		elif(any(LImpl.canApply(self.getLeftPremises()))):
+			l_Limpl=LImpl.canApply(self.getLeftPremises())
+			self.__children = LImpl.stepLeft(self, self.getLeftPremises()[l_Limpl.index(True)])
+			self.__rule= LImpl.interpolate
+			self.__side=True
+
+		elif(any(LImpl.canApply(self.getRightPremises()))):
+			l_Rimpl=LImpl.canApply(self.getRightPremises())
+			self.__children = LImpl.stepRight(self, self.getRightPremises()[l_Rimpl.index(True)])
+			self.__rule= LImpl.interpolate
+			self.__side=False
+
+		#modality rule can be applied
+		elif(LMod.canApply(self.getPremises(),self.getConclusions())):
+			self.__children, self.__modsymbol = LMod.step(self, self.getLeftConclusions(), self.getRightConclusions())
+			self.__rule=LMod.interpolate
+			self.__side=True
+
+		#weakening rule can be applied
+		elif (Weak.canApply(self.getPremises(),self.getConclusions())):
+			self.__children = Weak.step(self, self.getLeftConclusions(), self.getRightConclusions())
+			self.__rule= Weak.interpolate
+			self.__side=True
+
+		if self.__children== None:
+			#print ("NOT provable because children is None:", self.toString())
+			return False
+
+		elif len(self.__children)>0:
+			#print ("provable:", self.toString())
+			return True
+
+		#print("no rule could be applied, hence this is not provable:", self.toString())
 		return False
 
 	def getRightPremises(self):
@@ -221,8 +207,8 @@ class Entailment:
 		self.__rConclusions=conclusionL
 		return self
 
-	def addPremL(self, new, index):
-		self.__lPremises.insert(index,new)
+	def addPremL(self, new):
+		self.__lPremises.append(new)
 
 	def addPremR(self, new):
 		self.__rPremises.append(new)
@@ -233,6 +219,18 @@ class Entailment:
 	def addConcR(self, new):
 		self.__rConclusions.append(new)
 
+	def removePremL(self, old):
+		self.__lPremises.remove(old)
+
+	def removePremR(self, old):
+		self.__rPremises.remove(old)
+
+	def removeConcL(self, old):
+		self.__lConclusions.remove(old)
+
+	def removeConcR(self, old):
+		self.__rConclusions.remove(old)
+
 	@staticmethod
 	def copyEntailment(entailment):
 
@@ -241,9 +239,7 @@ class Entailment:
 		cLeftConcl=copy.copy(entailment.getLeftConclusions())
 		cRightConcl=copy.copy(entailment.getRightConclusions())
 
-		after=Entailment(cLeftPremises, cRightPremises, cLeftConcl, cRightConcl)
-
-		return after
+		return Entailment(cLeftPremises, cRightPremises, cLeftConcl, cRightConcl)
 
 	def toString(self):
 
@@ -290,16 +286,14 @@ class Entailment:
 
 		return (a + " ; " + c + " |- " + b + " ; " + d )
 
+#TODO CHECK THIS FUNCTION
 	def isAxiom(self):
 
 		if len(self.__children)==0:
-			print ("HERE2"+ self.toString())
 			return True
 		elif self.__children==None:
-			print ("HERE2"+ self.toString())
 			return True
 		elif len(self.__children)>0:
-			print ("HERE3"+ self.toString())
 			return False
 
 	def axiomInterpolant(self):
@@ -386,6 +380,9 @@ class Entailment:
 				self.__latex+=r"\RightLabel{$ Mod "+ self.__modsymbol +"$}"+"\n"
 				self.__latex+=r"\UnaryInfC{$"+ self.convertSymbols(self.__rule(interpolants, self.__side, self.__modsymbol))+ "$}"+"\n"
 
+			elif(self.__rule.__qualname__[:-12]=="Weak"):
+				self.__latex+=r"\RightLabel{$ Weakening $}"+"\n"
+				self.__latex+=r"\UnaryInfC{$"+ self.convertSymbols(self.__rule(interpolants, self.__side, self.__modsymbol))+ "$}"+"\n"
 			else:
 				self.__latex+=r"\RightLabel{$"+ self.convertRule(self.__side)+ "$}"+"\n"
 				self.__latex+=r"\UnaryInfC{$"+ self.convertSymbols(self.__rule(interpolants, self.__side))+ "$}"+"\n"
@@ -396,7 +393,7 @@ class Entailment:
 
 			print(self.__rule(interpolants, self.__side).toString())
 
-		if(self.__rule.__qualname__[:-12]=="LMod"):
+		if((self.__rule.__qualname__[:-12]=="LMod")|(self.__rule.__qualname__[:-12]=="Weak")):
 			print(self.__rule(interpolants, self.__side, self.__modsymbol).toString())
 			print(" ")
 			return self.__rule(interpolants, self.__side, self.__modsymbol)
@@ -1011,8 +1008,6 @@ class LMod(MRule):
 				new.getLeftPremises()[index]=new.getLeftPremises()[index].getOperand()
 				index += 1
 
-		print("new:"+new.toString())
-		print("#"+str(new.solve()))
 		if not new.solve():
 			return None,None;
 
@@ -1030,63 +1025,41 @@ class Weak(MRule):
 	@staticmethod
 	def canApply(premises,conclusions):
 
-		for conclusion in conclusions:
-			if not isinstance(conclusion, op.Mod):
-				return False
-
-		for premise in premises:
-			if not isinstance(premise, op.Mod):
-				return False
-
-		for conclusion in conclusions:
-			found = False
-			for premise in premises:
-				if premise.getSymbol() == conclusion.getSymbol():
-					found = True
-					break
-
-			if not found:
-				return False
-
-		return True
+		return ((premises != []) | (conclusions != []))
 
 	@staticmethod
 	def step(entailment, lC, rC):
 
-		division = {}
+		possibleWeakenings = []
 
 		for conclusion in entailment.getConclusions():
 
-			division[conclusion.getSymbol()] = {}
+			w = entailment.copyEntailment(entailment)
 
 			if conclusion in entailment.getLeftConclusions():
-				division[conclusion.getSymbol()]["lC"] = [copy.deepcopy(conclusion)]
-				division[conclusion.getSymbol()]["rC"] = []
+				w.removeConcL(conclusion)
 			else:
-				division[conclusion.getSymbol()]["rC"] = [copy.deepcopy(conclusion)]
-				division[conclusion.getSymbol()]["lC"] = []
+				w.removeConcR(conclusion)
 
-			division[conclusion.getSymbol()]["lP"] = []
-			division[conclusion.getSymbol()]["rP"] = []
+			possibleWeakenings.append(w)
 
-			for premise in entailment.getLeftPremises():
-				if premise.getSymbol() == conclusion.getSymbol():
-					division[conclusion.getSymbol()]["lP"].append(copy.deepcopy(premise))
+		for premise in entailment.getLeftPremises():
 
-			for premise in entailment.getRightPremises():
-				if premise.getSymbol() == conclusion.getSymbol():
-					division[conclusion.getSymbol()]["rP"].append(copy.deepcopy(premise))
+			w = entailment.copyEntailment(entailment)
 
+			if premise in entailment.getLeftPremises():
+				w.removePremL(premise)
+			else:
+				w.removePremR(premise)
 
-		for symbol, item in division.items():
-			print(symbol, item["lP"])
+			possibleWeakenings.append(w)
 
-		for symbol, subdivision in division.items():
-
-			new = Entailment(subdivision["lP"], subdivision["rP"], subdivision["lC"], subdivision["rC"])
-			print("entailment"+ new.toString())
-			if new.solve():
-				return [new]
+		i = 0
+		for w in possibleWeakenings:
+			i += 1
+			#print("trying weakening", i, "out of", len(possibleWeakenings))
+			if w.solve():
+				return [w]
 
 		return None;
 

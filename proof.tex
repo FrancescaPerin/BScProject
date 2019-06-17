@@ -6,20 +6,12 @@
 
 
 
-
-\AxiomC{$p, q ;  \overset{q}{\vdash} q ; $}
-\RightLabel{$ Mod []$}
-\UnaryInfC{$[](p), [](q) ;  \overset{[](q)}{\vdash} [](q) ; $}
-
-
-\AxiomC{$p, q ;  \overset{p}{\vdash} p ; $}
-\RightLabel{$ Mod []$}
-\UnaryInfC{$[](p), [](q) ;  \overset{[](p)}{\vdash} [](p) ; $}
-\RightLabel{$R\land_{+}$}
-\BinaryInfC{$[](p), [](q) ;  \overset{([](q) \land [](p))}{\vdash} ([](q) \land [](p)) ; $}
-\RightLabel{$ Mod []$}
-\UnaryInfC{$[]([](p)), []([](q)) ;  \overset{[](([](q) \land [](p)))}{\vdash} [](([](q) \land [](p))) ; $}
+\AxiomC{$b ;  \overset{b}{\vdash} b ; $}
+\RightLabel{$ Mod [a]$}
+\UnaryInfC{$[a](b) ;  \overset{[a](b)}{\vdash} [a](b) ; $}
+\RightLabel{$ Weakening $}
+\UnaryInfC{$[a](b), [b](d) ;  \overset{[a](b)}{\vdash} [a](b) ; $}
 \RightLabel{$L\land_{+}$}
-\UnaryInfC{$([]([](p)) \land []([](q))) ;  \overset{[](([](q) \land [](p)))}{\vdash} [](([](q) \land [](p))) ; $}
+\UnaryInfC{$([a](b) \land [b](d)) ;  \overset{[a](b)}{\vdash} [a](b) ; $}
 \end{prooftree}
 \end{document}
