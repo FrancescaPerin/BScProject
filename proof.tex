@@ -4,13 +4,7 @@
 \begin{document}
 \begin{prooftree}
 
-
-
-\AxiomC{$b ;  \overset{b}{\vdash} b ; $}
-\RightLabel{$ Mod [a]$}
-\UnaryInfC{$[a](b) ;  \overset{[a](b)}{\vdash} [a](b) ; $}
-\RightLabel{$ Weakening $}
-\UnaryInfC{$[a](b), [b](d) ;  \overset{[a](b)}{\vdash} [a](b) ; $}
+\AxiomC{$[a](b), [b](d) ;  \overset{[a](b)}{\vdash} [a](b) ; $}
 \RightLabel{$L\land_{+}$}
 \UnaryInfC{$([a](b) \land [b](d)) ;  \overset{[a](b)}{\vdash} [a](b) ; $}
 \end{prooftree}

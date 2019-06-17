@@ -36,8 +36,13 @@ class Entailment:
 	def solve(self):
 
 		for premise in self.getPremises():
-			if premise in self.getConclusions():
-				return True
+			print("premise: "+premise.toString())
+			for conclusion in self.getConclusions():
+				print("conclusion: "+conclusion.toString())
+
+				if premise.toString()==conclusion.toString():
+					print("is axiom")
+					return True
 
 		#check if:
 
@@ -299,67 +304,74 @@ class Entailment:
 	def axiomInterpolant(self):
 
 		interpolants=None
+		for premise in self.getPremises():
+			for conclusion in self.getConclusions():
+
+				if premise.toString()==conclusion.toString():
+
+					interpolants=premise
+
+					self.__latex=r"\AxiomC{$"+self.convertSymbols(interpolants)+"$}\n"
+
+					print("")
+					print("Axiom  " + self.toString() + " ")
+					print (interpolants.toString())
+					print(" ")
+
+					return interpolants
+
+
+		for premise in self.getRightPremises():
+			for conclusion in self.getRightConclusions():
+
+				if premise.toString()==conclusion.toString():
+
+
+					interpolants=op.Not(premise)
+
+					self.__latex=r"\AxiomC{$"+self.convertSymbols(interpolants)+"$}\n"
+
+					print("")
+					print("Axiom  " + self.toString() + " ")
+					print (interpolants.toString())
+					print(" ")
+
+					return interpolants
+
 		for premise in self.getLeftPremises():
+			for conclusion in self.getRightConclusions():
 
-			if premise in self.getLeftConclusions():
+				if premise.toString()==conclusion.toString():
 
-				interpolants=premise
+					interpolants=basics.Atom("False")
+					interpolants.setValue(False)
 
-				self.__latex=r"\AxiomC{$"+self.convertSymbols(interpolants)+"$}\n"
+					self.__latex+=r"\AxiomC{$"+self.convertSymbols(interpolants)+"$}\n"
 
-				print("")
-				print("Axiom  " + self.toString() + " ")
-				print (interpolants.toString())
-				print(" ")
+					print("")
+					print("Axiom :" + self.toString())
+					print(interpolants.toString())
+					print("")
 
-				return interpolants
-
+					return interpolants
 
 		for premise in self.getRightPremises():
 
-			if premise in self.getRightConclusions():
+			for conclusion in self.getLeftConclusions():
 
-				interpolants=op.Not(premise)
+				if premise.toString()==conclusion.toString():
 
-				self.__latex=r"\AxiomC{$"+self.convertSymbols(interpolants)+"$}\n"
+					interpolants=basics.Atom("True")
+					interpolants.setValue(True)
 
-				print("")
-				print("Axiom  " + self.toString() + " ")
-				print (interpolants.toString())
-				print(" ")
+					self.__latex+=r"\AxiomC{$"+self.convertSymbols(interpolants)+"$}"+"\n"
 
-				return interpolants
+					print("")
+					print("Axiom :" + self.toString())
+					print(interpolants.toString())
+					print("")
 
-		for premise in self.getLeftPremises():
-
-			if premise in self.getRightConclusions():
-				interpolants=basics.Atom("False")
-				interpolants.setValue(False)
-
-				self.__latex+=r"\AxiomC{$"+self.convertSymbols(interpolants)+"$}\n"
-
-				print("")
-				print("Axiom :" + self.toString())
-				print(interpolants.toString())
-				print("")
-
-				return interpolants
-
-		for premise in self.getRightPremises():
-
-			if premise in self.getLeftConclusions():
-
-				interpolants=basics.Atom("True")
-				interpolants.setValue(True)
-
-				self.__latex+=r"\AxiomC{$"+self.convertSymbols(interpolants)+"$}"+"\n"
-
-				print("")
-				print("Axiom :" + self.toString())
-				print(interpolants.toString())
-				print("")
-
-				return interpolants
+					return interpolants
 
 		return interpolants
 
