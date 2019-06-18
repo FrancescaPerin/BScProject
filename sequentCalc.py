@@ -400,11 +400,11 @@ class Entailment:
 				self.__latex+=r"\UnaryInfC{$"+ self.convertSymbols(self.__rule(interpolants, self.__side, self.__modsymbol))+ "$}"+"\n"
 
 			elif(self.__rule.__qualname__[:-12]=="Semicolon"):
-				self.__latex+=r"\RightLabel{$ Semicolon $}"+"\n"
+				self.__latex+=r"\RightLabel{$ ; $}"+"\n"
 				self.__latex+=r"\UnaryInfC{$"+ self.convertSymbols(self.__rule(interpolants, self.__side, self.__modsymbol))+ "$}"+"\n"
 
 			elif(self.__rule.__qualname__[:-12]=="UnionL"):
-				self.__latex+=r"\RightLabel{$ Union L$}"+"\n"
+				self.__latex+=r"\RightLabel{$ \cup L$}"+"\n"
 				self.__latex+=r"\UnaryInfC{$"+ self.convertSymbols(self.__rule(interpolants, self.__side, self.__modsymbol))+ "$}"+"\n"
 
 			else:
@@ -414,7 +414,7 @@ class Entailment:
 		if (len(self.__children))==2:
 
 			if(self.__rule.__qualname__[:-12]=="UnionR"):
-				self.__latex+=r"\RightLabel{$ Union R$}"+"\n"
+				self.__latex+=r"\RightLabel{$ \cup R$}"+"\n"
 				self.__latex+=r"\BinaryInfC{$"+ self.convertSymbols(self.__rule(interpolants, self.__side, self.__modsymbol))+ "$}"+"\n"
 				print(self.__rule(interpolants, self.__side, self.__modsymbol).toString())
 				print(" ")

@@ -76,7 +76,7 @@ def main():
 	d = basics.Atom("d")
 
 	phi = op.Mod(b ,"aUb")
-	psi = op.Disj(op.Mod(b ,"a"),op.Mod(b, "b"))
+	psi = op.Mod(b ,"b")
 
 	entailment = sc.Entailment([phi],[], [psi], [])
 	print(entailment.toString())
