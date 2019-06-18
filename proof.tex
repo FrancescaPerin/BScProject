@@ -4,8 +4,11 @@
 \begin{document}
 \begin{prooftree}
 
-\AxiomC{$[a](b), [b](d) ;  \overset{[a](b)}{\vdash} [a](b) ; $}
-\RightLabel{$L\land_{+}$}
-\UnaryInfC{$([a](b) \land [b](d)) ;  \overset{[a](b)}{\vdash} [a](b) ; $}
+
+\AxiomC{$[a](b), [b](b) ;  \overset{[a](b)}{\vdash} [a](b), [b](b) ; $}
+\RightLabel{$ Union L$}
+\UnaryInfC{$[aUb](b) ;  \overset{[a](b)}{\vdash} [a](b), [b](b) ; $}
+\RightLabel{$R\lor_{+}$}
+\UnaryInfC{$[aUb](b) ;  \overset{[a](b)}{\vdash} ([a](b) \lor [b](b)) ; $}
 \end{prooftree}
 \end{document}

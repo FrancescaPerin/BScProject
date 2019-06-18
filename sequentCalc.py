@@ -35,13 +35,12 @@ class Entailment:
 
 	def solve(self):
 
+		print("proof:"+self.toString())
+
 		for premise in self.getPremises():
-			print("premise: "+premise.toString())
 			for conclusion in self.getConclusions():
-				print("conclusion: "+conclusion.toString())
 
 				if premise.toString()==conclusion.toString():
-					print("is axiom")
 					return True
 
 		#check if:
@@ -115,7 +114,7 @@ class Entailment:
 		#right rules which produce two childrens
 		#conjunction right rule (conclusions) can be applied to left part (before semicolon)
 		elif(any(RConj.canApply(self.getLeftConclusions()))):
-			r_Lconj=RConj.canApply(self.getLeftConclusions())
+			r_Lconjs=RConj.canApply(self.getLeftConclusions())
 			self.__children = RConj.stepLeft(self, self.getLeftConclusions()[r_Lconjs.index(True)])
 			self.__rule=RConj.interpolate
 			self.__side=True
@@ -157,6 +156,22 @@ class Entailment:
 			self.__children, self.__modsymbol = LMod.step(self, self.getLeftConclusions(), self.getRightConclusions())
 			self.__rule=LMod.interpolate
 			self.__side=True
+
+		#semicolon rule can be applied
+		elif (Semicolon.canApply(self.getPremises(),self.getConclusions())):
+			self.__children = Semicolon.step(self, self.getLeftConclusions(), self.getRightConclusions())
+			self.__rule= Semicolon.interpolate
+			self.__side=True
+
+		elif (UnionL.canApply(self.getPremises(),self.getConclusions())):
+			self.__children = UnionL.step(self, self.getLeftConclusions(), self.getRightConclusions())
+			self.__rule= UnionL.interpolate
+			self.__side=True
+
+		elif (UnionR.canApply(self.getPremises(),self.getConclusions())):
+			self.__children = UnionR.step(self, self.getLeftConclusions(), self.getRightConclusions())
+			self.__rule= UnionR.interpolate
+			self.__side=False
 
 		#weakening rule can be applied
 		elif (Weak.canApply(self.getPremises(),self.getConclusions())):
@@ -223,18 +238,6 @@ class Entailment:
 
 	def addConcR(self, new):
 		self.__rConclusions.append(new)
-
-	def removePremL(self, old):
-		self.__lPremises.remove(old)
-
-	def removePremR(self, old):
-		self.__rPremises.remove(old)
-
-	def removeConcL(self, old):
-		self.__lConclusions.remove(old)
-
-	def removeConcR(self, old):
-		self.__rConclusions.remove(old)
 
 	@staticmethod
 	def copyEntailment(entailment):
@@ -395,20 +398,37 @@ class Entailment:
 			elif(self.__rule.__qualname__[:-12]=="Weak"):
 				self.__latex+=r"\RightLabel{$ Weakening $}"+"\n"
 				self.__latex+=r"\UnaryInfC{$"+ self.convertSymbols(self.__rule(interpolants, self.__side, self.__modsymbol))+ "$}"+"\n"
+
+			elif(self.__rule.__qualname__[:-12]=="Semicolon"):
+				self.__latex+=r"\RightLabel{$ Semicolon $}"+"\n"
+				self.__latex+=r"\UnaryInfC{$"+ self.convertSymbols(self.__rule(interpolants, self.__side, self.__modsymbol))+ "$}"+"\n"
+
+			elif(self.__rule.__qualname__[:-12]=="UnionL"):
+				self.__latex+=r"\RightLabel{$ Union L$}"+"\n"
+				self.__latex+=r"\UnaryInfC{$"+ self.convertSymbols(self.__rule(interpolants, self.__side, self.__modsymbol))+ "$}"+"\n"
+
 			else:
 				self.__latex+=r"\RightLabel{$"+ self.convertRule(self.__side)+ "$}"+"\n"
 				self.__latex+=r"\UnaryInfC{$"+ self.convertSymbols(self.__rule(interpolants, self.__side))+ "$}"+"\n"
 
 		if (len(self.__children))==2:
-			self.__latex+=r"\RightLabel{$"+ self.convertRule(self.__side)+ "$}"+"\n"
-			self.__latex+=r"\BinaryInfC{$"+ self.convertSymbols(self.__rule(interpolants, self.__side))+ "$}"+"\n"
 
-			print(self.__rule(interpolants, self.__side).toString())
+			if(self.__rule.__qualname__[:-12]=="UnionR"):
+				self.__latex+=r"\RightLabel{$ Union R$}"+"\n"
+				self.__latex+=r"\BinaryInfC{$"+ self.convertSymbols(self.__rule(interpolants, self.__side, self.__modsymbol))+ "$}"+"\n"
+				print(self.__rule(interpolants, self.__side, self.__modsymbol).toString())
+				print(" ")
 
-		if((self.__rule.__qualname__[:-12]=="LMod")|(self.__rule.__qualname__[:-12]=="Weak")):
-			print(self.__rule(interpolants, self.__side, self.__modsymbol).toString())
-			print(" ")
-			return self.__rule(interpolants, self.__side, self.__modsymbol)
+			else:
+				self.__latex+=r"\RightLabel{$"+ self.convertRule(self.__side)+ "$}"+"\n"
+				self.__latex+=r"\BinaryInfC{$"+ self.convertSymbols(self.__rule(interpolants, self.__side))+ "$}"+"\n"
+
+				print(self.__rule(interpolants, self.__side).toString())
+
+		if((self.__rule.__qualname__[:-12]=="LMod")|(self.__rule.__qualname__[:-12]=="Weak")|(self.__rule.__qualname__[:-12]=="Semicolon")|(self.__rule.__qualname__[:-12]=="UnionL")|(self.__rule.__qualname__[:-12]=="UnionR")):
+				print(self.__rule(interpolants, self.__side, self.__modsymbol).toString())
+				print(" ")
+				return self.__rule(interpolants, self.__side, self.__modsymbol)
 		else:
 			print(self.__rule(interpolants, self.__side).toString())
 
@@ -752,7 +772,8 @@ class LConj(LRule):
 
 	@staticmethod
 	def canApply(premises):
-		return ([premise.getSymbol() == pars.CONJ_SYMBOL for premise in premises])
+
+		return[premise.getSymbol() == pars.CONJ_SYMBOL for premise in premises]
 
 	@staticmethod
 	def stepLeft(entailment, premise):
@@ -1046,35 +1067,358 @@ class Weak(MRule):
 
 		for conclusion in entailment.getConclusions():
 
-			w = entailment.copyEntailment(entailment)
+			new = entailment.copyEntailment(entailment)
 
 			if conclusion in entailment.getLeftConclusions():
-				w.removeConcL(conclusion)
+				new.getLeftConclusions().remove(conclusion)
 			else:
-				w.removeConcR(conclusion)
+				new.getRightConclusions().remove(conclusion)
 
-			possibleWeakenings.append(w)
+			possibleWeakenings.append(new)
 
 		for premise in entailment.getLeftPremises():
 
-			w = entailment.copyEntailment(entailment)
+			new = entailment.copyEntailment(entailment)
 
 			if premise in entailment.getLeftPremises():
-				w.removePremL(premise)
+				new.getLeftPremises().remove(premise)
 			else:
-				w.removePremR(premise)
+				new.getRightPremises().remove(premise)
 
-			possibleWeakenings.append(w)
+			possibleWeakenings.append(new)
 
 		i = 0
-		for w in possibleWeakenings:
+		for new in possibleWeakenings:
 			i += 1
-			#print("trying weakening", i, "out of", len(possibleWeakenings))
-			if w.solve():
-				return [w]
+			if new.solve():
+				return [new]
 
 		return None;
 
 	#interpolant rule if weakening interpolant is not changed
 	def interpolate (interpolant,c,self):
 		return interpolant[0]
+
+class Semicolon(MRule):
+
+	@staticmethod
+	def canApply(premises,conclusions):
+
+
+		for conclusion in premises + conclusions:
+
+			if isinstance(conclusion, op.Mod):
+
+				new=conclusion.getSymbol()
+				new = new[1:-1]
+
+				if new.startswith('(') and new.endswith(')'):
+
+					new = new[1:-1]
+
+				i=[i for i,x in enumerate(new) if x==";"] # => [1, 3]
+
+				for index in i:
+					new1=list(new)
+					list1a=new1[:int(index)]
+					list1b=new1[int(index)+1:]
+
+					sub1 = "("
+					sub2 = ")"
+
+					count1a = list1a.count(sub1)
+					count2a = list1a.count(sub2)
+
+					count1b = list1b.count(sub1)
+					count2b = list1b.count(sub2)
+
+					counta=count1a + count2a
+					countb=count1b + count2b
+
+					if (counta % 2 == 0) and (countb % 2==0):
+						return True
+
+		return False
+
+	@staticmethod
+	def step(entailment, lC, rC):
+
+		new = entailment.copyEntailment(entailment)
+
+		for item in entailment.getPremises() +entailment.getConclusions():
+
+			if isinstance(item, op.Mod):
+
+				newSymb=item.getSymbol()
+				newSymb = newSymb[1:-1]
+
+				if newSymb.startswith('(') and newSymb.endswith(')'):
+
+					newSymb = newSymb[1:-1]
+
+				i=[i for i,x in enumerate(newSymb) if x==";"] # => [1, 3]
+
+				for index in i:
+					newlist=list(newSymb)
+					list1a=newlist[:int(index)]
+					list1b=newlist[int(index)+1:]
+					str1 = ''.join(list1a)
+					str2 = ''.join(list1b)
+
+					sub1 = "("
+					sub2 = ")"
+
+					count1a = list1a.count(sub1)
+					count2a = list1a.count(sub2)
+
+					count1b = list1b.count(sub1)
+					count2b = list1b.count(sub2)
+
+					counta=count1a + count2a
+					countb=count1b + count2b
+
+					if (counta % 2 == 0) and (countb % 2==0):
+
+						if item in entailment.getPremises():
+
+							if item in entailment.getLeftPremises():
+								new.getLeftPremises().remove(item)
+								new.addPremL(op.Mod(op.Mod(item.getOperand(),str2),str1))
+							else:
+								new.getRightPremises().remove(item)
+								new.addPremR(op.Mod(op.Mod(item.getOperand(),str2),str1))
+
+						elif item in entailment.getConclusions():
+
+							if item in entailment.getLeftConclusions():
+								new.getLeftConclusions().remove(item)
+								new.addConcL(op.Mod(op.Mod(item.getOperand(),str2),str1))
+							else:
+								new.getRightConclusions().remove(item)
+								new.addConcR(op.Mod(op.Mod(item.getOperand(),str2),str1))
+
+			if not new.solve():
+				return None;
+
+			return [new]
+
+	#interpolant does not change the Semicolon rule just rewrites the formula in a different fromat
+	def interpolate (interpolant, c, self):
+		return interpolant[0]
+
+class UnionL(MRule):
+
+	@staticmethod
+	def canApply(premises,conclusions):
+
+		for premise in premises:
+
+			if isinstance(premise, op.Mod):
+
+				new=premise.getSymbol()
+				new = new[1:-1]
+
+				if new.startswith('(') and new.endswith(')'):
+
+					new = new[1:-1]
+
+				i=[i for i,x in enumerate(new) if x=="U"] # => [1, 3]
+
+				for index in i:
+					new1=list(new)
+					list1a=new1[:int(index)]
+					list1b=new1[int(index)+1:]
+
+					sub1 = "("
+					sub2 = ")"
+
+					count1a = list1a.count(sub1)
+					count2a = list1a.count(sub2)
+
+					count1b = list1b.count(sub1)
+					count2b = list1b.count(sub2)
+
+					counta=count1a + count2a
+					countb=count1b + count2b
+
+					if (counta % 2 == 0) and (countb % 2==0):
+						return True
+
+		return False
+
+	@staticmethod
+	def step(entailment, lC, rC):
+
+		new = entailment.copyEntailment(entailment)
+
+		for item in entailment.getPremises():
+
+			if isinstance(item, op.Mod):
+
+				newSymb=item.getSymbol()
+				newSymb = newSymb[1:-1]
+
+				if newSymb.startswith('(') and newSymb.endswith(')'):
+
+					newSymb = newSymb[1:-1]
+
+				i=[i for i,x in enumerate(newSymb) if x=="U"] # => [1, 3]
+
+				for index in i:
+					newlist=list(newSymb)
+					list1a=newlist[:int(index)]
+					list1b=newlist[int(index)+1:]
+					str1 = ''.join(list1a)
+					str2 = ''.join(list1b)
+
+					sub1 = "("
+					sub2 = ")"
+
+					count1a = list1a.count(sub1)
+					count2a = list1a.count(sub2)
+
+					count1b = list1b.count(sub1)
+					count2b = list1b.count(sub2)
+
+					counta=count1a + count2a
+					countb=count1b + count2b
+
+					if (counta % 2 == 0) and (countb % 2==0):
+
+						if item in entailment.getLeftPremises():
+							new.getLeftPremises().remove(item)
+							new.addPremL(op.Mod(item.getOperand(),str1))
+							new.addPremL(op.Mod(item.getOperand(),str2))
+
+						else:
+							new.getRightPremises().remove(item)
+							new.addPremR(op.Mod(item.getOperand(),str1))
+							new.addPremR(op.Mod(item.getOperand(),str2))
+
+			if not new.solve():
+				return None;
+
+			return[new]
+
+	#interpolant does not change the Semicolon rule just rewrites the formula in a different fromat
+	def interpolate (interpolant, c, self):
+		return interpolant[0]
+
+class UnionR(MRule):
+
+	@staticmethod
+	def canApply(premises,conclusions):
+
+		for conclusion in conclusions:
+
+			if isinstance(conclusion, op.Mod):
+
+				new=conclusion.getSymbol()
+				new = new[1:-1]
+
+				if new.startswith('(') and new.endswith(')'):
+
+					new = new[1:-1]
+
+				i=[i for i,x in enumerate(new) if x=="U"] # => [1, 3]
+
+				for index in i:
+					new1=list(new)
+					list1a=new1[:int(index)]
+					list1b=new1[int(index)+1:]
+
+					sub1 = "("
+					sub2 = ")"
+
+					count1a = list1a.count(sub1)
+					count2a = list1a.count(sub2)
+
+					count1b = list1b.count(sub1)
+					count2b = list1b.count(sub2)
+
+					counta=count1a + count2a
+					countb=count1b + count2b
+
+					if (counta % 2 == 0) and (countb % 2==0):
+						return True
+
+		return False
+
+	@staticmethod
+	def step(entailment, lC, rC):
+
+		left = entailment.copyEntailment(entailment)
+		right = entailment.copyEntailment(entailment)
+
+		for item in entailment.getConclusions():
+
+			if isinstance(item, op.Mod):
+
+				newSymb=item.getSymbol()
+				newSymb = newSymb[1:-1]
+
+				if newSymb.startswith('(') and newSymb.endswith(')'):
+
+					newSymb = newSymb[1:-1]
+
+				i=[i for i,x in enumerate(newSymb) if x=="U"] # => [1, 3]
+
+				for index in i:
+					newlist=list(newSymb)
+					list1a=newlist[:int(index)]
+					list1b=newlist[int(index)+1:]
+					str1 = ''.join(list1a)
+					str2 = ''.join(list1b)
+
+					print("STR1::::::::"+str1)
+					print("STR2::::::::"+str2)
+
+					sub1 = "("
+					sub2 = ")"
+
+					count1a = list1a.count(sub1)
+					count2a = list1a.count(sub2)
+
+					count1b = list1b.count(sub1)
+					count2b = list1b.count(sub2)
+
+					counta=count1a + count2a
+					countb=count1b + count2b
+
+					if (counta % 2 == 0) and (countb % 2==0):
+
+
+						if item in entailment.getConclusions():
+
+							if item in entailment.getLeftConclusions():
+								left.getLeftConclusions().remove(item)
+								right.getLeftConclusions().remove(item)
+								left.addConcL(op.Mod(item.getOperand(),str1))
+								right.addConcL(op.Mod(item.getOperand(),str2))
+
+								print("left:"+left.toString())
+
+								print("right:"+right.toString())
+
+								return[left, right]
+							else:
+								left.getRightConclusions().remove(item)
+								right.getConclusions().remove(item)
+								left.addConcR(op.Mod(item.getOperand(),str1))
+								right.addConcLR(op.Mod(item.getOperand(),str2))
+
+								print("left:"+left.toString())
+								print("right:"+right.toString())
+
+								return[left, right]
+
+			if (not right.solve() or left.solve()):
+				return None;
+
+	#interpolant does not change the Semicolon rule just rewrites the formula in a different fromat
+	def interpolate (interpolant, c, self):
+		if c:
+			return op.Conj(interpolant[0],interpolant[1])
+		else:
+			return op.Disj(interpolant[0],interpolant[1])
+

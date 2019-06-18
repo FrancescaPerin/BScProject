@@ -75,9 +75,8 @@ def main():
 	b = basics.Atom("b")
 	d = basics.Atom("d")
 
-	phi = op.Conj(op.Mod(b ,"a"), op.Mod(d ,"b"))
-	psi = op.Mod(b ,"a")
-
+	phi = op.Mod(b ,"aUb")
+	psi = op.Disj(op.Mod(b ,"a"),op.Mod(b, "b"))
 
 	entailment = sc.Entailment([phi],[], [psi], [])
 	print(entailment.toString())
@@ -91,7 +90,7 @@ def main():
 		print("final interpolant:"+ interpolant.toString())
 		print("check: ", entailment.checkInterpolant(phi, psi, interpolant))
 
-	entailment.latexProofAux()
+		entailment.latexProofAux()
 
 	"""
 	print("__________________________________")
