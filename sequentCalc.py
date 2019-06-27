@@ -35,14 +35,19 @@ class Entailment:
 
 	def solve(self):
 
-		print("proof:"+self.toString())
-
+		#print("proof:"+self.toString())
 		for premise in self.getPremises():
-			for conclusion in self.getConclusions():
+				for conclusion in self.getConclusions():
+					if premise.toString()==conclusion.toString():
 
-				if premise.toString()==conclusion.toString():
-					return True
+						entailment=self.toString()
 
+						new=entailment.replace("|-","")
+						string="~^|->"
+
+						if not any(elem in new for elem in string):
+
+							return True
 		#check if:
 
 		#right rules who have only one children
@@ -58,7 +63,7 @@ class Entailment:
 		elif(any(RDisj.canApply(self.getRightConclusions()))):
 			r_Rdisj=RDisj.canApply(self.getRightConclusions())
 			self.__children = RDisj.stepRight(self, self.getRightConclusions()[r_Rdisj.index(True)])
-			self.__rule= RDij.interpolate
+			self.__rule= RDisj.interpolate
 			self.__side=False
 
 		elif(any(RImpl.canApply(self.getLeftConclusions()))):
@@ -70,7 +75,7 @@ class Entailment:
 		elif(any(RImpl.canApply(self.getRightConclusions()))):
 			r_Rimpl=RImpl.canApply(self.getRightConclusions())
 			self.__children = RImpl.stepRight(self, self.getRightConclusions()[r_Rimpl.index(True)])
-			self.__rule= RImpl.interpolant
+			self.__rule= RImpl.interpolate
 			self.__side=False
 
 		elif(any(RNeg.canApply(self.getLeftConclusions()))):
@@ -150,6 +155,7 @@ class Entailment:
 			self.__children = LImpl.stepRight(self, self.getRightPremises()[l_Rimpl.index(True)])
 			self.__rule= LImpl.interpolate
 			self.__side=False
+
 
 		#modality rule can be applied
 		elif(LMod.canApply(self.getPremises(),self.getConclusions())):
@@ -297,6 +303,14 @@ class Entailment:
 #TODO CHECK THIS FUNCTION
 	def isAxiom(self):
 
+		entailment=self.toString()
+
+		new=entailment.replace("|-","")
+		string="~^|->"
+
+		if any(elem in new for elem in string):
+			return False
+
 		if len(self.__children)==0:
 			return True
 		elif self.__children==None:
@@ -306,9 +320,9 @@ class Entailment:
 
 	def axiomInterpolant(self):
 
-		interpolants=None
-		for premise in self.getPremises():
-			for conclusion in self.getConclusions():
+		interpolants= None
+		for premise in self.getLeftPremises():
+			for conclusion in self.getLeftConclusions():
 
 				if premise.toString()==conclusion.toString():
 
@@ -646,7 +660,7 @@ class RDisj(RRule):
 
 		new = Entailment.copyEntailment(entailment)
 
-		new.getRigthConclusions().remove(conclusion)
+		new.getRightConclusions().remove(conclusion)
 
 		new.getRightConclusions().append(conclusion.getOperandLeft())
 		new.getRightConclusions().append(conclusion.getOperandRight())

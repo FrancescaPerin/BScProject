@@ -7,7 +7,8 @@ import string
 import sys
 
 binOp = [op.Conj, op.Disj, op.Impl]
-unOp = [op.Not]
+unOp = [op.Not, op.Mod]
+
 
 def atomsIsSubset(phi, psi):
 
@@ -21,6 +22,7 @@ def randomGen(maxLen, nAtoms):
 
 	atoms = []
 	prevSymbols = []
+
 
 	for i in range(nAtoms):
 
@@ -50,10 +52,12 @@ def randomGenAux(maxLen, atoms):
 
 			return op(operand1, operand2)
 
-		else:
+		#elif isinstance(op, op.Mod):
 
+		else:
 			operand = randomGenAux(maxLen-1, atoms)
 			return op(operand)
+
 
 	else:
 
