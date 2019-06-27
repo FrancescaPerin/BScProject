@@ -220,8 +220,8 @@ def main():
 		print ("Number of tested formulas:"+ str(i))
 		print ("Number of valid formulas:"+ str(validFormulas))
 		print ("Number of valid formulas for which interpolant is correct and checked:"+ str(correctInterpolant))
-		print ("count entailment 1 valid"+ str(countE1))
-		print ("count entailment 1 valid"+ str(countE2))
+		print ("count entailment 1 valid: "+ str(countE1))
+		print ("count entailment 1 valid: "+ str(countE2))
 		print("_________________________________________________________________________________________")
 
 
