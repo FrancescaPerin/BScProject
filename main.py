@@ -9,12 +9,13 @@ import basicInterpolant as bi
 def main():
 	"""
 
+	r = basics.Atom("r")
+	p = basics.Atom("p")
 	m = basics.Atom("m")
-	w = basics.Atom("w")
 
 
-	phi = op.Mod(w)
-	psi = op.Impl(op.Conj(m,w),op.Conj(m,w))
+	phi = op.Impl(r,p)
+	psi = op.Disj(op.Impl(p,m),op.Impl(m,p))
 
 
 	entailment = sc.Entailment([phi],[], [psi], [])
@@ -27,9 +28,6 @@ def main():
 	entailment.latexProofAux()
 
 	print("check: ", entailment.checkInterpolant(phi, psi, interpolant))
-
-
-
 
 
 	k = basics.Atom("k")
@@ -198,6 +196,9 @@ def main():
 			interpolant= entailment.calcInterpolant()
 			print("final interpolant:"+ interpolant.toString())
 
+			#if interpolant.simplify():
+				#interpolant=interpolant.simplify()
+
 			entailment1=sc.Entailment([phi],[], [interpolant], [])
 			entailment2=sc.Entailment([interpolant],[], [psi], [])
 
@@ -214,8 +215,12 @@ def main():
 
 				correctInterpolant+=1
 
+			else:
+				entailment.latexProofAux()
+				break
 
-			#entailment.latexProofAux()
+
+
 
 		print ("Number of tested formulas:"+ str(i))
 		print ("Number of valid formulas:"+ str(validFormulas))

@@ -35,7 +35,7 @@ class Entailment:
 
 	def solve(self):
 
-		#print("proof:"+self.toString())
+		print("proof:"+self.toString())
 		for premise in self.getPremises():
 				for conclusion in self.getConclusions():
 					if premise.toString()==conclusion.toString():
@@ -184,6 +184,17 @@ class Entailment:
 			self.__children = Weak.step(self, self.getLeftConclusions(), self.getRightConclusions())
 			self.__rule= Weak.interpolate
 			self.__side=True
+
+
+		for item in self.getConclusions():
+
+			if item.toString()=="True":
+				return True
+
+		for item in self.getPremises():
+
+			if item.toString()=="False":
+				return True
 
 		if self.__children== None:
 			#print ("NOT provable because children is None:", self.toString())

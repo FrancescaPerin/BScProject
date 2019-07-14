@@ -6,14 +6,18 @@
 
 
 
-\AxiomC{$[](w) ; m, w \overset{\top}{\vdash} m ; $}
 
-\AxiomC{$[](w) ; m, w \overset{\top}{\vdash} w ; $}
-\RightLabel{$R\land_{+}$}
-\BinaryInfC{$[](w) ; m, w \overset{(\top \land \top)}{\vdash} (m \land w) ; $}
-\RightLabel{$L\land_{-}$}
-\UnaryInfC{$[](w) ; (m \land w) \overset{(\top \land \top)}{\vdash} (m \land w) ; $}
-\RightLabel{$R\rightarrow_{+}$}
-\UnaryInfC{$[](w) ;  \overset{(\top \land \top)}{\vdash} ((m \land w) \rightarrow (m \land w)) ; $}
+
+\AxiomC{$l ;  \overset{\bot}{\vdash}  ; l$}
+\RightLabel{$R\rightarrow_{-}$}
+\UnaryInfC{$ ;  \overset{\bot}{\vdash}  ; (l \rightarrow l)$}
+\RightLabel{$ Mod []$}
+\UnaryInfC{$ ;  \overset{[](\bot)}{\vdash}  ; []((l \rightarrow l))$}
+\RightLabel{$ Mod []$}
+\UnaryInfC{$ ;  \overset{[]([](\bot))}{\vdash}  ; []([]((l \rightarrow l)))$}
+\RightLabel{$ Weakening $}
+\UnaryInfC{$ ;  \overset{[]([](\bot))}{\vdash} x ; []([]((l \rightarrow l)))$}
+\RightLabel{$L\neg_{+}$}
+\UnaryInfC{$\neg(x) ;  \overset{\neg([]([](\bot)))}{\vdash} []([]((l \rightarrow l))) ; $}
 \end{prooftree}
 \end{document}
