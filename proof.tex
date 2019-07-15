@@ -6,18 +6,12 @@
 
 
 
-
-
-\AxiomC{$l ;  \overset{\bot}{\vdash}  ; l$}
-\RightLabel{$R\rightarrow_{-}$}
-\UnaryInfC{$ ;  \overset{\bot}{\vdash}  ; (l \rightarrow l)$}
-\RightLabel{$ Mod []$}
-\UnaryInfC{$ ;  \overset{[](\bot)}{\vdash}  ; []((l \rightarrow l))$}
-\RightLabel{$ Mod []$}
-\UnaryInfC{$ ;  \overset{[]([](\bot))}{\vdash}  ; []([]((l \rightarrow l)))$}
-\RightLabel{$ Weakening $}
-\UnaryInfC{$ ;  \overset{[]([](\bot))}{\vdash} x ; []([]((l \rightarrow l)))$}
-\RightLabel{$L\neg_{+}$}
-\UnaryInfC{$\neg(x) ;  \overset{\neg([]([](\bot)))}{\vdash} []([]((l \rightarrow l))) ; $}
+\AxiomC{$[](m) ; w, m, m \overset{\top}{\vdash} w ; $}
+\RightLabel{$L\land_{-}$}
+\UnaryInfC{$[](m) ; (m \land m), w \overset{\top}{\vdash} w ; $}
+\RightLabel{$R\rightarrow_{+}$}
+\UnaryInfC{$[](m) ; (m \land m) \overset{\top}{\vdash} (w \rightarrow w) ; $}
+\RightLabel{$R\rightarrow_{+}$}
+\UnaryInfC{$[](m) ;  \overset{\top}{\vdash} ((m \land m) \rightarrow (w \rightarrow w)) ; $}
 \end{prooftree}
 \end{document}

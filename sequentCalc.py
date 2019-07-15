@@ -35,19 +35,39 @@ class Entailment:
 
 	def solve(self):
 
-		print("proof:"+self.toString())
-		for premise in self.getPremises():
+		entailment=self.toString()
+
+		new=entailment.replace("|-","")
+		string="~^|->"
+
+		if not any(elem in new for elem in string):
+
+			for premise in self.getPremises():
 				for conclusion in self.getConclusions():
 					if premise.toString()==conclusion.toString():
+						return True
 
-						entailment=self.toString()
 
-						new=entailment.replace("|-","")
-						string="~^|->"
+			if len(self.getConclusions())==1:
 
-						if not any(elem in new for elem in string):
+				for itemC in self.getConclusions():
 
-							return True
+					if itemC.toString()=="True":
+						return True
+
+					elif itemC.toString()=="False":
+						return False
+
+			elif len(self.getPremises())==1:
+
+				for itemP in self.getPremises():
+
+					if itemP.toString()=="False":
+						return True
+
+					elif itemP.toString()=="True":
+						return False
+
 		#check if:
 
 		#right rules who have only one children
@@ -185,16 +205,6 @@ class Entailment:
 			self.__rule= Weak.interpolate
 			self.__side=True
 
-
-		for item in self.getConclusions():
-
-			if item.toString()=="True":
-				return True
-
-		for item in self.getPremises():
-
-			if item.toString()=="False":
-				return True
 
 		if self.__children== None:
 			#print ("NOT provable because children is None:", self.toString())
@@ -1016,7 +1026,7 @@ class LMod(MRule):
 		if len(conclusions)>1:
 			return False
 
-		elif len(conclusions)<1  or not isinstance(conclusions[0], op.Mod):
+		elif len(conclusions)==1  and not isinstance(conclusions[0], op.Mod):
 			return False
 
 		elif (len(conclusions)==1 and isinstance(conclusions[0], op.Mod)):
@@ -1026,33 +1036,64 @@ class LMod(MRule):
 				if (premise.getSymbol() != conclusion.getSymbol()):
 					return False
 
+		elif(len(conclusions)==0):
+
+			if len(premises)>1:
+				symbol= premises[0].getSymbol()
+
+				for premise in premises:
+					if not isinstance(premise, op.Mod) and premise.getSymbol!= symbol:
+						return False
+
+					return True
+
+			else:
+				if len(premises)==1 and isinstance(premises[0], op.Mod):
+					return True
+				else:
+					return False
+
 		return True
 
 	@staticmethod
 	def step(entailment, lC, rC):
 
 		new = Entailment.copyEntailment(entailment)
-		symbol=new.getConclusions()[0].getSymbol()
 
 		gotConcl = True
 		index=0
 
 		if len(rC)==1 and isinstance(rC[0], op.Mod) and len(lC)<1:
-
+			symbol=new.getRightConclusions()[0].getSymbol()
 			conclusion = entailment.getRightConclusions()[0]
 
 			new.getRightConclusions().remove(conclusion)
 			new.addConcR(conclusion.getOperand())
 
+
 		elif len(lC)==1 and isinstance(lC[0], op.Mod) and len(rC)<1:
+			symbol=new.getLeftConclusions()[0].getSymbol()
 
 			conclusion = entailment.getLeftConclusions()[0]
 
 			new.getLeftConclusions().remove(conclusion)
 			new.addConcL(conclusion.getOperand())
 
-		else:
+
+		else :
 			gotConcl = False
+
+
+			symbol=new.getPremises()[0].getSymbol()
+			while index < len(new.getRightPremises()):
+				new.getRightPremises()[index]=new.getRightPremises()[index].getOperand()
+				index += 1
+
+			index=0
+			while index < len(new.getLeftPremises()):
+				new.getLeftPremises()[index]=new.getLeftPremises()[index].getOperand()
+				index += 1
+
 
 
 		if gotConcl:

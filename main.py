@@ -7,15 +7,16 @@ import sequentCalc as sc
 import basicInterpolant as bi
 
 def main():
+
+	#[](p) ;  |- ([](m) -> [](m)) ;
 	"""
 
-	r = basics.Atom("r")
 	p = basics.Atom("p")
 	m = basics.Atom("m")
 
 
-	phi = op.Impl(r,p)
-	psi = op.Disj(op.Impl(p,m),op.Impl(m,p))
+	phi = op.Mod(p)
+	psi = op.Impl(op.Mod(m),op.Mod(m))
 
 
 	entailment = sc.Entailment([phi],[], [psi], [])
@@ -176,7 +177,7 @@ def main():
 	correctInterpolant=0
 	countE1=0
 	countE2=0
-	while i< 100:
+	while i< 10000:
 		entailment=F.randomGen(5, 3)
 
 		psi=entailment[0]
@@ -226,7 +227,7 @@ def main():
 		print ("Number of valid formulas:"+ str(validFormulas))
 		print ("Number of valid formulas for which interpolant is correct and checked:"+ str(correctInterpolant))
 		print ("count entailment 1 valid: "+ str(countE1))
-		print ("count entailment 1 valid: "+ str(countE2))
+		print ("count entailment 2 valid: "+ str(countE2))
 		print("_________________________________________________________________________________________")
 
 
