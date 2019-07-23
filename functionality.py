@@ -7,7 +7,8 @@ import string
 import sys
 
 binOp = [op.Conj, op.Disj, op.Impl]
-unOp = [op.Not]
+unOp = [op.Not,op.Mod]
+opProg = ["U", ";"]
 
 
 def atomsIsSubset(phi, psi):
@@ -17,6 +18,21 @@ def atomsIsSubset(phi, psi):
 			return False
 	return True
 
+def genProgram(atoms, maxDepth):
+
+	if maxDepth<1:
+		return random.choice(atoms)
+
+	sample = random.choice(atoms+opProg)
+
+	if not sample in atoms:
+
+		operand1 = genProgram(atoms, maxDepth-1)
+		operand2 = genProgram(atoms, maxDepth-1)
+
+		return "(" + operand1 + sample + operand2 + ")"
+
+	return sample
 
 def randomGen(maxLen, nAtoms):
 
