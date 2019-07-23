@@ -7,7 +7,7 @@ import string
 import sys
 
 binOp = [op.Conj, op.Disj, op.Impl]
-unOp = [op.Not, op.Mod]
+unOp = [op.Not]
 
 
 def atomsIsSubset(phi, psi):

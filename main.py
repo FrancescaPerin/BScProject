@@ -8,127 +8,18 @@ import basicInterpolant as bi
 
 def main():
 
-	#[](p) ;  |- ([](m) -> [](m)) ;
-	"""
+
 
 	p = basics.Atom("p")
-	m = basics.Atom("m")
-
-
-	phi = op.Mod(p)
-	psi = op.Impl(op.Mod(m),op.Mod(m))
-
-
-	entailment = sc.Entailment([phi],[], [psi], [])
-	print(entailment.toString())
-	print(entailment.solve())
-
-	interpolant= entailment.calcInterpolant()
-
-	print("final interpolant:"+ interpolant.toString())
-	entailment.latexProofAux()
-
-	print("check: ", entailment.checkInterpolant(phi, psi, interpolant))
-
-
-	k = basics.Atom("k")
-	a = basics.Atom("a")
-	s = basics.Atom("s")
-
-
-	phi = op.Not(s)
-	psi = op.Impl(op.Conj(k,a),op.Conj(k,a))
-
-
-	entailment = sc.Entailment([phi],[], [psi], [])
-	print(entailment.toString())
-	print(entailment.solve())
-
-	interpolant= entailment.calcInterpolant()
-
-	print("final interpolant:"+ interpolant.toString())
-
-	print("check: ", entailment.checkInterpolant(phi, psi, interpolant))
-
-	#entailment.latexProofAux()
-
-
-
-	u = basics.Atom("u")
+	q = basics.Atom("q")
 	t = basics.Atom("t")
-	v = basics.Atom("v")
+	r = basics.Atom("r")
 	s = basics.Atom("s")
 
 
-	phi = op.Conj(op.Disj(u,op.Conj(v,s)),u)
-	psi = op.Disj(op.Disj(v,s),u)
+	phi = op.Disj(op.Disj(p,q),r)
+	psi = op.Conj(op.Conj(r,s),t)
 
-
-	entailment = sc.Entailment([phi],[], [psi], [])
-	print(entailment.toString())
-	print(entailment.solve())
-
-	interpolant= entailment.calcInterpolant()
-
-	print("final interpolant:"+ interpolant.toString())
-
-	print("check: ", entailment.checkInterpolant(phi, psi, interpolant))
-
-	#entailment.latexProofAux()
-
-
-	print("__________________________________")
-
-	p = basics.Atom("p")
-	q = basics.Atom("q")
-	r = basics.Atom("r")
-
-	phi = op.Mod(op.Conj(op.Mod(p),op.Mod(q)))
-	psi = op.Mod(op.Mod(op.Disj(p,r)))
-
-
-	entailment = sc.Entailment([phi],[], [psi], [])
-	print(entailment.toString())
-	print(entailment.solve())
-
-	interpolant= entailment.calcInterpolant()
-
-	print("final interpolant:"+ interpolant.toString())
-
-	print("check: ", entailment.checkInterpolant(phi, psi, interpolant))
-
-	print("__________________________________")
-
-
-	p = basics.Atom("p")
-	q = basics.Atom("q")
-	r = basics.Atom("r")
-
-	phi = op.Conj(op.Mod(op.Mod(p)), op.Mod(op.Mod(q)))
-	psi = op.Mod(op.Conj(op.Mod(q),op.Mod(p)))
-
-
-	entailment = sc.Entailment([phi],[], [psi], [])
-	print(entailment.toString())
-	print(entailment.solve())
-
-	interpolant= entailment.calcInterpolant()
-
-	print("final interpolant:"+ interpolant.toString())
-
-	print("check: ", entailment.checkInterpolant(phi, psi, interpolant))
-
-	#entailment.latexProofAux()
-
-
-	print("__________________________________")
-
-
-	b = basics.Atom("b")
-	d = basics.Atom("d")
-
-	phi = op.Mod(b ,"aUb")
-	psi = op.Mod(b ,"b")
 
 	entailment = sc.Entailment([phi],[], [psi], [])
 	print(entailment.toString())
@@ -144,40 +35,39 @@ def main():
 
 		entailment.latexProofAux()
 
-
-	print("__________________________________")
-
-	p = basics.Atom("p")
-	q = basics.Atom("q")
-	r = basics.Atom("r")
-
-	phi = op.Conj(op.Mod(op.Mod(p)), op.Mod(op.Mod(q)))
-	psi = op.Mod(op.Disj(op.Mod(q),op.Mod(r)))
-
-
-	entailment = sc.Entailment([phi],[], [psi], [])
-	print(entailment.toString())
-	val=entailment.solve()
-
-	print(val)
-
-	if val:
-
-		interpolant= entailment.calcInterpolant()
-		print("final interpolant:"+ interpolant.toString())
-		print("check: ", entailment.checkInterpolant(phi, psi, interpolant))
-
-	entailment.latexProofAux()
-
-	print("__________________________________")
-
 	"""
+	False -> True
+	False -> p
+	p -> True
+    True -> p v ~p
+    True -> ~(p ^ ~p)
+    p -> p
+    (p ^ q) -> (q v r)
+    (p ^ q ^ r) -> (q v r v s)
+    (p ^ q ^ r) -> (r v s v t)
+    (p -> q) -> (~q -> ~p)
+    ((p v t) -> (q v r)) -> ((~r ^ s) -> (~q -> ~p))
+
+	not provable:
+
+    p -> q
+    q -> ~q
+    q v (r ^ s)
+    (p v q v r) -> (r ^ s ^ t)
+    ((p v t) -> (q v r)) -> (~r -> (~q -> ~p))
+
+
+
+
+	print("__________________________________")
+
+
 	i=0
 	validFormulas=0
 	correctInterpolant=0
 	countE1=0
 	countE2=0
-	while i< 10000:
+	while i< 150000:
 		entailment=F.randomGen(5, 3)
 
 		psi=entailment[0]
@@ -215,7 +105,6 @@ def main():
 				print("check: ", check)
 
 				correctInterpolant+=1
-
 			else:
 				entailment.latexProofAux()
 				break
@@ -229,7 +118,7 @@ def main():
 		print ("count entailment 1 valid: "+ str(countE1))
 		print ("count entailment 2 valid: "+ str(countE2))
 		print("_________________________________________________________________________________________")
-
+		"""
 
 
 if __name__ == '__main__':

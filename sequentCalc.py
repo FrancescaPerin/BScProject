@@ -411,6 +411,41 @@ class Entailment:
 
 					return interpolants
 
+		if len(self.getConclusions())==1:
+
+			for itemC in self.getConclusions():
+
+				if itemC.toString()=="True":
+					interpolants=basics.Atom("True")
+					interpolants.setValue(True)
+
+					self.__latex+=r"\AxiomC{$"+self.convertSymbols(interpolants)+"$}"+"\n"
+
+					print("")
+					print("Axiom :" + self.toString())
+					print(interpolants.toString())
+					print("")
+
+					return interpolants
+
+
+		elif len(self.getPremises())==1:
+
+			for itemP in self.getPremises():
+
+				if itemP.toString()=="False":
+					interpolants=basics.Atom("False")
+					interpolants.setValue(False)
+
+					self.__latex+=r"\AxiomC{$"+self.convertSymbols(interpolants)+"$}\n"
+
+					print("")
+					print("Axiom :" + self.toString())
+					print(interpolants.toString())
+					print("")
+
+					return interpolants
+
 		return interpolants
 
 	def calcInterpolant(self):
