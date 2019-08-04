@@ -7,78 +7,96 @@ import string
 import sys
 
 binOp = [op.Conj, op.Disj, op.Impl]
-unOp = [op.Not,op.Mod]
+unOp = [op.Not, op.Mod]
 opProg = ["U", ";"]
 
 
 def atomsIsSubset(phi, psi):
 
-	for atomPhi in phi.getAtoms():
-		if atomPhi.getValue() == None and not psi.hasAtom(atomPhi):
-			return False
-	return True
+    for atomPhi in phi.getAtoms():
+        if atomPhi.getValue() is None and not psi.hasAtom(atomPhi):
+            return False
+    return True
+
 
 def genProgram(atoms, maxDepth):
 
-	if maxDepth<1:
-		return random.choice(atoms)
+    if maxDepth < 1:
+        return random.choice(atoms)
 
-	sample = random.choice(atoms+opProg)
+    sample = random.choice(atoms + opProg)
 
-	if not sample in atoms:
+    if sample not in atoms:
 
-		operand1 = genProgram(atoms, maxDepth-1)
-		operand2 = genProgram(atoms, maxDepth-1)
+        operand1 = genProgram(atoms, maxDepth - 1)
+        operand2 = genProgram(atoms, maxDepth - 1)
 
-		return "(" + operand1 + sample + operand2 + ")"
+        return "(" + operand1 + " " + sample + " " + operand2 + ")"
 
-	return sample
-
-def randomGen(maxLen, nAtoms):
-
-	atoms = []
-	prevSymbols = []
+    return sample
 
 
-	for i in range(nAtoms):
+def randomGen(maxLen, nAtoms, maxLenProg, nAtomsProg):
 
-		letter = None
+    atoms = []
+    prevSymbols = []
 
-		while not letter or letter in prevSymbols:
-			letter = random.choice(string.ascii_letters[0:int((len(string.ascii_letters)/2))])
+    for i in range(nAtoms):
 
-		atoms.append(basics.Atom(letter))
-		prevSymbols.append(letter)
+        letter = None
 
-	phi = randomGenAux(maxLen, atoms)
-	psi = randomGenAux(int(maxLen/2), atoms)
+        while not letter or letter in prevSymbols:
+            letter = random.choice(
+                string.ascii_letters[0:int((len(string.ascii_letters) / 2))])
 
-	return (phi, psi)
+        atoms.append(basics.Atom(letter))
+        prevSymbols.append(letter)
 
-def randomGenAux(maxLen, atoms):
+    atomsProg = []
 
-	if maxLen > 1:
+    for i in range(nAtomsProg):
 
-		op = random.choice(binOp + unOp)
+        letter = None
 
-		if op in binOp:
+        while not letter or letter in atomsProg:
+            letter = random.choice(
+                string.ascii_letters[0:int((len(string.ascii_letters) / 2))])
 
-			operand1 = randomGenAux(int(maxLen/2), atoms)
-			operand2 = randomGenAux(int(maxLen/2), atoms)
+        atomsProg.append(letter)
 
-			return op(operand1, operand2)
+    phi = randomGenAux(maxLen, atoms, maxLenProg, atomsProg)
+    psi = randomGenAux(int(maxLen / 2), atoms, maxLenProg, atomsProg)
 
-		#elif isinstance(op, op.Mod):
-
-		else:
-			operand = randomGenAux(maxLen-1, atoms)
-			return op(operand)
+    return (phi, psi)
 
 
-	else:
+def randomGenAux(maxLen, atoms, maxLenProg, atomsProg):
 
-		return random.choice(atoms)
+    if maxLen > 1:
+
+        operator = random.choice(binOp + unOp)
+
+        if operator in binOp:
+
+            operand1 = randomGenAux(
+                int(maxLen / 2), atoms, maxLenProg, atomsProg)
+            operand2 = randomGenAux(
+                int(maxLen / 2), atoms, maxLenProg, atomsProg)
+
+            return operator(operand1, operand2)
+
+        # elif isinstance(op, op.Mod):
+
+        else:
+            operand = randomGenAux(maxLen - 2, atoms, maxLenProg, atomsProg)
+            return operator(operand) if operator != op.Mod else operator(
+                operand, genProgram(atomsProg, maxLenProg))
+
+    else:
+
+        return random.choice(atoms)
 
 
 if __name__ == '__main__':
-	s = randomGen(int(sys.argv[1]), int(sys.argv[2]))
+    s = randomGen(int(sys.argv[1]), int(sys.argv[2]),
+                  int(sys.argv[3]), int(sys.argv[4]))

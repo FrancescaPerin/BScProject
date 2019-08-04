@@ -2,40 +2,43 @@ import folOperator as op
 import functionality as F
 import copy
 
+
 def interpolateAux(phi, psi):
 
-	if(F.atomsIsSubset(phi, psi)):
-		return phi
+    if(F.atomsIsSubset(phi, psi)):
+        return phi
 
-	# get p
-	for atomPhi in phi.getAtoms():
-		if atomPhi.getValue() == None and not psi.hasAtom(atomPhi):
-			p = atomPhi
-			break
+    # get p
+    for atomPhi in phi.getAtoms():
+        if atomPhi.getValue() is None and not psi.hasAtom(atomPhi):
+            p = atomPhi
+            break
 
-	phiTrue = copy.deepcopy(phi).setAtomBySymbol(p.getSymbol(), True)
-	phiFalse = copy.deepcopy(phi).setAtomBySymbol(p.getSymbol(), False)
+    phiTrue = copy.deepcopy(phi).setAtomBySymbol(p.getSymbol(), True)
+    phiFalse = copy.deepcopy(phi).setAtomBySymbol(p.getSymbol(), False)
 
-	return interpolateAux(op.Disj(phiTrue, phiFalse), psi)
+    return interpolateAux(op.Disj(phiTrue, phiFalse), psi)
+
 
 def interpolate(phi, psi):
 
-	if not op.Impl(phi, psi).isTaut():
-		print("False")
-		return False
+    if not op.Impl(phi, psi).isTaut():
+        print("False")
+        return False
 
-	return interpolateAux(copy.copy(phi), psi)
+    return interpolateAux(copy.copy(phi), psi)
+
 
 def computeInterpolant(phi, psi):
-	print("phi: " + phi.toString())
-	print("psi: " + psi.toString())
+    print("phi: " + phi.toString())
+    print("psi: " + psi.toString())
 
-	interpolated = interpolate(phi, psi)
+    interpolated = interpolate(phi, psi)
 
-	if not interpolated:
-		return False
+    if not interpolated:
+        return False
 
-	print("interpolant: " + interpolated.toString())
-	print("simplified interpolant: " + interpolated.simplify().toString())
+    print("interpolant: " + interpolated.toString())
+    print("simplified interpolant: " + interpolated.simplify().toString())
 
-	return interpolated
+    return interpolated
