@@ -3,12 +3,20 @@ import basics
 
 import random
 import string
+import itertools
 
 import sys
 
 binOp = [op.Conj, op.Disj, op.Impl]
 unOp = [op.Not, op.Mod]
 opProg = ["U", ";"]
+
+def getAllCombs(l):
+    comb = []
+    for i in range(len(l),0,-1):
+        comb.extend(list(itertools.combinations(l,i)))
+
+    return comb
 
 
 def atomsIsSubset(phi, psi):
@@ -17,7 +25,6 @@ def atomsIsSubset(phi, psi):
         if atomPhi.getValue() is None and not psi.hasAtom(atomPhi):
             return False
     return True
-
 
 def genProgram(atoms, maxDepth):
 

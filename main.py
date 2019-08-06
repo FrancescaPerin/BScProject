@@ -8,14 +8,13 @@ import basicInterpolant as bi
 
 def main():
 
-	#[(a ; b ; c) U (a ; d ; c)]p -> [a ; (b U d) ; c]q
 
 
-	q = basics.Atom("q")
-	p = basics.Atom("p")
 
-	phi = op.Mod(p,"((a ; (b ; c)) U (a ; (d ; c)))")
-	psi = op.Mod(p,"(a ; ((b U d) ; c))")
+	i = basics.Atom("i")
+
+	phi = op.Impl(i,i)
+	psi = op.Mod(op.Impl(i,i),"((b U b) U (i ; (p ; b)))")
 
 	entailment = sc.Entailment([phi],[], [psi], [])
 	print(entailment.toString())

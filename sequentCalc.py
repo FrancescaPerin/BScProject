@@ -7,6 +7,8 @@ from sys import platform
 import subprocess
 import copy
 import collections
+import itertools
+
 
 # BASIC CLASS
 
@@ -505,6 +507,7 @@ class Entailment:
 
 
         return interpolants
+
 
     def calcInterpolant(self):
 
@@ -1244,6 +1247,7 @@ class LMod(MRule):
         return op.Mod(interpolant[0], symbol)
 
 
+
 class Weak(MRule):
 
     @staticmethod
@@ -1256,25 +1260,20 @@ class Weak(MRule):
 
         possibleWeakenings = []
 
-        for conclusion in entailment.getConclusions():
+        ent=entailment.getPremises()+entailment.getConclusions()
 
-            new = entailment.copyEntailment(entailment)
+        for toEliminate in F.getAllCombs(ent):
+            for primitive in toEliminate:
+                new = entailment.copyEntailment(entailment)
 
-            if conclusion in entailment.getLeftConclusions():
-                new.getLeftConclusions().remove(conclusion)
-            else:
-                new.getRightConclusions().remove(conclusion)
-
-            possibleWeakenings.append(new)
-
-        for premise in entailment.getPremises():
-
-            new = entailment.copyEntailment(entailment)
-
-            if premise in entailment.getLeftPremises():
-                new.getLeftPremises().remove(premise)
-            else:
-                new.getRightPremises().remove(premise)
+                if primitive in entailment.getLeftConclusions():
+                    new.getLeftConclusions().remove(primitive)
+                elif primitive in entailment.getRightConclusions():
+                    new.getRightConclusions().remove(primitive)
+                elif primitive in entailment.getLeftPremises():
+                    new.getLeftPremises().remove(primitive)
+                elif primitive in entailment.getRightPremises():
+                    new.getRightPremises().remove(primitive)
 
             possibleWeakenings.append(new)
 
@@ -1824,7 +1823,7 @@ class UnionR(MRule):
                         else:
                             left.getRightConclusions().remove(item)
                             right.getRightConclusions().remove(item)
-                            left.addConcR(op.Mod(item.getOperand(), str1in1))
+                            left.addConcR(op.Mod(item.getOperand(), strFin1))
                             right.addConcR(op.Mod(item.getOperand(), strFin2))
 
                             return[left, right]
