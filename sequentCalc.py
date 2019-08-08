@@ -49,25 +49,19 @@ class Entailment:
                     if premise.toString() == conclusion.toString():
                         return True
 
-            if len(self.getConclusions()) ==1:
+            if len(self.getConclusions()) >=1:
 
                 for itemC in self.getConclusions():
 
-                    if itemC.toString() == "True":
+                    if "True" in itemC.toString() :
                         return True
 
-                    elif itemC.toString() == "False":
-                        return False
-
-            elif len(self.getPremises()) ==1:
+            if len(self.getPremises()) >=1:
 
                 for itemP in self.getPremises():
 
-                    if itemP.toString() == "False":
+                    if  "False" in itemP.toString():
                         return True
-
-                    elif itemP.toString() == "True":
-                        return False
 
         # check if:
 
@@ -1253,6 +1247,35 @@ class Weak(MRule):
     @staticmethod
     def canApply(premises, conclusions):
 
+        atomsPrem=[]
+        atomsConcl=[]
+
+        for premise in premises:
+
+            for atom in premise.getAtoms():
+
+                if ("True" in atom.toString()) or ("False" in atom.toString()):
+                    return True
+                else:
+                    atomsPrem.append(atom)
+
+        for conclusion in conclusions:
+
+            for atom in conclusion.getAtoms():
+
+                if ("True" in atom.toString()) or ("False" in atom.toString()):
+                    return True
+                else:
+                    atomsConcl.append(atom)
+
+        #this is an heuristic. If there are no common atoms in the premises and
+        #conlusions weakening will not lead to finding a solution. Therefore rule
+        # is not applied
+        if (bool(set(atomsPrem).intersection(atomsConcl))):
+            return True
+        else :
+            return False
+
         return ((premises != []) | (conclusions != []))
 
     @staticmethod
@@ -1263,26 +1286,23 @@ class Weak(MRule):
         ent=entailment.getPremises()+entailment.getConclusions()
 
         for toEliminate in F.getAllCombs(ent):
-            for primitive in toEliminate:
-                new = entailment.copyEntailment(entailment)
+            new = entailment.copyEntailment(entailment)
 
-                if primitive in entailment.getLeftConclusions():
+            for primitive in toEliminate:
+
+                if primitive in new.getLeftConclusions():
                     new.getLeftConclusions().remove(primitive)
-                elif primitive in entailment.getRightConclusions():
+                elif primitive in new.getRightConclusions():
                     new.getRightConclusions().remove(primitive)
-                elif primitive in entailment.getLeftPremises():
+                elif primitive in new.getLeftPremises():
                     new.getLeftPremises().remove(primitive)
-                elif primitive in entailment.getRightPremises():
+                elif primitive in new.getRightPremises():
                     new.getRightPremises().remove(primitive)
 
-            possibleWeakenings.append(new)
+            if not (Weak.canApply(new.getPremises(), new.getConclusions())):
 
-        i = 0
-        for new in possibleWeakenings:
-            i += 1
-
-            if new.solve():
-                return [new]
+                if new.solve():
+                    return [new]
 
         return None
 

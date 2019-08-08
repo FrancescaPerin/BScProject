@@ -143,6 +143,8 @@ class Disj(Operator):
             if a == False and b == False:
                 return False
 
+            print("blablabla ")
+
             return None
 
         super(Disj, self).__init__(pars.DISJ_SYMBOL, OP, operand1, operand2)
