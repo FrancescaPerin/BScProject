@@ -31,10 +31,10 @@ The formula is given similarly to prefix notation. The operators used are the fo
 
 Here are some easy and some more complicated examples to understad the fomat required:
 
-*(p ^ q ^ r): op.Conj(op.Conj(p,q),r) - op.Conj(p,op.Conj(q,r))
-*(p ^ q ^ r ^ s): op.Conj(op.Conj(p,q),op.Conj(r,s)) or op.Conj(op.Conj(op.Conj(p,q),r),s)
-*((p | q)->p): op.Impl(op.Disj(p,q),p)
-*([a][b]p ->[a U b]p): op.Impl(op.Mod(op.Mod(p,"b"),"a"), op.Mod(p, "(a U b)"))
+* (p ^ q ^ r): op.Conj(op.Conj(p,q),r) - op.Conj(p,op.Conj(q,r))
+* (p ^ q ^ r ^ s): op.Conj(op.Conj(p,q),op.Conj(r,s)) or op.Conj(op.Conj(op.Conj(p,q),r),s)
+* ((p | q)->p): op.Impl(op.Disj(p,q),p)
+* ([a][b]p ->[a U b]p): op.Impl(op.Mod(op.Mod(p,"b"),"a"), op.Mod(p, "(a U b)"))
 
 
 
