@@ -40,7 +40,7 @@ Here are some easy and some more complicated examples to understad the fomat req
 * ([a][b]p ->[a U b]p): op.Impl(op.Mod(op.Mod(p,"b"),"a"), op.Mod(p, "(a U b)"))
 * (([(a ; b);((d U c) U d)]p ^ q) | ~[b]s): op.Disj(op.Conj(op.Mod(p,"((a ; b) ; ((d U c) U d))"),q),op.Not(op.Mod(s,"b")))
 
-####Note:
+#### Note:
 
 The code is higly sentitive in particular to the format of the string passed in the modality operator. The semicolon (;) and union(U) are both binary, when used a whitespace is always required both before and after the symbol. White space must not be used anywhere else in the string (not at the beginning/end of the string and also not between parenthesis). If used in combination, each symbol must have the corresponding open and closed parenthesis also at the outer level. For instance this is the correct format of the string **"((a ; b) ; ((d U c) U d))"** any variations such as below will result in a mistake in the computation:
 
