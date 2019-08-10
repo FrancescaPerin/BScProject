@@ -52,9 +52,9 @@ The code is higly sentitive in particular to the format of the string passed in 
 If none or only one symbol is used such as in "a ; b" or "a" the outer paranthesis can be left out if desired as they are not needed, however the whitespace use still follows the same rules mentioned above (before and after symbol and not at the begginning or end of the string).
 
 
-### Testing specific formula
+### Testing a specific formula
 
-To tests a specific formula of the type phi->psi the user should add the option `--manual` by it self in which then the user will be asked to "Enter phi:" and the to "Enther psi:".
+To tests a specific formula of the type phi->psi the user can add the option `--manual` by it self in which then the user will be asked to "Enter phi:" and the to "Enther psi:".
 Otherwise the user can choose to follow the option `--manual` by formula phi in between single quotes and then formula psi also in between single quotes. Where the formulas follow the format explained above.
 
 Like so: `main.py --manual 'op.Conj(p,q)' 'q'`
@@ -62,4 +62,13 @@ Like so: `main.py --manual 'op.Conj(p,q)' 'q'`
 If the sentence tested is valid the program will output a pdf image, which will be automatically opened which shows the proof of validity and the computed interpolant. The image is not saved automatically and must be manually saved, this is why the program only allows the user to input one full formula (one psi, one phi) at the time otherwise the proof will get overwritten and then lost.
 
 ### Running an experiment
-The user can also decided to run an experiment with randomly generated formulas
+The user can also decided to run an experiment with randomly generated formulas if so the user should add the option `--random` followed by one of the following options :
+
+* `--prop` to generate sentences in propositional logic
+* `--modal` to generate sentences in modal logic
+* `--PDL` to generate sentences in PDL
+
+and then add as final parameter an integer which is the number of sentences the program is going to test.
+
+In this case the latex pdf proofs will not be generated because as mentioned before it will get overwritten.The program while testing will print the number of sentences tested, the number of valid sentences, the number of valid sentences for which the interpolant was computed and is valid.
+If it is the case that the program finds a sentence which is valid but the computed interpolant is not valid, the program stops and provides the latex pdf proof. We don't want this to happen.
