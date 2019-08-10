@@ -55,9 +55,9 @@ If none or only one symbol is used such as in "a ; b" or "a" the outer paranthes
 ### Testing specific formula
 
 To tests a specific formula of the type phi->psi the user should add the option `--manual` by it self in which then the user will be asked to "Enter phi:" and the to "Enther psi:".
-Otherwise the user can choose to follow the option "--manual" by formula phi in between single quotes and then formula psi also in between single quotes. Where the formulas follow the format explained above.
+Otherwise the user can choose to follow the option `--manual` by formula phi in between single quotes and then formula psi also in between single quotes. Where the formulas follow the format explained above.
 
-Like so: main.py --manual 'op.Conj(p,q)' 'q'
+Like so: `main.py --manual 'op.Conj(p,q)' 'q'`
 
 If the sentence tested is valid the program will output a pdf image, which will be automatically opened which shows the proof of validity and the computed interpolant. The image is not saved automatically and must be manually saved, this is why the program only allows the user to input one full formula (one psi, one phi) at the time otherwise the proof will get overwritten and then lost.
 
