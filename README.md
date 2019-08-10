@@ -31,10 +31,23 @@ The formula is given similarly to prefix notation. The operators used are the fo
 
 Here are some easy and some more complicated examples to understad the fomat required:
 
-* (p ^ q ^ r): op.Conj(op.Conj(p,q),r) - op.Conj(p,op.Conj(q,r))
-* (p ^ q ^ r ^ s): op.Conj(op.Conj(p,q),op.Conj(r,s)) or op.Conj(op.Conj(op.Conj(p,q),r),s)
+* (p ^ q ^ r): op.Conj(op.Conj(p,q),r) **or** op.Conj(p,op.Conj(q,r))
+* (p ^ q ^ r ^ s): op.Conj(op.Conj(p,q),op.Conj(r,s)) **or** op.Conj(op.Conj(op.Conj(p,q),r),s)
 * ((p | q)->p): op.Impl(op.Disj(p,q),p)
 * ([a][b]p ->[a U b]p): op.Impl(op.Mod(op.Mod(p,"b"),"a"), op.Mod(p, "(a U b)"))
+* (([(a ; b);((d U c) U d)]p ^ q) | ~[b]s): op.Disj(op.Conj(op.Mod(p,"((a ; b) ; ((d U c) U d))"),q),op.Not(op.Mod(s,"b")))
+
+Note:
+
+The code is higly sentitive in particular to the format of the string passed in the modality operator. The semicolon (;) and union(U) are both binary, when used a whitespace is always required both before and after the symbol. White space must not be used anywhere else in the string (not at the beginning/end of the string and also not between parenthesis). If used in combination, each symbol must have the corresponding open and closed parenthesis also at the outer level. For instance this is the correct format of the string **((a ; b) ; ((d U c) U d))** any variations such as below will result in a mistake in the computation:
+
+* ((a ; b) ; (d U c U d))
+* (a ; b) ; ((d U c) U d)
+* ((a; b) ; ((d Uc) U d))
+*((a ; b) ; ( (d U c) U d))
+
+If none or only one symbol is used such as in "a ; b" or "a" the outer paranthesis can be left out if desired as they are not needed, however the whitespace use still follows the same rules mentioned above (before and after symbol and not at the begginning or end of the string).
+
 
 
 
