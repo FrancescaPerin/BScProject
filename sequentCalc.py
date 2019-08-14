@@ -43,7 +43,6 @@ class Entailment:
         string = "~^|->"
 
         if not any(elem in new for elem in string):
-
             for premise in self.getPremises():
                 for conclusion in self.getConclusions():
                     if premise.toString() == conclusion.toString():
@@ -52,14 +51,12 @@ class Entailment:
         if len(self.getConclusions()) >= 1 and len(self.getPremises()) > 0:
 
             for itemC in self.getConclusions():
-
                 if "True" in itemC.toString():
                     return True
 
         if len(self.getPremises()) >= 1 and len(self.getConclusions()) > 0:
 
             for itemP in self.getPremises():
-
                 if "False" in itemP.toString():
                     return True
 
@@ -239,13 +236,16 @@ class Entailment:
             self.__side = True
 
         if self.__children is None:
+            print("NOT provable1:" + self.toString())
             return False
 
         elif len(self.__children) > 0:
             for child in self.__children:
                 if not child.solve():
+                    print("NOT provable2:" + self.toString())
                     return False
 
+            print("Provable:" + self.toString())
             return True
 
         return False
@@ -375,8 +375,8 @@ class Entailment:
                 for item in self.getPremises():
                     if "False"in item.toString():
                         return True
-            else:
 
+            else:
                 return False
 
         if len(self.__children) == 0 or self.__children is None:
@@ -1287,10 +1287,10 @@ class LMod(MRule):
                 "False" in interpolant[0].toString()):
 
             return interpolant[0]
-        else:
-            symbol = symbol.replace("[", "")
-            symbol = symbol.replace("]", "")
-            return op.Mod(interpolant[0], symbol)
+
+        symbol = symbol.replace("[", "")
+        symbol = symbol.replace("]", "")
+        return op.Mod(interpolant[0], symbol)
 
 
 class Weak(MRule):
