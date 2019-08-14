@@ -1,4 +1,4 @@
-# Theorem Prover of interpolation for propositional logic, modal logic and PDL.
+# Theorem Prover of Craig's interpolation for propositional logic, modal logic and PDL.
 
 This project consists in a theorem prover which aims to show that Craig' interpolation property holds for propositional logic, modal logic and PDL. The program given a logic sentence first determines it's validity, and if valid computes one of the possible interpolants and checks if it respects the general definition of interpolant.
 

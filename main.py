@@ -7,161 +7,162 @@ import sequentCalc as sc
 
 import basicInterpolant as bi
 
+
 def main(argv):
 
-	#loading all atoms name for user use
-	a=basics.Atom("a")
-	b=basics.Atom("b")
-	c=basics.Atom("c")
-	d=basics.Atom("d")
-	e=basics.Atom("e")
-	f=basics.Atom("f")
-	g=basics.Atom("g")
-	h=basics.Atom("h")
-	i=basics.Atom("i")
-	l=basics.Atom("l")
-	m=basics.Atom("m")
-	n=basics.Atom("n")
-	o=basics.Atom("o")
-	p=basics.Atom("p")
-	q=basics.Atom("q")
-	r=basics.Atom("r")
-	s=basics.Atom("s")
-	t=basics.Atom("t")
-	u=basics.Atom("u")
-	v=basics.Atom("v")
-	z=basics.Atom("z")
-	w=basics.Atom("w")
-	k=basics.Atom("k")
-	j=basics.Atom("j")
-	y=basics.Atom("y")
-	x=basics.Atom("x")
+    # loading all atoms name for user use
+    a = basics.Atom("a")
+    b = basics.Atom("b")
+    c = basics.Atom("c")
+    d = basics.Atom("d")
+    e = basics.Atom("e")
+    f = basics.Atom("f")
+    g = basics.Atom("g")
+    h = basics.Atom("h")
+    i = basics.Atom("i")
+    l = basics.Atom("l")
+    m = basics.Atom("m")
+    n = basics.Atom("n")
+    o = basics.Atom("o")
+    p = basics.Atom("p")
+    q = basics.Atom("q")
+    r = basics.Atom("r")
+    s = basics.Atom("s")
+    t = basics.Atom("t")
+    u = basics.Atom("u")
+    v = basics.Atom("v")
+    z = basics.Atom("z")
+    w = basics.Atom("w")
+    k = basics.Atom("k")
+    j = basics.Atom("j")
+    y = basics.Atom("y")
+    x = basics.Atom("x")
 
-	#setting default name for false and true and setting boolean value
+    # setting default name for false and true and setting boolean value
 
-	false=basics.Atom("False")
-	false.setValue(False)
+    false = basics.Atom("False")
+    false.setValue(False)
 
-	true=basics.Atom("True")
-	true.setValue(True)
+    true = basics.Atom("True")
+    true.setValue(True)
 
-	#if user decide to test a formula then take phi and psi from command line
+    # if user decide to test a formula then take phi and psi from command line
 
-	if len(argv)<2:
-		raise Exception("Missing arguments")
-		exit(-1)
+    if len(argv) < 2:
+        raise Exception("Missing arguments")
+        exit(-1)
 
-	if argv[1]=="--manual":
+    if argv[1] == "--manual":
 
+        if len(argv) == 4:
+            phiString = argv[2]
+            psiString = argv[3]
+        elif len(argv) == 2:
+            phiString = input("Insert phi: ")
+            psiString = input("Insert psi: ")
+        else:
+            raise Exception(
+                "Wrong argument format, phi or psi not inserted or extra arguments")
+            exit(-1)
 
+        phi = eval(phiString)
+        psi = eval(psiString)
 
-		if len(argv)==4:
-			phiString = argv[2]
-			psiString = argv[3]
-		elif len(argv)==2:
-			phiString = input("Insert phi: ")
-			psiString = input("Insert psi: ")
-		else:
-			raise Exception("Wrong argument format, phi or psi not inserted or extra arguments")
-			exit(-1)
+        print("phi: ", phi.toString())
+        print("psi: ", psi.toString())
 
-		phi=eval(phiString)
-		psi=eval(psiString)
+        entailment = sc.Entailment([phi], [], [psi], [])
+        print("Entailment: ", entailment.toString())
 
-		print("phi: ", phi.toString())
-		print("psi: ", psi.toString())
+        val = entailment.solve()
+        print("Value entailment: ", val)
 
-		entailment = sc.Entailment([phi],[], [psi], [])
-		print("Entailment: ", entailment.toString())
+        if val:
 
-		val=entailment.solve()
-		print("Value entailment: ", val)
+            interpolant = entailment.calcInterpolant()
+            print("final interpolant:", interpolant.toString())
+            print(
+                "check: ",
+                entailment.checkInterpolant(
+                    phi,
+                    psi,
+                    interpolant))
 
-		if val:
+            entailment.latexProofAux()
 
-			interpolant= entailment.calcInterpolant()
-			print("final interpolant:", interpolant.toString())
-			print("check: ", entailment.checkInterpolant(phi, psi, interpolant))
+    elif argv[1] == "--random":
 
-			entailment.latexProofAux()
+        i = 0
+        validFormulas = 0
+        correctInterpolant = 0
+        countE1 = 0
+        countE2 = 0
 
+        count = int(argv[3])
 
-	elif argv[1]=="--random":
+        while i < count:
 
-		i=0
-		validFormulas=0
-		correctInterpolant=0
-		countE1=0
-		countE2=0
+            if argv[2] == "--prop":
 
-		count=int(argv[3])
+                entailment = F.randomGen(5, 3, False)
 
+            elif argv[2] == "--modal":
 
-		while i< count:
+                entailment = F.randomGen(5, 3, True)
 
-			if argv[2]== "--prop":
+            elif argv[2] == "--PDL":
 
-				entailment=F.randomGen(5, 3, False)
+                entailment = F.randomGenPDL(5, 3, 3, 3)
 
-			elif argv[2]=="--modal":
+            else:
+                raise Exception(
+                    "Wrong argument format, logic to be used not specified")
+                exit(-1)
 
-				entailment=F.randomGen(5, 3, True)
+            psi = entailment[0]
+            phi = entailment[1]
 
-			elif argv[2]=="--PDL":
+            entailment = sc.Entailment([phi], [], [psi], [])
+            print(entailment.toString())
+            val = entailment.solve()
 
-				entailment=F.randomGenPDL(5, 3, 3, 3)
+            print(val)
 
-			else:
-				raise Exception("Wrong argument format, logic to be used not specified")
-				exit(-1)
+            i += 1
 
-			psi=entailment[0]
-			phi= entailment[1]
+            if val:
+                validFormulas += 1
 
-			entailment = sc.Entailment([phi],[], [psi], [])
-			print(entailment.toString())
-			val=entailment.solve()
+                interpolant = entailment.calcInterpolant()
+                print("final interpolant:" + interpolant.toString())
 
-			print(val)
+                entailment1 = sc.Entailment([phi], [], [interpolant], [])
+                entailment2 = sc.Entailment([interpolant], [], [psi], [])
 
-			i+=1
+                if entailment1.solve():
+                    countE1 += 1
+                if entailment2.solve():
+                    countE2 += 1
 
-			if val:
-				validFormulas+=1
+                check = entailment.checkInterpolant(phi, psi, interpolant)
 
-				interpolant= entailment.calcInterpolant()
-				print("final interpolant:"+ interpolant.toString())
+                if check:
 
-				entailment1=sc.Entailment([phi],[], [interpolant], [])
-				entailment2=sc.Entailment([interpolant],[], [psi], [])
+                    print("check: ", check)
 
-				if entailment1.solve():
-					countE1+=1
-				if entailment2.solve():
-					countE2+=1
+                    correctInterpolant += 1
+                else:
+                    entailment.latexProofAux()
+                    break
 
-				check=entailment.checkInterpolant(phi, psi, interpolant)
-
-				if check:
-
-					print("check: ", check)
-
-					correctInterpolant+=1
-				else:
-					entailment.latexProofAux()
-					break
-
-
-
-
-			print ("Number of tested formulas:"+ str(i))
-			print ("Number of valid formulas:"+ str(validFormulas))
-			print ("Number of valid formulas for which interpolant is correct and checked:"+ str(correctInterpolant))
-			print ("count entailment 1 valid: "+ str(countE1))
-			print ("count entailment 2 valid: "+ str(countE2))
-			print("_________________________________________________________________________________________")
-
+            print("Number of tested formulas:" + str(i))
+            print("Number of valid formulas:" + str(validFormulas))
+            print(
+                "Number of valid formulas for which interpolant is correct and checked:" +
+                str(correctInterpolant))
+            print(
+                "_________________________________________________________________________________________")
 
 
 if __name__ == '__main__':
-	main(sys.argv)
+    main(sys.argv)

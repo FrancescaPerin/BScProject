@@ -49,19 +49,19 @@ class Entailment:
                     if premise.toString() == conclusion.toString():
                         return True
 
-            if len(self.getConclusions()) >=1:
+        if len(self.getConclusions()) >= 1 and len(self.getPremises()) > 0:
 
-                for itemC in self.getConclusions():
+            for itemC in self.getConclusions():
 
-                    if "True" in itemC.toString() :
-                        return True
+                if "True" in itemC.toString():
+                    return True
 
-            if len(self.getPremises()) >=1:
+        if len(self.getPremises()) >= 1 and len(self.getConclusions()) > 0:
 
-                for itemP in self.getPremises():
+            for itemP in self.getPremises():
 
-                    if  "False" in itemP.toString():
-                        return True
+                if "False" in itemP.toString():
+                    return True
 
         # check if:
 
@@ -238,8 +238,6 @@ class Entailment:
             self.__rule = Weak.interpolate
             self.__side = True
 
-        #print("proof: "+self.toString())
-
         if self.__children is None:
             return False
 
@@ -359,7 +357,6 @@ class Entailment:
 
         return (a + " ; " + c + " |- " + b + " ; " + d)
 
-# TODO CHECK THIS FUNCTION
     def isAxiom(self):
 
         entailment = self.toString()
@@ -368,7 +365,19 @@ class Entailment:
         string = "~^|>"
 
         if any(elem in new for elem in string):
-            return False
+
+            if len(self.getConclusions()) >= 1 and len(self.getPremises()) > 0:
+                for item in self.getConclusions():
+                    if "True" in item.toString():
+                        return True
+
+            elif len(self.getPremises()) >= 1 and len(self.getConclusions()) > 0:
+                for item in self.getPremises():
+                    if "False"in item.toString():
+                        return True
+            else:
+
+                return False
 
         if len(self.__children) == 0 or self.__children is None:
 
@@ -377,17 +386,15 @@ class Entailment:
                     if premise.toString() == conclusion.toString():
                         return True
 
-        if len(self.getConclusions()) == 1:
-            if self.getConclusions()[0].toString() == "True":
-                return True
-            elif self.getConclusions()[0].toString() == "False":
-                return False
+        if len(self.getConclusions()) >= 1 and len(self.getPremises()) > 0:
+            for item in self.getConclusions():
+                if "True" in item.toString():
+                    return True
 
-        elif len(self.getPremises()) == 1:
-            if self.getPremises()[0].toString() == "False":
-                return True
-            elif self.getPremises()[0].toString() == "False":
-                return False
+        if len(self.getPremises()) >= 1 and len(self.getConclusions()) > 0:
+            for item in self.getPremises():
+                if "False" in item.toString():
+                    return True
 
         if len(self.__children) > 0:
             return False
@@ -467,9 +474,27 @@ class Entailment:
 
                     return interpolants
 
-        for itemC in self.getConclusions():
+        for itemRC in self.getRightConclusions():
 
-            if itemC.toString() == "True":
+            if "True" in itemRC.toString() and len(self.getPremises()) > 0:
+
+                interpolants = basics.Atom("False")
+                interpolants.setValue(False)
+
+                self.__latex += r"\AxiomC{$" + \
+                    self.convertSymbols(interpolants) + "$}" + "\n"
+
+                print("")
+                print("Axiom :" + self.toString())
+                print(interpolants.toString())
+                print("")
+
+                return interpolants
+
+        for itemLC in self.getLeftConclusions():
+
+            if "True" in itemLC.toString() and len(self.getPremises()) > 0:
+
                 interpolants = basics.Atom("True")
                 interpolants.setValue(True)
 
@@ -483,9 +508,27 @@ class Entailment:
 
                 return interpolants
 
-        for itemP in self.getPremises():
+        for itemRP in self.getRightPremises():
 
-            if itemP.toString() == "False":
+            if ("False" in itemRP.toString()) and len(
+                    self.getConclusions()) > 0:
+                interpolants = basics.Atom("True")
+                interpolants.setValue(True)
+
+                self.__latex += r"\AxiomC{$" + \
+                    self.convertSymbols(interpolants) + "$}\n"
+
+                print("")
+                print("Axiom :" + self.toString())
+                print(interpolants.toString())
+                print("")
+
+                return interpolants
+
+        for itemLP in self.getLeftPremises():
+
+            if ("False" in itemRP.toString()) and len(
+                    self.getConclusions()) > 0:
                 interpolants = basics.Atom("False")
                 interpolants.setValue(False)
 
@@ -499,9 +542,7 @@ class Entailment:
 
                 return interpolants
 
-
         return interpolants
-
 
     def calcInterpolant(self):
 
@@ -618,12 +659,14 @@ class Entailment:
 
     def convertSymbols(self, interpolant):
 
-        newS = self.toString()
         interpolantStr = interpolant.toString()
+
+        newS = self.toString()
 
         newS = newS.replace(
             r"|-", r"\overset{" + interpolantStr + r"}{\vdash}")
         newS = newS.replace(pars.DISJ_SYMBOL, r"\lor")
+        newS = newS.replace("U", r"\cup")
         newS = newS.replace(pars.CONJ_SYMBOL, r"\land")
         newS = newS.replace(pars.IMPL_SYMBOL, r"\rightarrow")
         newS = newS.replace(pars.NOT_SYMBOL, r"\neg")
@@ -666,7 +709,7 @@ class Entailment:
         theLaTeXproof = self.latexProof()
         with open("proof.tex", "w") as myfile:
             myfile.write(
-                "\\documentclass[border=10pt,varwidth=30cm]{standalone}\n"
+                "\\documentclass[border=10pt,varwidth=50cm]{standalone}\n"
                 "\\usepackage{bussproofs}\n"
                 "\\usepackage{amsmath}\n"
                 "\\begin{document}\n"
@@ -1145,6 +1188,9 @@ class LMod(MRule):
             symbolConc = conclusions[0].getSymbol()
             newsymbolConc = symbolConc.replace(" ", "")
 
+            if len(premises) == 0:
+                return False
+
             for premise in premises:
 
                 newmod = premise.getSymbol()
@@ -1152,6 +1198,7 @@ class LMod(MRule):
 
                 if not (isinstance(premise, op.Mod)
                         ) or newmodSymbol != newsymbolConc:
+
                     return False
 
         elif(len(conclusions) == 0):
@@ -1230,16 +1277,20 @@ class LMod(MRule):
         if not new.solve():
             return None, None
 
-
         return [new], symbol
 
     # interpolant rule if Modality rule applied, modality added to interpolant
 
     def interpolate(interpolant, c, symbol):
-        symbol = symbol.replace("[", "")
-        symbol = symbol.replace("]", "")
-        return op.Mod(interpolant[0], symbol)
 
+        if ("True" in interpolant[0].toString()) or (
+                "False" in interpolant[0].toString()):
+
+            return interpolant[0]
+        else:
+            symbol = symbol.replace("[", "")
+            symbol = symbol.replace("]", "")
+            return op.Mod(interpolant[0], symbol)
 
 
 class Weak(MRule):
@@ -1247,8 +1298,8 @@ class Weak(MRule):
     @staticmethod
     def canApply(premises, conclusions):
 
-        atomsPrem=[]
-        atomsConcl=[]
+        atomsPrem = []
+        atomsConcl = []
 
         for premise in premises:
 
@@ -1268,12 +1319,12 @@ class Weak(MRule):
                 else:
                     atomsConcl.append(atom)
 
-        #this is an heuristic. If there are no common atoms in the premises and
-        #conlusions weakening will not lead to finding a solution. Therefore rule
+        # this is an heuristic. If there are no common atoms in the premises and
+        # conlusions weakening will not lead to finding a solution. Therefore rule
         # is not applied
         if (bool(set(atomsPrem).intersection(atomsConcl))):
             return True
-        else :
+        else:
             return False
 
         return ((premises != []) | (conclusions != []))
@@ -1283,7 +1334,7 @@ class Weak(MRule):
 
         possibleWeakenings = []
 
-        ent=entailment.getPremises()+entailment.getConclusions()
+        ent = entailment.getPremises() + entailment.getConclusions()
 
         for toEliminate in F.getAllCombs(ent):
             new = entailment.copyEntailment(entailment)
@@ -1299,10 +1350,28 @@ class Weak(MRule):
                 elif primitive in new.getRightPremises():
                     new.getRightPremises().remove(primitive)
 
-            if not (Weak.canApply(new.getPremises(), new.getConclusions())):
+            Lrules = [LConj, LDisj, LNeg, LImpl]
+            Rrules = [RNeg, RImpl, RConj, RDisj]
+            Prules = [LMod, Semicolon, UnionL, UnionR]
 
-                if new.solve():
-                    return [new]
+            for rule in Prules:
+                if rule.canApply(new.getPremises(), new.getConclusions()):
+                    if new.solve():
+                        return [new]
+
+            for rule in Lrules:
+                if rule.canApply(
+                        new.getRightPremises()) or rule.canApply(
+                        new.getLeftPremises()):
+                    if new.solve():
+                        return [new]
+
+            for rule in Rrules:
+                if rule.canApply(
+                        new.getRightConclusions()) or rule.canApply(
+                        new.getLeftConclusions()):
+                    if new.solve():
+                        return [new]
 
         return None
 
@@ -1327,16 +1396,18 @@ class Semicolon(MRule):
 
                     new = new[1:-1]
 
-                semicolon = [semicolon for semicolon, x in enumerate(new) if x == ";"]
-                union =[union for union, x in enumerate(new) if x == "U"]
+                semicolon = [
+                    semicolon for semicolon,
+                    x in enumerate(new) if x == ";"]
+                union = [union for union, x in enumerate(new) if x == "U"]
 
-                semicolonMin=100
-                unionMin=100
+                semicolonMin = 100
+                unionMin = 100
 
                 for index in semicolon:
 
                     new1 = list(new)
-                    list1a = new1[:int(index)-1]
+                    list1a = new1[:int(index) - 1]
                     list1b = new1[int(index) + 2:]
 
                     str1 = ''.join(list1a)
@@ -1348,17 +1419,16 @@ class Semicolon(MRule):
                     countOpenSemi = list1a.count(sub1)
                     countCloseSemi = list1a.count(sub2)
 
-
-                    countSemi=countOpenSemi-countCloseSemi
+                    countSemi = countOpenSemi - countCloseSemi
 
                     if countSemi < semicolonMin:
 
-                        semicolonMin=countSemi
+                        semicolonMin = countSemi
 
                 for index in union:
 
                     new1 = list(new)
-                    list1a = new1[:int(index)-1]
+                    list1a = new1[:int(index) - 1]
                     list1b = new1[int(index) + 2:]
 
                     str1 = ''.join(list1a)
@@ -1370,12 +1440,11 @@ class Semicolon(MRule):
                     countOpenUnion = list1a.count(sub1)
                     countCloseUnion = list1a.count(sub2)
 
-
-                    countUnion=countOpenUnion-countCloseUnion
+                    countUnion = countOpenUnion - countCloseUnion
 
                     if countUnion <= unionMin:
 
-                        unionMin=countUnion
+                        unionMin = countUnion
 
                 if (semicolonMin < unionMin):
                     return True
@@ -1398,17 +1467,19 @@ class Semicolon(MRule):
 
                     newSymb = newSymb[1:-1]
 
-                semicolon = [semicolon for semicolon, x in enumerate(newSymb) if x == ";"]
-                union =[union for union, x in enumerate(newSymb) if x == "U"]
+                semicolon = [
+                    semicolon for semicolon,
+                    x in enumerate(newSymb) if x == ";"]
+                union = [union for union, x in enumerate(newSymb) if x == "U"]
 
-                semicolonMin=100
-                unionMin=100
-                indexMin=100
+                semicolonMin = 100
+                unionMin = 100
+                indexMin = 100
 
                 for index in semicolon:
 
                     new1 = list(newSymb)
-                    list1a = new1[:int(index)-1]
+                    list1a = new1[:int(index) - 1]
                     list1b = new1[int(index) + 2:]
 
                     str1 = ''.join(list1a)
@@ -1420,19 +1491,18 @@ class Semicolon(MRule):
                     countOpenSemi = list1a.count(sub1)
                     countCloseSemi = list1a.count(sub2)
 
-
-                    countSemi=countOpenSemi-countCloseSemi
+                    countSemi = countOpenSemi - countCloseSemi
 
                     if countSemi < semicolonMin:
 
-                        indexMin=index
+                        indexMin = index
 
-                        semicolonMin=countSemi
+                        semicolonMin = countSemi
 
                 for index in union:
 
                     new1 = list(newSymb)
-                    list1a = new1[:int(index)-1]
+                    list1a = new1[:int(index) - 1]
                     list1b = new1[int(index) + 2:]
 
                     str1 = ''.join(list1a)
@@ -1444,16 +1514,15 @@ class Semicolon(MRule):
                     countOpenUnion = list1a.count(sub1)
                     countCloseUnion = list1a.count(sub2)
 
-
-                    countUnion=countOpenUnion-countCloseUnion
+                    countUnion = countOpenUnion - countCloseUnion
 
                     if countUnion <= unionMin:
 
-                        unionMin=countUnion
+                        unionMin = countUnion
 
-                if semicolonMin<unionMin:
+                if semicolonMin < unionMin:
 
-                    listA = new1[:int(indexMin)-1]
+                    listA = new1[:int(indexMin) - 1]
                     listB = new1[int(indexMin) + 2:]
 
                     strFin1 = ''.join(listA)
@@ -1527,16 +1596,18 @@ class UnionL(MRule):
 
                     new = new[1:-1]
 
-                semicolon = [semicolon for semicolon, x in enumerate(new) if x == ";"]
-                union =[union for union, x in enumerate(new) if x == "U"]
+                semicolon = [
+                    semicolon for semicolon,
+                    x in enumerate(new) if x == ";"]
+                union = [union for union, x in enumerate(new) if x == "U"]
 
-                semicolonMin=100
-                unionMin=100
+                semicolonMin = 100
+                unionMin = 100
 
                 for index in semicolon:
 
                     new1 = list(new)
-                    list1a = new1[:int(index)-1]
+                    list1a = new1[:int(index) - 1]
                     list1b = new1[int(index) + 2:]
 
                     str1 = ''.join(list1a)
@@ -1548,17 +1619,16 @@ class UnionL(MRule):
                     countOpenSemi = list1a.count(sub1)
                     countCloseSemi = list1a.count(sub2)
 
-
-                    countSemi=countOpenSemi-countCloseSemi
+                    countSemi = countOpenSemi - countCloseSemi
 
                     if countSemi < semicolonMin:
 
-                        semicolonMin=countSemi
+                        semicolonMin = countSemi
 
                 for index in union:
 
                     new1 = list(new)
-                    list1a = new1[:int(index)-1]
+                    list1a = new1[:int(index) - 1]
                     list1b = new1[int(index) + 2:]
 
                     str1 = ''.join(list1a)
@@ -1570,12 +1640,11 @@ class UnionL(MRule):
                     countOpenUnion = list1a.count(sub1)
                     countCloseUnion = list1a.count(sub2)
 
-
-                    countUnion=countOpenUnion-countCloseUnion
+                    countUnion = countOpenUnion - countCloseUnion
 
                     if countUnion <= unionMin:
 
-                        unionMin=countUnion
+                        unionMin = countUnion
 
                 if (unionMin < semicolonMin):
                     return True
@@ -1598,17 +1667,19 @@ class UnionL(MRule):
 
                     newSymb = newSymb[1:-1]
 
-                semicolon = [semicolon for semicolon, x in enumerate(newSymb) if x == ";"]
-                union =[union for union, x in enumerate(newSymb) if x == "U"]
+                semicolon = [
+                    semicolon for semicolon,
+                    x in enumerate(newSymb) if x == ";"]
+                union = [union for union, x in enumerate(newSymb) if x == "U"]
 
-                semicolonMin=100
-                unionMin=100
-                indexMin=100
+                semicolonMin = 100
+                unionMin = 100
+                indexMin = 100
 
                 for index in semicolon:
 
                     new1 = list(newSymb)
-                    list1a = new1[:int(index)-1]
+                    list1a = new1[:int(index) - 1]
                     list1b = new1[int(index) + 2:]
 
                     str1 = ''.join(list1a)
@@ -1620,17 +1691,16 @@ class UnionL(MRule):
                     countOpenSemi = list1a.count(sub1)
                     countCloseSemi = list1a.count(sub2)
 
-
-                    countSemi=countOpenSemi-countCloseSemi
+                    countSemi = countOpenSemi - countCloseSemi
 
                     if countSemi < semicolonMin:
 
-                        semicolonMin=countSemi
+                        semicolonMin = countSemi
 
                 for index in union:
 
                     new1 = list(newSymb)
-                    list1a = new1[:int(index)-1]
+                    list1a = new1[:int(index) - 1]
                     list1b = new1[int(index) + 2:]
 
                     str1 = ''.join(list1a)
@@ -1642,23 +1712,21 @@ class UnionL(MRule):
                     countOpenUnion = list1a.count(sub1)
                     countCloseUnion = list1a.count(sub2)
 
-
-                    countUnion=countOpenUnion-countCloseUnion
+                    countUnion = countOpenUnion - countCloseUnion
 
                     if countUnion <= unionMin:
 
-                        indexMin=index
+                        indexMin = index
 
-                        unionMin=countUnion
+                        unionMin = countUnion
 
                 if unionMin < semicolonMin:
 
-                    listA = new1[:int(indexMin)-1]
+                    listA = new1[:int(indexMin) - 1]
                     listB = new1[int(indexMin) + 2:]
 
                     strFin1 = ''.join(listA)
                     strFin2 = ''.join(listB)
-
 
                     if item in entailment.getLeftPremises():
                         new.getLeftPremises().remove(item)
@@ -1699,11 +1767,13 @@ class UnionR(MRule):
 
                     new = new[1:-1]
 
-                semicolon = [semicolon for semicolon, x in enumerate(new) if x == ";"]
-                union =[union for union, x in enumerate(new) if x == "U"]
+                semicolon = [
+                    semicolon for semicolon,
+                    x in enumerate(new) if x == ";"]
+                union = [union for union, x in enumerate(new) if x == "U"]
 
-                semicolonMin=100
-                unionMin=100
+                semicolonMin = 100
+                unionMin = 100
 
                 for index in semicolon:
 
@@ -1720,12 +1790,11 @@ class UnionR(MRule):
                     countOpenSemi = list1a.count(sub1)
                     countCloseSemi = list1a.count(sub2)
 
-
-                    countSemi=countOpenSemi-countCloseSemi
+                    countSemi = countOpenSemi - countCloseSemi
 
                     if countSemi < semicolonMin:
 
-                        semicolonMin=countSemi
+                        semicolonMin = countSemi
 
                 for index in union:
 
@@ -1742,12 +1811,11 @@ class UnionR(MRule):
                     countOpenUnion = list1a.count(sub1)
                     countCloseUnion = list1a.count(sub2)
 
-
-                    countUnion=countOpenUnion-countCloseUnion
+                    countUnion = countOpenUnion - countCloseUnion
 
                     if countUnion <= unionMin:
 
-                        unionMin=countUnion
+                        unionMin = countUnion
 
                 if (unionMin < semicolonMin):
                     return True
@@ -1771,17 +1839,19 @@ class UnionR(MRule):
 
                     newSymb = newSymb[1:-1]
 
-                semicolon = [semicolon for semicolon, x in enumerate(newSymb) if x == ";"]
-                union =[union for union, x in enumerate(newSymb) if x == "U"]
+                semicolon = [
+                    semicolon for semicolon,
+                    x in enumerate(newSymb) if x == ";"]
+                union = [union for union, x in enumerate(newSymb) if x == "U"]
 
-                semicolonMin=100
-                unionMin=100
-                indexMin=100
+                semicolonMin = 100
+                unionMin = 100
+                indexMin = 100
 
                 for index in semicolon:
 
                     new1 = list(newSymb)
-                    list1a = new1[:int(index)-1]
+                    list1a = new1[:int(index) - 1]
                     list1b = new1[int(index) + 2:]
 
                     str1 = ''.join(list1a)
@@ -1793,12 +1863,11 @@ class UnionR(MRule):
                     countOpenSemi = list1a.count(sub1)
                     countCloseSemi = list1a.count(sub2)
 
-
-                    countSemi=countOpenSemi-countCloseSemi
+                    countSemi = countOpenSemi - countCloseSemi
 
                     if countSemi < semicolonMin:
 
-                        semicolonMin=countSemi
+                        semicolonMin = countSemi
 
                 for index in union:
 
@@ -1815,17 +1884,16 @@ class UnionR(MRule):
                     countOpenUnion = list1a.count(sub1)
                     countCloseUnion = list1a.count(sub2)
 
-
-                    countUnion=countOpenUnion-countCloseUnion
+                    countUnion = countOpenUnion - countCloseUnion
 
                     if countUnion <= unionMin:
-                        indexMin=index
+                        indexMin = index
 
-                        unionMin=countUnion
+                        unionMin = countUnion
 
                 if unionMin < semicolonMin:
 
-                    listA = new1[:int(indexMin)-1]
+                    listA = new1[:int(indexMin) - 1]
                     listB = new1[int(indexMin) + 2:]
 
                     strFin1 = ''.join(listA)

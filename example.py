@@ -83,6 +83,7 @@ class Element:
     def toString(self):
         pass
 
+
 class Atom(Element):
 
     def __init__(self, symbol):

@@ -11,10 +11,11 @@ binOp = [op.Conj, op.Disj, op.Impl]
 unOp = [op.Not, op.Mod]
 opProg = ["U", ";"]
 
+
 def getAllCombs(l):
     comb = []
-    for i in range(len(l),0,-1):
-        comb.extend(list(itertools.combinations(l,i)))
+    for i in range(len(l), 0, -1):
+        comb.extend(list(itertools.combinations(l, i)))
 
     return comb
 
@@ -25,6 +26,7 @@ def atomsIsSubset(phi, psi):
         if atomPhi.getValue() is None and not psi.hasAtom(atomPhi):
             return False
     return True
+
 
 def genProgram(atoms, maxDepth):
 
@@ -101,8 +103,6 @@ def randomGenAuxPDL(maxLen, atoms, maxLenProg, atomsProg):
 
         return random.choice(atoms)
 
-
-
     return (phi, psi)
 
 
@@ -111,48 +111,48 @@ def randomGen(maxLen, nAtoms, mod):
     atoms = []
     prevSymbols = []
 
-
     for i in range(nAtoms):
 
         letter = None
 
         while not letter or letter in prevSymbols:
-            letter = random.choice(string.ascii_letters[0:int((len(string.ascii_letters)/2))])
+            letter = random.choice(
+                string.ascii_letters[0:int((len(string.ascii_letters) / 2))])
 
         atoms.append(basics.Atom(letter))
         prevSymbols.append(letter)
 
-    phi = randomGenAux(maxLen, atoms , mod)
-    psi = randomGenAux(int(maxLen/2), atoms, mod)
+    phi = randomGenAux(maxLen, atoms, mod)
+    psi = randomGenAux(int(maxLen / 2), atoms, mod)
 
     return (phi, psi)
 
 
-
 def randomGenAux(maxLen, atoms, mod):
 
-    if mod==False:
-        unOp=[op.Not]
+    modAtom = random.choice(
+        string.ascii_letters[0:int((len(string.ascii_letters) / 2))])
 
     if maxLen > 1:
 
-        operator = random.choice(binOp + unOp)
+        if mod:
+            operator = random.choice(binOp + unOp)
+
+        else:
+            operator = random.choice(binOp + [op.Not])
 
         if operator in binOp:
 
-            operand1 = randomGenAux(int(maxLen/2), atoms, mod)
-            operand2 = randomGenAux(int(maxLen/2), atoms, mod)
+            operand1 = randomGenAux(int(maxLen / 2), atoms, mod)
+            operand2 = randomGenAux(int(maxLen / 2), atoms, mod)
 
             return operator(operand1, operand2)
 
         else:
-            operand = randomGenAux(maxLen-1, atoms, mod)
-            return operator(operand)
-
+            operand = randomGenAux(maxLen - 1, atoms, mod)
+            return operator(operand)if operator != op.Mod else operator(
+                operand, modAtom)
 
     else:
 
         return random.choice(atoms)
-
-
-

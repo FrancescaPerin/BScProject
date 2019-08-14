@@ -1,7 +1,7 @@
 import basics
 import pars
 
-# Class for unary operators (for now only not)
+# Class for unary operators (modality and negation)
 
 
 class UnaryOperator(basics.Element):
@@ -32,6 +32,11 @@ class UnaryOperator(basics.Element):
             return self.getSymbol() + "(" + str(self.__operand) + ")"
 
         return self.getSymbol() + "(" + self.__operand.toString() + ")"
+
+    # Function simplify() given a sentence try to simplify it for instance
+    # (p ^ p)-> q is simplified to p -> q
+
+    # Function never called in final version of the code
 
     def simplify(self):
         selfVal = self.getValue()
@@ -84,6 +89,11 @@ class Operator(basics.Element):
 
         return atoms
 
+    # Function simplify() given a sentence try to simplify it for instance
+    # (p ^ p)-> q is simplified to p -> q
+
+    # Function never called in final version of the code
+
     def simplify(self):
 
         selfValue = self.getValue()
@@ -118,6 +128,8 @@ class Operator(basics.Element):
         return "(" + self.__operand1.toString() + " " + \
             self.getSymbol() + " " + self.__operand2.toString() + ")"
 
+# Defining conjunction operator
+
 
 class Conj(Operator):
 
@@ -132,6 +144,7 @@ class Conj(Operator):
         super(Conj, self).__init__("^", OP, operand1, operand2)
 
 
+# Defining disjunction operator
 class Disj(Operator):
 
     def __init__(self, operand1, operand2):
@@ -143,11 +156,11 @@ class Disj(Operator):
             if a == False and b == False:
                 return False
 
-            print("blablabla ")
-
             return None
 
         super(Disj, self).__init__(pars.DISJ_SYMBOL, OP, operand1, operand2)
+
+# Defining implication operator
 
 
 class Impl(Operator):
@@ -165,6 +178,8 @@ class Impl(Operator):
 
         super(Impl, self).__init__(pars.IMPL_SYMBOL, OP, operand1, operand2)
 
+# Defining negation operator
+
 
 class Not(UnaryOperator):
 
@@ -180,6 +195,8 @@ class Not(UnaryOperator):
         super(Not, self).__init__(pars.NOT_SYMBOL, OP, operand)
 
 
+# Defining modality operator (symbol is a program or complex program )
+# Exeption raised because the code should never have to reach that function.
 class Mod(UnaryOperator):
 
     def __init__(self, operand, symbol=""):
