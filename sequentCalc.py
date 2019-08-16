@@ -42,6 +42,8 @@ class Entailment:
         new = entailment.replace("|-", "")
         string = "~^|->"
 
+        print ("proof:"+ self.toString())
+
         if not any(elem in new for elem in string):
             for premise in self.getPremises():
                 for conclusion in self.getConclusions():
@@ -238,6 +240,10 @@ class Entailment:
         if self.__children is None:
             print("NOT provable1:" + self.toString())
             return False
+
+        if len(self.__children)==1:
+            if self.toString()==self.__children[0].toString():
+                return False
 
         elif len(self.__children) > 0:
             for child in self.__children:
@@ -709,7 +715,7 @@ class Entailment:
         theLaTeXproof = self.latexProof()
         with open("proof.tex", "w") as myfile:
             myfile.write(
-                "\\documentclass[border=10pt,varwidth=50cm]{standalone}\n"
+                "\\documentclass[border=10pt,varwidth=200cm]{standalone}\n"
                 "\\usepackage{bussproofs}\n"
                 "\\usepackage{amsmath}\n"
                 "\\begin{document}\n"
