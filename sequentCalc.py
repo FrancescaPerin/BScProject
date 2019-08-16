@@ -42,14 +42,14 @@ class Entailment:
         new = entailment.replace("|-", "")
         string = "~^|->"
 
-        print ("proof:"+ self.toString())
+        #print ("proof:"+ self.toString())
 
         if not any(elem in new for elem in string):
             #print(self.toString())
             for premise in self.getPremises():
                 for conclusion in self.getConclusions():
                     if premise.toString() == conclusion.toString():
-                        print(self.toString())
+                        #print(self.toString())
                         return True
 
         if len(self.getConclusions()) >= 1 and len(self.getPremises()) > 0:
@@ -240,7 +240,7 @@ class Entailment:
             self.__side = True
 
         if self.__children is None:
-            print("NOT provable1:" + self.toString())
+            #print("NOT provable1:" + self.toString())
             return False
 
 
@@ -248,7 +248,7 @@ class Entailment:
         if len(self.__children) > 0:
             for child in self.__children:
                 if not child.solve():
-                    print("NOT provable2:" + self.toString())
+                    #print("NOT provable2:" + self.toString())
                     return False
             return True
 
