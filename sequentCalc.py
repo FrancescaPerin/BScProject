@@ -45,9 +45,11 @@ class Entailment:
         print ("proof:"+ self.toString())
 
         if not any(elem in new for elem in string):
+            #print(self.toString())
             for premise in self.getPremises():
                 for conclusion in self.getConclusions():
                     if premise.toString() == conclusion.toString():
+                        print(self.toString())
                         return True
 
         if len(self.getConclusions()) >= 1 and len(self.getPremises()) > 0:
@@ -241,18 +243,19 @@ class Entailment:
             print("NOT provable1:" + self.toString())
             return False
 
-        if len(self.__children)==1:
-            if self.toString()==self.__children[0].toString():
-                return False
 
-        elif len(self.__children) > 0:
+
+        if len(self.__children) > 0:
             for child in self.__children:
                 if not child.solve():
                     print("NOT provable2:" + self.toString())
                     return False
-
-            print("Provable:" + self.toString())
             return True
+
+        if len(self.__children)==1:
+            if self.toString()==self.__children[0].toString():
+                return False
+
 
         return False
 
@@ -533,7 +536,7 @@ class Entailment:
 
         for itemLP in self.getLeftPremises():
 
-            if ("False" in itemRP.toString()) and len(
+            if ("False" in itemLP.toString()) and len(
                     self.getConclusions()) > 0:
                 interpolants = basics.Atom("False")
                 interpolants.setValue(False)
