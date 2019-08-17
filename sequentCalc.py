@@ -252,6 +252,7 @@ class Entailment:
 
         if len(self.__children) == 1:
             if self.toString() == self.__children[0].toString():
+                #print("NOT provable3:" + self.toString())
                 return False
 
         return False
@@ -303,6 +304,18 @@ class Entailment:
 
     def addConcR(self, new):
         self.__rConclusions.append(new)
+
+    def removePremL(self, old):
+        self.__lPremises.remove(old)
+
+    def removePremR(self, old):
+        self.__rPremises.remove(old)
+
+    def removeConcL(self, old):
+        self.__lConclusions.remove(old)
+
+    def removeConcR(self, old):
+        self.__rConclusions.remove(old)
 
     @staticmethod
     def copyEntailment(entailment):
@@ -1289,9 +1302,7 @@ class LMod(MRule):
 
     def interpolate(interpolant, c, symbol):
 
-        if ("True" in interpolant[0].toString()) or (
-                "False" in interpolant[0].toString()):
-
+        if ("False" in interpolant[0].toString()):
             return interpolant[0]
 
         symbol = symbol.replace("[", "")
@@ -1340,44 +1351,35 @@ class Weak(MRule):
 
         possibleWeakenings = []
 
-        ent = entailment.getPremises() + entailment.getConclusions()
+        for conclusion in entailment.getConclusions():
 
-        for toEliminate in F.getAllCombs(ent):
-            new = entailment.copyEntailment(entailment)
+            w = entailment.copyEntailment(entailment)
 
-            for primitive in toEliminate:
+            if conclusion in entailment.getLeftConclusions():
+                w.removeConcL(conclusion)
+            else:
+                w.removeConcR(conclusion)
 
-                if primitive in new.getLeftConclusions():
-                    new.getLeftConclusions().remove(primitive)
-                elif primitive in new.getRightConclusions():
-                    new.getRightConclusions().remove(primitive)
-                elif primitive in new.getLeftPremises():
-                    new.getLeftPremises().remove(primitive)
-                elif primitive in new.getRightPremises():
-                    new.getRightPremises().remove(primitive)
+            possibleWeakenings.append(w)
 
-            Lrules = [LConj, LDisj, LNeg, LImpl]
-            Rrules = [RNeg, RImpl, RConj, RDisj]
-            Prules = [LMod, Semicolon, UnionL, UnionR]
+        for premise in entailment.getPremises():
 
-            for rule in Prules:
-                if rule.canApply(new.getPremises(), new.getConclusions()):
-                    if new.solve():
-                        return [new]
+            w = entailment.copyEntailment(entailment)
 
-            for rule in Lrules:
-                if rule.canApply(
-                        new.getRightPremises()) or rule.canApply(
-                        new.getLeftPremises()):
-                    if new.solve():
-                        return [new]
+            if premise in entailment.getLeftPremises():
+                w.removePremL(premise)
+            else:
+                w.removePremR(premise)
 
-            for rule in Rrules:
-                if rule.canApply(
-                        new.getRightConclusions()) or rule.canApply(
-                        new.getLeftConclusions()):
-                    if new.solve():
-                        return [new]
+            possibleWeakenings.append(w)
+
+        i = 0
+        for w in possibleWeakenings:
+            i += 1
+            #print("trying weakening", i, "out of", len(possibleWeakenings))
+
+            if w.solve():
+                return [w]
 
         return None
 

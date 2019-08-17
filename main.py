@@ -151,9 +151,6 @@ def main(argv):
                     print("check: ", check)
 
                     correctInterpolant += 1
-                else:
-                    entailment.latexProofAux()
-                    break
 
             print("Number of tested formulas:" + str(i))
             print("Number of valid formulas:" + str(validFormulas))
