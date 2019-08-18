@@ -19,6 +19,9 @@ To run the code alway run the script 'main.py'. The user can then decide to test
 
 If the user decides to input a formula, this should be given in a very specific format, if the format is not followed it could lead to wrong results as the code is very sensitive in particular when using the modality operator.
 
+The user can only use  all lower case letters for propositional atoms (such as 'a','b','c').
+The user can also use the atoms 'True' or 'False' in which case the user should use 'true' and 'false' as name of the atoms.
+
 The formula is given similarly to prefix notation. The operators used are the following:
 
 
@@ -26,6 +29,9 @@ The formula is given similarly to prefix notation. The operators used are the fo
 * Negation(~a): op.Not(a)
 * Modality([]a): op.Mod(a)
 * Modality([b]a): op.Mod(a, "b")
+* Modality([c;b]a): op.Mod(a, "c ; b")
+* Modality([c U b]a): op.Mod(a, "c U b")
+
 
 * Conjunction(a^b): op.Conj(a,b)
 * Disjunction(a|b): op.Disj(a,b)
@@ -39,6 +45,8 @@ Here are some easy and some more complicated examples to understad the fomat req
 * ((p | q)->p): op.Impl(op.Disj(p,q),p)
 * ([a][b]p ->[a U b]p): op.Impl(op.Mod(op.Mod(p,"b"),"a"), op.Mod(p, "(a U b)"))
 * (([(a ; b);((d U c) U d)]p ^ q) | ~[b]s): op.Disj(op.Conj(op.Mod(p,"((a ; b) ; ((d U c) U d))"),q),op.Not(op.Mod(s,"b")))
+* (p ^ q) -> [a]True: op.Impl(op.Disj(p,q),op.Mod(true,"a"))
+* (p v [c]False): op.Disj(p, op.Mod(false,"c"))
 
 #### Note:
 

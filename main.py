@@ -49,7 +49,8 @@ def main(argv):
     # if user decide to test a formula then take phi and psi from command line
 
     if len(argv) < 2:
-        raise Exception("Missing arguments")
+        raise Exception(
+            "Please use \n --manual if user wants to test a specific case \n --random for randomly")
         exit(-1)
 
     if argv[1] == "--manual":
@@ -98,7 +99,15 @@ def main(argv):
         countE1 = 0
         countE2 = 0
 
-        count = int(argv[3])
+        if len(argv) == 2:
+            raise Exception(
+                "Please specify which logic has to be tested:\n --prop for testing for propositional logic\n --modal for modal logic\n --PDL for star-free PDL followed by an integer")
+            exit(-1)
+        elif len(argv) == 3:
+            raise Exception("Please insert number of formulas to be tested")
+            exit(-1)
+        else:
+            count = int(argv[3])
 
         while i < count:
 
@@ -116,7 +125,7 @@ def main(argv):
 
             else:
                 raise Exception(
-                    "Wrong argument format, logic to be used not specified")
+                    "Please specify which logic has to be tested:\n --prop for testing for propositional logic\n --modal for modal logic\n --PDL for star-free PDL followed by an integer")
                 exit(-1)
 
             psi = entailment[0]
